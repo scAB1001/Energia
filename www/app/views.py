@@ -20,26 +20,38 @@ DANGER, SUCCESS = 'danger', 'success'
 views = Blueprint('views', __name__)
 
 
-# General
 """  
 
     Helper variables and methods
 
 """
+def display_user_data():
+    users = User.query.all()
+    for user in users:
+        print(f"User: {user.first_name}, Email: {user.email}")
 
-click_count = 30
-should_increment = True
-@views.route('/toggle_count', methods=['POST'])
-def toggle_count():
-    global click_count, should_increment
-    if should_increment:
-        click_count += 1
-    else:
-        click_count -= 1
-    # Toggle the state
-    should_increment = not should_increment
-    #print(f"Current click count: {click_count}")
-    return jsonify(click_count=click_count)
+        # Print all leases for this user
+        for lease in user.leases:
+            print(
+                f"\tLeased Car ID: {lease.car_id}, Term: {lease.term_length} months")
+
+        # Print all interactions for this user
+        for interaction in user.interactions:
+            print(
+                f"\tInteraction: {interaction.swipe_type} with Car ID: {interaction.car_id}")
+
+
+def display_table_nicely(numCards, li):
+    print(f'\nList of {numCards} cars:\n[')
+    for card in li:
+        print('\t{')
+        data = card.items()
+        for key, value in data:
+            if isinstance(value, str):
+                value = value.replace('\n', ' ').replace('\t\t', ', ')
+            print(f'\t\t{key}: {value},')
+        print('\t},')
+    print(']\n')
 
 
 # Attempts to stage and apply a commit to the db, else rollback the attempt
@@ -121,33 +133,71 @@ def pre_populate_db():
         db.session.commit()
 
 
-def display_user_data():
-    users = User.query.all()
-    for user in users:
-        print(f"User: {user.first_name}, Email: {user.email}")
+def pre_populate_tblCars():
+    # Reset cars abd user interactions tables when meeting the explore page?
+    if not is_table_empty(Car):
+        Car.query.delete()
+        print(f"Deleting rows... table_empty: {is_table_empty(Car)}\n")
 
-        # Print all leases for this user
-        for lease in user.leases:
-            print(
-                f"\tLeased Car ID: {lease.car_id}, Term: {lease.term_length} months")
+    if current_user.is_authenticated:
+        delete_user_interactions(current_user.id)
+        db.session.commit()
+        print(
+            f"Deleting rows... table_empty: {is_table_empty(UserInteraction)}")
 
-        # Print all interactions for this user
-        for interaction in user.interactions:
-            print(
-                f"\tInteraction: {interaction.swipe_type} with Car ID: {interaction.car_id}")
+    try:
+        # Format: Car(car_name, make, model, year, body_type, horsepower, monthly_payment, mileage)
+        cars_to_add = [
+            Car(image='astonMartinSILagonda1', car_name='Aston Martin Lagonda Series 1', make='Aston Martin', model='Lagonda',
+                year=1974, body_type='4-door saloon', horsepower=280, monthly_payment=54611.96, mileage=18324),
 
+            Car(image='astonMartinSIILagonda2', car_name='Aston Martin Lagonda Series 2', make='Aston Martin', model='Lagonda',
+                year=1976, body_type='4-door saloon', horsepower=280, monthly_payment=15461.56, mileage=103633),
 
-def display_table_nicely(numCards, li):
-    print(f'\nList of {numCards} cars:\n[')
-    for card in li:
-        print('\t{')
-        data = card.items()
-        for key, value in data:
-            if isinstance(value, str):
-                value = value.replace('\n', ' ').replace('\t\t', ', ')
-            print(f'\t\t{key}: {value},')
-        print('\t},')
-    print(']\n')
+            Car(image='astonMartinSIIILagonda3', car_name='Aston Martin Lagonda Series 3', make='Aston Martin', model='Lagonda',
+                year=1986, body_type='4-door saloon', horsepower=0, monthly_payment=7766.58, mileage=132084),
+
+            Car(image='astonMartinSIVLagonda4', car_name='Aston Martin Lagonda Series 4', make='Aston Martin', model='Lagonda',
+                year=1987, body_type='4-door saloon', horsepower=0, monthly_payment=33633.98, mileage=123117),
+
+            Car(image='ferrariTestarossa1', car_name='Ferrari Testarossa', make='Ferrari', model='Testarossa',
+                year=1984, body_type='2-door berlinetta', horsepower=385, monthly_payment=34185.91, mileage=146545),
+
+            Car(image='ferrariF512M2', car_name='Ferrari F512 M', make='Ferrari', model='F512 M',
+                year=1994, body_type='2-door berlinetta', horsepower=434, monthly_payment=6352.03, mileage=196267),
+
+            Car(image='ferrariF512TR3', car_name='Ferrari F512 TR', make='Ferrari', model='512 TR',
+                year=1991, body_type='2-door berlinetta', horsepower=422, monthly_payment=31245.32, mileage=198978),
+
+            Car(image='ferrari308GTRainbow4', car_name='Ferrari 308 GT Bertone Rainbow', make='Ferrari', model='308 GT',
+                year=1976, body_type='2-door coupe', horsepower=255, monthly_payment=52585.91, mileage=89017),
+
+            Car(image='countachLP400Lamborghini1', car_name='Lamborghini Countach LP400', make='Lamborghini', model='LP400',
+                year=1974, body_type='2-door coupe', horsepower=375, monthly_payment=82042.47, mileage=167228),
+
+            Car(image='countachLP500Lamborghini2', car_name='Lamborghini Countach LP500', make='Lamborghini', model='LP500',
+                year=1982, body_type='2-door coupe', horsepower=370, monthly_payment=27854.73, mileage=100220),
+
+            Car(image='countachLP5000LamborghiniQuattrovalvole3', car_name='Lamborghini Countach LP5000 Quattrovalvole', make='Lamborghini', model='LP5000 Quattrovalvole',
+                year=1985, body_type='2-door coupe', horsepower=455, monthly_payment=81930.27, mileage=103074),
+
+            Car(image='countach25thAnniversaryLamborghini4', car_name='Lamborghini Countach 25th Anniversary', make='Lamborghini', model='25th Anniversary Edition',
+                year=1988, body_type='2-door coupe', horsepower=414, monthly_payment=36409.78, mileage=140320),
+
+            Car(image='mercedesBenz300SLGullwing1', car_name='Mercedes-Benz 300SL Gullwing', make='Mercedes-Benz', model='300SL',
+                year=1954, body_type='2-door coupe', horsepower=215, monthly_payment=22230.65, mileage=92350)
+        ]
+
+        # Add cars to the database
+        print("\nAdding rows...")
+        db.session.add_all(cars_to_add)
+        db.session.commit()
+        is_table_empty(Car)
+        return jsonify({"status": "success", "message": "Cars added successfully"})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 def delete_user_interactions(user_id):
@@ -175,90 +225,27 @@ def delete_user_interactions(user_id):
             f"An error occurred while deleting interactions for user ID {user_id}: {e}")
 
 
-def pre_populate_tblCars():
-    # Reset cars abd user interactions tables when meeting the explore page?
-    if not is_table_empty(Car):
-        Car.query.delete()
-        print(f"Deleting rows... table_empty: {is_table_empty(Car)}\n")
-        
-    if current_user.is_authenticated:
-        delete_user_interactions(current_user.id)
-        db.session.commit()
-        print(f"Deleting rows... table_empty: {is_table_empty(UserInteraction)}")
-        
-    
-    try:
-        # Format: Car(car_name, make, model, year, body_type, horsepower, monthly_payment, mileage)
-        cars_to_add = [
-            Car(image='astonMartinSILagonda1', car_name='Aston Martin Lagonda Series 1', make='Aston Martin', model='Lagonda',
-            year=1974, body_type='4-door saloon', horsepower=280, monthly_payment=54611.96, mileage=18324),
-        
-            Car(image='astonMartinSIILagonda2', car_name='Aston Martin Lagonda Series 2', make='Aston Martin', model='Lagonda', 
-                year=1976, body_type='4-door saloon', horsepower=280, monthly_payment=15461.56, mileage=103633),
-                
-            Car(image='astonMartinSIIILagonda3', car_name='Aston Martin Lagonda Series 3', make='Aston Martin', model='Lagonda', 
-                year=1986, body_type='4-door saloon', horsepower=0, monthly_payment=7766.58, mileage=132084),
 
-            Car(image='astonMartinSIVLagonda4', car_name='Aston Martin Lagonda Series 4', make='Aston Martin', model='Lagonda', 
-                year=1987, body_type='4-door saloon', horsepower=0, monthly_payment=33633.98, mileage=123117),
-
-            Car(image='ferrariTestarossa1', car_name='Ferrari Testarossa', make='Ferrari', model='Testarossa', 
-                year=1984, body_type='2-door berlinetta', horsepower=385, monthly_payment=34185.91, mileage=146545),
-
-            Car(image='ferrariF512M2', car_name='Ferrari F512 M', make='Ferrari', model='F512 M', 
-                year=1994, body_type='2-door berlinetta', horsepower=434, monthly_payment=6352.03, mileage=196267),
-            
-            Car(image='ferrariF512TR3', car_name='Ferrari F512 TR', make='Ferrari', model='512 TR', 
-                year=1991, body_type='2-door berlinetta', horsepower=422, monthly_payment=31245.32, mileage=198978),
-
-            Car(image='ferrari308GTRainbow4', car_name='Ferrari 308 GT Bertone Rainbow', make='Ferrari', model='308 GT', 
-                year=1976, body_type='2-door coupe', horsepower=255, monthly_payment=52585.91, mileage=89017),
-            
-            Car(image='countachLP400Lamborghini1', car_name='Lamborghini Countach LP400', make='Lamborghini', model='LP400', 
-                year=1974, body_type='2-door coupe', horsepower=375, monthly_payment=82042.47, mileage=167228),
-            
-            Car(image='countachLP500Lamborghini2', car_name='Lamborghini Countach LP500', make='Lamborghini', model='LP500', 
-                year=1982, body_type='2-door coupe', horsepower=370, monthly_payment=27854.73, mileage=100220),
-
-            Car(image='countachLP5000LamborghiniQuattrovalvole3', car_name='Lamborghini Countach LP5000 Quattrovalvole', make='Lamborghini', model='LP5000 Quattrovalvole', 
-                year=1985, body_type='2-door coupe', horsepower=455, monthly_payment=81930.27, mileage=103074),
-
-            Car(image='countach25thAnniversaryLamborghini4', car_name='Lamborghini Countach 25th Anniversary', make='Lamborghini', model='25th Anniversary Edition', 
-                year=1988, body_type='2-door coupe', horsepower=414, monthly_payment=36409.78, mileage=140320),
-            
-            Car(image='mercedesBenz300SLGullwing1', car_name='Mercedes-Benz 300SL Gullwing', make='Mercedes-Benz', model='300SL', 
-                year=1954, body_type='2-door coupe', horsepower=215, monthly_payment=22230.65, mileage=92350)
-        ]
-        
-        # Add cars to the database
-        print("\nAdding rows...")
-        db.session.add_all(cars_to_add)
-        db.session.commit()
-        is_table_empty(Car)    
-        return jsonify({"status": "success", "message": "Cars added successfully"})
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-
-# Routes
 """
     
     View entries
 
 """
-@views.route('/')
-def home():
-    #clear_tables()
-    
-    # DANGER #
-    #if not User.query.first():
-    #    pre_populate_db()
+click_count = 30
+should_increment = True
 
 
-    return render_template('/site/home.html', title='Home', user=current_user)
+@views.route('/toggle_count', methods=['POST'])
+def toggle_count():
+    global click_count, should_increment
+    if should_increment:
+        click_count += 1
+    else:
+        click_count -= 1
+    # Toggle the state
+    should_increment = not should_increment
+    # print(f"Current click count: {click_count}")
+    return jsonify(click_count=click_count)
 
 
 @app.route('/react', methods=['POST'])
@@ -319,6 +306,16 @@ def test():
     return render_template('test.html', title='Test', user=current_user, car=car)
     
 
+@views.route('/')
+def home():
+    # clear_tables()
+
+    # DANGER #
+    # if not User.query.first():
+    #    pre_populate_db()
+
+    return render_template('/site/home.html', title='Home', user=current_user)
+
 
 @views.route('/explore')
 @login_required
@@ -352,7 +349,6 @@ def single_view():
     
     return render_template('/site/single_view.html', title='Car', user=current_user, cars=cars)
     
-
 
 @views.route('/history')
 @login_required
