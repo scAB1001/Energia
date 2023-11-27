@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="homepage">
+    <section class="intro"><h1>Welcome to AutoSwipe</h1></section>
+    <section class="features">
+        <div class="feature">
+            <h2>Explore</h2>
+            <p>Browse through a vast range of vehicles near you.</p>
+        </div>
+        <div class="feature">
+            <h2>Save Favourites</h2>
+            <p>Swipe right to save the cars you love.</p>
+        </div>
+        <div class="feature">
+            <h2>Full Details</h2>
+            <p>Get all the details and specs you need to make an informed decision.</p>
+        </div>
+    </section>
+    <section class="cta">
+        {% if not user.is_authenticated %}
+        <a href="/login" class="cta-button">Sign in</a>
+        {% endif %}
+        <a href="/signup" class="cta-button">Sign up</a>
+    </section>
+
+    <!-- New User Guide Section -->
+    <section class="user-guide">
+        <h2>How to Use AutoSwipe</h2>
+        <ol class="guide-steps">
+            {% if not user.is_authenticated %}
+            <li>
+                <h3>Create an Account or Sign into an existing one</h3>
+                <p>Sign up for a new account to get started. It's quick and easy!</p>
+            </li>
+            {% endif %}
+            <li>
+                <h3>Swipe Through Vehicles</h3>
+                <p>Swipe left to pass or swipe right to save any vehicle for later.</p>
+            </li>
+            <li>
+                <h3>Review Your Favourites and Get In Touch</h3>
+                <p>Access your favourites anytime and contact the lessor.</p>
+            </li>
+        </ol>
+    </section>
+
+</div>
+{% endblock %}

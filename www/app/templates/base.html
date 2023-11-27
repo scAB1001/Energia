@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='index.js') }}"></script>
+  <title>{% if title %}{{ title }}{% else %}Oops! Reload the page{% endif %}</title>
+</head>
+
+<body>
+  <header class="top-bar">
+    <nav class="settings-nav">
+      {% if user.is_authenticated %}
+      <ul>
+        <li><a href="/logout" title="Logout"><img src="{{ url_for('static', filename='icons/logout.png') }}" alt="Logout icon" class="nav-icon"></a>Logout</li>
+        <li><a href="/settings" title="Settings"><img src="{{ url_for('static', filename='icons/cog.png') }}" alt="Settings icon" class="nav-icon"></a>Settings</li>
+        <li><a href="/history" title="History"><img src="{{ url_for('static', filename='icons/history.png') }}" alt="History icon" class="nav-icon"></a>History</li>
+      </ul>
+      {% else %}
+      <marquee direction="right"><h3>Login to use AutoSwipe.</h3></marquee>
+      {% endif %}
+    </nav>
+  </header>
+
+  <br><br><main class="content">{% block content %}{% endblock %}</main>
+
+  <footer class="bottom-bar">
+    <nav class="main-nav">
+      <ul>
+        <li><a href="/" class="icon-home" title="Home"><img src="{{ url_for('static', filename='icons/home.png') }}" alt="Home icon" class="nav-icon"></a>Home</li>
+        {% if user.is_authenticated %}
+        <li><a href="/explore" class="icon-explore" title="Explore"><img src="{{ url_for('static', filename='icons/search.png') }}" alt="Explore icon" class="nav-icon"></a>Explore</li>
+        <li><a href="/saved" class="icon-saved" title="Saved"><img src="{{ url_for('static', filename='icons/bookmark.png') }}" alt="Saved icon" class="nav-icon"></a>Liked</li>
+        {% endif %}
+      </ul>
+    </nav>
+  </footer>
+  
+ <!-- Flash messages -->
+  <div class="flash messages">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class="flashes danger">
+      {% for message in messages %}
+      {{ message }}
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+  </div>
+</body>
+</html>

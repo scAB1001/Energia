@@ -1,0 +1,733 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    max-width: 300vh;
+    min-width: 100vh;
+    max-height: 300vh;
+    min-height: 100vh;
+    font-family: 'Everson Mono', sans-serif;
+}
+
+body {
+    /* background: linear-gradient(to right, #ff7854, #fd267d); */
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    place-items: center;
+    justify-content: center;
+    background: linear-gradient(0deg, rgb(255, 96, 54), rgb(253, 38, 122)) no-repeat;
+}
+
+
+.top-bar,
+.bottom-bar {
+    background: #FFEBF2;
+    backdrop-filter: blur(10px);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    /* Should match the max-width of .content */
+    max-width: 1024px;
+    width: 100%;
+    height: 8%;
+    z-index: 1000;
+    border-radius: 20px;
+    border-style: solid;
+    border-width: 3px;
+    border-color: #6a6969;
+}
+
+.top-bar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    /* Only round the bottom corners of the top bar */
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    z-index: 1000;
+}
+
+.bottom-bar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    /* Only round the top corners of the bottom bar */
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    z-index: 1000;
+}
+
+.settings-nav ul,
+.main-nav ul {
+    list-style-type: none;
+    display: flex;
+    /* This will spread the nav items */
+    justify-content: space-between;
+    padding: 0 1rem;
+    padding-top: 0.5rem;
+    /* This ensures that the nav fills the height of the bar */
+    height: 100%;
+    /* Vertically centers the nav items */
+    align-items: center;
+    text-align: left;
+    color: black;
+}
+
+.settings-nav li,
+.main-nav li {
+    padding: 0 1rem;
+    margin: 0;
+}
+
+.settings-nav a,
+.main-nav a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    padding-left: 18%;
+}
+
+.settings-nav img,
+.main-nav img {
+    height: 24px;
+    width: auto;
+}
+
+.img:hover,
+.img:focus {
+    transform: scale(1.05);
+    background-color: #8f8480;
+    color: #ffffff;
+}
+
+.content {
+    /* Set the max-width to the desired width of the central strip */
+    max-width: 1024px;
+    width: 100%;
+    margin: 0 auto;
+    /* Needed for absolute positioning of header and footer */
+    position: relative;
+    flex-grow: 1;
+    /* Adjust based on top/bottom bar height */
+    padding-bottom: 50px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+}
+
+/* Add any additional styles for your specific sections/pages here */
+.homepage, 
+.login, 
+.signup,
+.settings,
+.history,
+.saved {
+    padding-top: 15%;
+    text-align: left;
+    padding: 20px 20px;
+}
+
+.intro {
+    margin-bottom: 0;
+    color: #ffff;
+}
+
+.intro h1 {
+    font-size: 2.5rem;
+}
+
+.features {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 2rem;
+    padding-top: 3%;
+    cursor: help;
+}
+
+.feature {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 1rem;
+    border-radius: 8px;
+    width: 30%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.feature h2 {
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.feature p {
+    color: #5c5c5c;
+}
+
+.nav-icon {
+    width: 48px;
+    height: 48px;
+    /* This ensures that the aspect ratio is maintained without the image being stretched */
+    /* You can also set object-fit property if needed */
+    object-fit: contain;
+}
+
+.cta {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.cta-button {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #cf1560;
+    padding: 1.75rem 2.5rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.cta-button-danger {
+    background-color: rgb(200, 0, 0);
+    color: #ffeaf2;
+    padding: 0.75rem 1.5rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.cta-button:hover,
+.cta-button:focus {
+    transform: scale(1.05);
+    background-color: #ff7854;
+    color: #fff;
+}
+
+/* Blurred sidebars */
+/* Adds pseudo-elements to create the blurred side effect */
+.content::before,
+.content::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    width: calc((100% - 1024px) / 2);
+    /* Adjust the width calculation based on max-width of .content */
+    height: 100%;
+    background: inherit;
+    /* Takes the gradient background from the body */
+    backdrop-filter: blur(15px);
+}
+
+.content::before {
+    left: 0;
+}
+
+.content::after {
+    right: 0;
+}
+
+/* Add media queries for responsiveness */
+@media (max-width: 1024px) {
+
+    .content,
+    .top-bar,
+    .bottom-bar {
+        width: 100%;
+        max-width: none;
+    }
+
+    .content::before,
+    .content::after {
+        display: none;
+        /* Removes the blurred sidebars on smaller screens */
+    }
+}
+
+.user-guide {
+    background: rgba(255, 255, 255, 0.9);
+    margin: 2rem 0;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.user-guide h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+    
+}
+
+.guide-steps {
+    list-style: none;
+    padding: 0;
+}
+
+.guide-steps li {
+    margin-bottom: 1rem;
+    background: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.guide-steps h3 {
+    margin-bottom: 0.5rem;
+}
+
+marquee {
+    padding-top: 15px;
+    width: 100%;
+    height: 100px;
+}
+
+/* Login Container */
+.form-signin {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    outline: none;
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+}
+
+.cta-button {
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #2A324B;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.cta-button:hover {
+    color: #C7C7C7;
+    background-color: #2A324B;
+}
+
+/* Button Styling */
+.btn-primary {
+    background-color: #fd267d;
+    border-color: #fd267d;
+    /* Add any other button styles here */
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #ff7854;
+    border-color: #ff7854;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .login-container {
+        margin: 1rem;
+        padding: 1rem;
+    }
+}
+
+/* Card-swipe Container */
+#swiper {
+    margin-top: 0;
+    height: 70vh;
+    aspect-ratio: 2 / 3;
+    perspective: 1000px;
+    perspective-origin: center 50%;
+    transform-style: preserve-3d;
+    position: relative;
+}
+
+.card {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    border-radius: 20px;
+    overflow: hidden;
+    transform: 
+        translateX(calc(8px * var(--i))) /*10*/
+        translateY(calc(-3px * var(--i))) /*-12*/
+        translateZ(calc(-15px * var(--i))); /*-30*/
+        /*rotate(calc(-1.00deg * var(--i)));*/
+    filter: drop-shadow(2px 2px 18px rgba(0, 0, 0, 0.5));
+    cursor: grabbing;
+    user-select: none;
+    transition: transform 0.5s; 
+}
+
+/* You might need to adjust the height of .card img to make room for .card-info */
+.card-container {
+    margin-top: 2rem;
+}
+
+.card img {
+    width: 100%;
+    /* height: 100%; */
+    height: calc(100% - 50px);
+    /* Adjust the 60px to the height of your .card-info */
+    object-fit: cover;
+    object-position: 50% 50%;
+}
+
+#like,
+#dislike {
+    font-size: 12vh;
+    border-radius: 50%;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+    animation-name: fade-in-out;
+    animation-duration: 1s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: both;
+    /* don't run animation at the beginning */
+    animation-play-state: paused;
+}
+
+#like.trigger,
+#dislike.trigger {
+    animation-name: fade-in-out2;
+}
+
+#like {
+    left: 95%;
+    bottom: 90%;
+    transform: translateY(-265%);
+    color: red;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+#dislike {
+    right: 85%;
+    bottom: 90%;
+    transform: translateY(261%);
+    color: #ccc;
+    background-color: rgba(0, 0, 0, 0.345);
+}
+
+@keyframes fade-in-out {
+
+    0%,
+    100% {
+        opacity: 0.2;
+    }
+
+    70% {
+        opacity: 1;
+    }
+}
+
+@keyframes fade-in-out2 {
+
+    0%,
+    100% {
+        opacity: 0.2;
+    }
+
+    70% {
+        opacity: 1;
+    }
+}
+
+.card-info {
+    width: 100%;
+    height: 15%;  /*90PX*/
+    color: white;
+    font-size: 20px;
+    font-style: italic;
+    bottom: 0;
+    padding: 3%; /*10PX*/
+    position: absolute;
+    align-items: center;
+    /* This will preserve spaces and line breaks, and wrap text */
+    white-space: pre-wrap;
+    background: rgba(33, 28, 28);
+}
+
+.card-info>div {
+    margin-bottom: 5px;
+}
+
+.card-info span {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.card-info p {
+    text-align: left;
+    font-size: 16px;
+    font-style: normal;
+    padding-left: 5%;
+    padding-top: 1.5%;
+    margin-bottom: 5px;
+}
+
+.after-cards h1 {
+    color: white;
+    transform: translateY(-380%);
+    z-index: 1000;
+}
+
+/* Styles for the single-view image */
+.image-container {
+    width: 920px;
+    min-height: 600px;
+    /* Ensures the image doesn't exceed the container */
+    overflow: hidden;
+    /* Centers the image within the container */
+    justify-content: center;
+    align-items: center;
+}
+
+.accordion-image {
+    /* Ensures the image is no taller or wider than the container */
+    max-width: 100%;
+    max-height: 100%;
+    /* Scales the image to fit while maintaining aspect ratio */
+    object-fit: contain;
+}
+
+.single-card-container {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 40px; /* Increased padding for more white space */
+}
+
+.single-card {
+    background: #ffffff;
+    border-radius: 15px; /* Softer corners */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25); /* More pronounced shadow */
+    padding: 30px; /* More internal space */
+    margin: 20px auto; /* Centered card */
+    width: 80%;
+    max-width: 500px; /* Larger card for better readability */
+    border-left: 5px solid #fd267d; /* Accent border */
+}
+
+.single-title {
+    color: #fd267d; /* Complementary title color */
+    font-size: 24px; /* Larger font size */
+    margin-bottom: 20px; /* Increased spacing */
+    text-align: center;
+    font-weight: bold; /* Bold font weight for better visibility */
+}
+
+.single-content p {
+    text-align: left;
+    color: #333; /* Darker font for better contrast and readability */
+    font-size: 18px; /* Larger font size */
+    line-height: 1.8; /* Increased line height for readability */
+    margin-bottom: 15px;
+}
+
+.single-content p strong {
+    color: #ff7854; /* Complementary strong tag color */
+}
+
+.card-footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.animated-button {
+    position: relative;
+    padding: 20px 40px;
+    margin: 12px;
+    background: linear-gradient(-30deg, #b06ab3 50%, #4568dc 50%);
+    color: white;
+    font-size: 20px;
+    letter-spacing: 2.5px;
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.animated-button:hover {
+    background: linear-gradient(-30deg, #4568dc 50%, #b06ab3 50%);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Accessibility */
+.animated-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px #fff, 0 0 0 4px #b06ab3;
+}
+
+.animated-button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+}
+/*
+.contact-button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.contact-button:hover {
+    background-color: #45a049;
+}
+
+
+.contact-button:focus {
+    outline: 2px dashed #4CAF50;
+    outline-offset: 4px;
+}
+
+ 
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}*/
+
+/* Error Pages */
+.error-page {
+    height: 80%;
+    text-align: center;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 2rem;
+}
+
+.error-page h1 {
+    font-size: 5rem;
+    color: #fd267d;
+}
+
+.error-page h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.error-page p {
+    padding-top: 10%;
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.error-page a.cta-button {
+    padding: 10px 20px;
+    background-color: #fd267d;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.error-page a.cta-button:hover {
+    background-color: #ff7854;
+}
+
+/* Keyframes for the slide- in/out animation */
+@keyframes slideIn {
+    from {
+        /* Start from off-screen */
+        bottom: -100px;
+        opacity: 0;
+    }
+
+    to {
+        /* End at visible position */
+        bottom: 50px;
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        bottom: 20px;
+        opacity: 1;
+    }
+
+    to {
+        bottom: -100px;
+        opacity: 0;
+    }
+}
+
+.flashes {
+    /* Initial off-screen position */
+    bottom: -100px;
+    left: 50%;
+    position: fixed;
+    font-size: 18px;
+    transform: translateX(-50%);
+    background: rgba(254, 234, 234, 0.95);
+    color: #282727;
+    padding: 18px 32px;
+    border-radius: 16px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border: 2px solid #6a6969;
+    opacity: 0;
+    /* Above other elements */
+    z-index: 1001;
+    animation: 
+        slideIn 0.80s ease forwards, 
+        slideOut 1.75s ease forwards 2.25s;
+}
+

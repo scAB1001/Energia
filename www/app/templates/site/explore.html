@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="explore">
+
+    <!-- Source: https://github.com/CodeSteppe/card-swiper -->
+    <div class="card-container">
+        <ion-icon id="dislike" name="close"></ion-icon>
+
+        <div id="swiper"></div>
+
+        <ion-icon id="like" name="heart-circle"></ion-icon>
+        
+        <!-- Local Scripts -->
+        <script type="text/javascript">const cars = {{ cars | tojson | safe }};</script>
+        <script src="{{ url_for('static', filename='card.js') }}"></script>
+        <script src="{{ url_for('static', filename='cardContainer.js') }}"></script>
+
+        <!-- Ionicons Scripts -->
+        <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    </div>
+
+    <div class="after-cards">
+        <h1>Find your dream car</h1>
+    </div>
+</div>
+{% endblock %}
