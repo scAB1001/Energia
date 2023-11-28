@@ -13,7 +13,7 @@
     <nav class="settings-nav">
       {% if user.is_authenticated %}
       <ul>
-        <li><a href="/logout" title="Logout"><img src="{{ url_for('static', filename='icons/logout.png') }}" alt="Logout icon" class="nav-icon"></a>Logout</li>
+        <li><a href="/logout" title="Sign out"><img src="{{ url_for('static', filename='icons/logout.png') }}" alt="Sign out icon" class="nav-icon"></a>Sign out</li>
         <li><a href="/settings" title="Settings"><img src="{{ url_for('static', filename='icons/cog.png') }}" alt="Settings icon" class="nav-icon"></a>Settings</li>
         <li><a href="/history" title="History"><img src="{{ url_for('static', filename='icons/history.png') }}" alt="History icon" class="nav-icon"></a>History</li>
       </ul>

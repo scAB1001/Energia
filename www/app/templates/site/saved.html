@@ -3,25 +3,35 @@
 {% block content %}
 <div class="saved">
     <section class="intro">
-        <h1>Saved</h1>
-        <p>Remember that one?</p>
+        <br><br><br><h1>Your Favourite Cars</h1>
     </section>
-
+    
     <!-- User Guide Section -->
     <section class="user-guide">
-        <h2>When You AutoSwiped</h2>
+        <h1>View your liked cards here</h1><br>
         <ol class="guide-steps">
             <li>
-                <h3>Review Your Favourites</h3>
-                <p>Access your saved favourites anytime and find your perfect match.</p>
-            </li>
-            <li>
-                <h3>Get In Touch</h3>
-                <p>Found the one? Get in touch with the seller right through the app.</p>
+                <h3>Review Your Favourites and Get In Touch</h3>
+                <p>Access your favourites anytime and contact the lessor.</p>
             </li>
         </ol>
     </section>
+    
+    <main class="grid">
+        {% for car in liked_cars %}
+        <article>
+            <img class="full-view" src="{{ url_for('static', filename='cars/' ~ car['imageUrl'] ~ '.jpg') }}"
+            alt="{{ car['carName'] }}">
+            <div class="grid-text">
+                <h3>{{ car['carName'] }}</h3>
+                <a href="/site/single-view/{{ car['carID'] }}" class="cta-button">See more</a>
+            </div>
+        </article>
+        {% endfor %}        
+    </main>
     <h2><a href="/saved/single_view" title="**Car Name**">Car X</a></h2>
+    
+
 
 </div>
 {% endblock %}

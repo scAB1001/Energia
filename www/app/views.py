@@ -1,19 +1,17 @@
 from app.models import UserInteraction
 from flask import Blueprint, render_template, flash, redirect, url_for, request, jsonify, session
 from flask_login import login_required, logout_user, current_user
-from .models import User, Car, Lease, UserInteraction
+from .models import User, Car, UserInteraction
 from .forms import LoginForm, RegistrationForm
 from app import app, db, admin
 from flask_admin.contrib.sqla import ModelView
 
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Car, db.session))
-admin.add_view(ModelView(Lease, db.session))
 admin.add_view(ModelView(UserInteraction, db.session))
 
 import json
-from collections import Counter
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Flash message flags
 DANGER, SUCCESS = 'danger', 'success'
@@ -25,6 +23,45 @@ views = Blueprint('views', __name__)
     Helper variables and methods
 
 """
+def time_since(timestamp):
+    now = datetime.now()
+    diff = now - timestamp
+
+    minutes = diff.total_seconds() / 60
+    hours = minutes / 60
+    days = diff.days
+    weeks = days / 7
+    months = days / 30
+    years = days / 365
+
+    if minutes < 1:
+        return "Just now"
+    elif minutes < 5:
+        return "1+ minutes ago"
+    elif minutes < 10:
+        return "5+ minutes ago"
+    elif minutes < 30:
+        return "10+ minutes ago"
+    elif hours < 1:
+        return "30+ minutes ago"
+    elif hours < 6:
+        return "1+ hour ago"
+    elif hours < 12:
+        return "6+ hours ago"
+    elif days < 1:
+        return "12+ hours ago"
+    elif weeks < 1:
+        return "1 day ago"
+    elif months < 1:
+        return "1+ week ago"
+    elif months < 6:
+        return "1+ month ago"
+    elif years < 1:
+        return "6+ months ago"
+    else:
+        return "1+ year ago"
+
+
 def display_user_data():
     users = User.query.all()
     for user in users:
@@ -74,9 +111,6 @@ def clear_tables():
     # Clear all data from tables
     if not is_table_empty(UserInteraction):
         UserInteraction.query.delete()
-        
-    if not is_table_empty(Lease):
-        Lease.query.delete()
     
     if not is_table_empty(Car):
         Car.query.delete()
@@ -94,7 +128,7 @@ def pre_populate_db():
     #clear_tables()
     
     # Create Users
-    if is_table_empty(User) and is_table_empty(Car) and is_table_empty(Lease) and is_table_empty(UserInteraction):
+    if is_table_empty(User) and is_table_empty(Car) and is_table_empty(UserInteraction):
         users = [
             User(email='user1@example.com', password='password1', first_name='User1'),
             User(email='user2@example.com', password='password2', first_name='User2'),
@@ -118,18 +152,6 @@ def pre_populate_db():
         db.session.add_all(users)
         db.session.add_all(cars)
 
-        # Commit the users and cars to the database
-        db.session.commit()
-
-        # Create Leases and User Interactions
-        for user in users:
-            for car in cars:
-                lease = Lease(user_id=user.id, car_id=car.id, term_length=36, mileage_limit=12000)
-                interaction = UserInteraction(user_id=user.id, car_id=car.id, swipe_type='like', timestamp=datetime.now())
-                db.session.add(lease)
-                db.session.add(interaction)
-
-        # Commit the leases and interactions to the database
         db.session.commit()
 
 
@@ -198,6 +220,30 @@ def pre_populate_tblCars():
     except Exception as e:
         db.session.rollback()
         return jsonify({"status": "error", "message": str(e)}), 500
+
+
+def user_liked_cars():
+    # Fetch all liked interactions for the current user
+    liked_interactions = UserInteraction.query.filter_by(
+        user_id=current_user.id, swiped_right=True
+    ).all()
+
+    # Fetch details of cars based on liked interactions
+    interactions = UserInteraction.query.filter_by(
+        user_id=current_user.id,
+        swiped_right=True
+    ).all()
+
+    liked_cars = {}
+    for interaction in interactions:
+        car = Car.query.get(interaction.car_id)
+        if car:
+            uk_format = interaction.timestamp.strftime("%d/%m/%Y at %H:%M")
+            liked_cars[uk_format] = car.log()
+
+    liked_cars_exist = liked_cars != {}
+    # print(liked_cars)
+    return liked_cars_exist, liked_cars
 
 
 def delete_user_interactions(user_id):
@@ -322,6 +368,9 @@ def test():
 
 @views.route('/')
 def home():
+    if current_user.is_authenticated:
+        # Delete current user_interaction
+        delete_user_interactions(current_user.id)
     # clear_tables()
 
     # DANGER #
@@ -348,46 +397,55 @@ def explore():
 @views.route('/saved')
 @login_required
 def saved():
-    return render_template('/site/saved.html', title='Saved', user=current_user)
-
-
-@views.route('/saved/single_view')
-@login_required
-def single_view():
-    # Query car by ID and Name (Only one car at a time)
-    cars = [Car.query.first().card_info()]
-    
-    return render_template('/site/single_view.html', title='Car', user=current_user, cars=cars)
-    
-
-@views.route('/history')
-@login_required
-def history():
-    if not current_user.is_authenticated:
-        return redirect(url_for('auth.login'))
-
     # Fetch all liked interactions for the current user
     liked_interactions = UserInteraction.query.filter_by(
         user_id=current_user.id, swiped_right=True
     ).all()
 
     # Fetch details of cars based on liked interactions
+    liked_cars = []
+    for interaction in liked_interactions:
+        car = Car.query.get(interaction.car_id)
+        if car:
+            liked_cars.append(car.grid_view())
+
+    liked_cars_exist = liked_cars != []
+    print(liked_cars, liked_cars_exist)
+
+    return render_template('/site/saved.html', title='Saved', liked_cars_exist=liked_cars_exist, liked_cars=liked_cars, user=current_user)
+
+
+@views.route('/saved/single_view/<int:carID>')
+@login_required
+def single_view():
+    # Query car by ID and Name (Only one car at a time)
+    cars = [Car.query.first().card_info()]
+    
+    return render_template('/site/single_view.html', title='Car', user=current_user, cars=cars)
+
+
+@views.route('/history')
+@login_required
+def history():   
+    # Fetch details of cars based on liked interactions
     interactions = UserInteraction.query.filter_by(
         user_id=current_user.id,
         swiped_right=True
     ).all()
 
-    liked_cars = {}
+    liked_cars = []
     for interaction in interactions:
         car = Car.query.get(interaction.car_id)
+        print(car)
         if car:
-            uk_format = interaction.timestamp.strftime("%d/%m/%Y at %H:%M")
-            liked_cars[uk_format] = car.log()
-    
-    liked_cars_exist = liked_cars != {}
-    #print(liked_cars)
+            # Using tuples to allow non-unique time entries
+            time_diff = time_since(interaction.timestamp)
+            liked_cars.append((time_diff, car.log()))
 
-    return render_template('/site/history.html', title='History', liked_cars_exist=liked_cars_exist, liked_cars=liked_cars, user=current_user)
+    print(liked_cars)
+
+    liked_cars_exist = liked_cars != []
+    return render_template('/site/history.html', title='History', time_diff=time_diff, liked_cars_exist=liked_cars_exist, liked_cars=liked_cars, user=current_user)
 
 
 @views.route('/settings')
@@ -430,3 +488,4 @@ def not_found_error(error):
 @app.errorhandler(500)
 def internal_error(error):
     db.session.rollback()  # Rollback the session in case of database errors
+    return render_template('/error/500.html', title='Error: 500', user=current_user), 500

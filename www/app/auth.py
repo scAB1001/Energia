@@ -16,7 +16,7 @@ def handle_login(email, password):
     if user:
         migrate_password(user, password)  # Migrate password if needed
         login_user(user, remember=True)
-        flash(f'Logged in successfully!', category=SUCCESS)
+        flash(f'Signed in successfully!', category=SUCCESS)
         return True
     else:
         flash('Incorrect email or password, try again.', category=DANGER)
@@ -29,7 +29,7 @@ def login():
 
     # Check if max attempts reached and redirect to signup if so
     if session.get('login_attempts', 0) >= MAX_LOGIN_ATTEMPTS:
-        flash('Maximum login attempts reached. Please sign up.', category=DANGER)
+        flash('Maximum sign-in attempts reached. Please sign up.', category=DANGER)
         return redirect(url_for('auth.signup'))
 
     if form.validate_on_submit():
@@ -54,7 +54,7 @@ def login():
 def logout():
     logout_user()
     session['login_attempts'] = 0
-    flash(f'Logged out successfully!', category=SUCCESS)
+    flash(f'Signed out successfully!', category=SUCCESS)
 
     return redirect(url_for('views.home'))
 
@@ -86,7 +86,7 @@ def handle_registration(email, first_name, password1, password2):
 @auth.route('/signup', methods=['GET', 'POST'])
 def signup():
     if not current_user.is_authenticated and session.get('login_attempts', 0) >= MAX_LOGIN_ATTEMPTS: ##
-        flash(f'Too many login attempts, create a new account.', category=DANGER)
+        flash(f'Too many sing-in attempts, create a new account.', category=DANGER)
 
     # If user is already logged in and wants to create another account,
     #   they will be logged out of the initial upon creation

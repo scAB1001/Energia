@@ -29,7 +29,6 @@ class User(BaseModel, UserMixin):
     first_name = db.Column(db.String(20), nullable=False)
 
     # Define relationships
-    leases = db.relationship('Lease', backref='user', lazy=True)
     interactions = db.relationship(
         'UserInteraction', backref='user', lazy=True)
 
@@ -50,13 +49,19 @@ class Car(BaseModel):
     monthly_payment = db.Column(db.Float, nullable=False)
     mileage = db.Column(db.Integer, nullable=False)
 
-    leases = db.relationship('Lease', backref='car', lazy=True)
     interactions = db.relationship('UserInteraction', backref='car', lazy=True)
 
     # Summary details
     def __repr__(self):
         return f"Car {self.id}: [{self.make}, {self.model}, {self.year}]"
     
+    def grid_view(self): 
+        return {
+            'carID': int(str(self.id)),
+            'imageUrl': f'{self.image}',
+            'carName': f'{self.car_name}'
+        }
+
     # Key details for card display
     def card_info(self):
         width = 30
@@ -73,13 +78,9 @@ class Car(BaseModel):
     # Log details to display in 'History' section
     def log(self):
         return {
-            'imageUrl': f'{self.image}',
             'carName': f'{self.car_name}',
-            'make': f'{self.make}',
-            'model': f'{self.model}',
             'year': f'{self.year}',
             'body_type': f'{self.body_type}',
-            'horsepower': f'{self.horsepower}',
             'monthly_payment': f'{self.monthly_payment}',
             'mileage': f'{self.mileage}'
         }
@@ -97,17 +98,6 @@ class Car(BaseModel):
             'monthly_payment': f'{self.monthly_payment}',
             'mileage': f'{self.mileage}'
         }
-
-class Lease(BaseModel):
-    __tablename__ = 'leases'
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    car_id = db.Column(db.Integer, db.ForeignKey('cars.id'), nullable=False)
-    term_length = db.Column(db.Integer, nullable=False)
-    mileage_limit = db.Column(db.Integer, nullable=False)
-
-    def __repr__(self):
-        return f"Lease [{self.user_id}, {self.car_id}, {self.term_length}]"
 
 
 class UserInteraction(BaseModel):
