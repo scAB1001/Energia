@@ -433,10 +433,10 @@ def history():
         swiped_right=True
     ).all()
 
+    time_diff = 0
     liked_cars = []
     for interaction in interactions:
         car = Car.query.get(interaction.car_id)
-        print(car)
         if car:
             # Using tuples to allow non-unique time entries
             time_diff = time_since(interaction.timestamp)
