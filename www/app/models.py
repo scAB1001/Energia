@@ -59,7 +59,7 @@ class Car(BaseModel):
     
     # Key details for card display
     def card_info(self):
-        width = 20
+        width = 30
         return {
             'carID': int(str(self.id)),
             'imageUrl': f'{self.image}',
@@ -68,6 +68,20 @@ class Car(BaseModel):
                     f'Body: {self.body_type}'.rjust(width) + '\n' +
                     f'Horsepower: {self.horsepower}bhp'.ljust(width) +
                     f'Make: {self.make}'.rjust(width)
+        }
+
+    # Log details to display in 'History' section
+    def log(self):
+        return {
+            'imageUrl': f'{self.image}',
+            'carName': f'{self.car_name}',
+            'make': f'{self.make}',
+            'model': f'{self.model}',
+            'year': f'{self.year}',
+            'body_type': f'{self.body_type}',
+            'horsepower': f'{self.horsepower}',
+            'monthly_payment': f'{self.monthly_payment}',
+            'mileage': f'{self.mileage}'
         }
     
     # Full details to display in 'Saved (single_view)' section

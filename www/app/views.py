@@ -363,7 +363,31 @@ def single_view():
 @views.route('/history')
 @login_required
 def history():
-    return render_template('/site/history.html', title='History', user=current_user)
+    if not current_user.is_authenticated:
+        return redirect(url_for('auth.login'))
+
+    # Fetch all liked interactions for the current user
+    liked_interactions = UserInteraction.query.filter_by(
+        user_id=current_user.id, swiped_right=True
+    ).all()
+
+    # Fetch details of cars based on liked interactions
+    interactions = UserInteraction.query.filter_by(
+        user_id=current_user.id,
+        swiped_right=True
+    ).all()
+
+    liked_cars = {}
+    for interaction in interactions:
+        car = Car.query.get(interaction.car_id)
+        if car:
+            uk_format = interaction.timestamp.strftime("%d/%m/%Y at %H:%M")
+            liked_cars[uk_format] = car.log()
+    
+    liked_cars_exist = liked_cars != {}
+    #print(liked_cars)
+
+    return render_template('/site/history.html', title='History', liked_cars_exist=liked_cars_exist, liked_cars=liked_cars, user=current_user)
 
 
 @views.route('/settings')
@@ -406,4 +430,3 @@ def not_found_error(error):
 @app.errorhandler(500)
 def internal_error(error):
     db.session.rollback()  # Rollback the session in case of database errors
-    return render_template('/error/500.html', title='Error: 500', user=current_user), 500
