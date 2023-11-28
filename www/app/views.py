@@ -368,16 +368,19 @@ def test():
 
 @views.route('/')
 def home():
+    first_name = 'Guest'
     if current_user.is_authenticated:
         # Delete current user_interaction
         delete_user_interactions(current_user.id)
+        first_name = User.query.get(current_user.first_name); print(first_name)
+        first_name = User.query.get(current_user).first_name; print(first_name)
     # clear_tables()
 
     # DANGER #
     # if not User.query.first():
     #    pre_populate_db()
 
-    return render_template('/site/home.html', title='Home', user=current_user)
+    return render_template('/site/home.html', title='Home', first_name=first_name, user=current_user)
 
 
 @views.route('/explore')
