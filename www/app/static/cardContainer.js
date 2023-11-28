@@ -16,7 +16,14 @@ function appendNewCard(carData) {
     carName: carData.carName,
     details: carData.details,
     
-    onDismiss: appendNewCard,
+    onDismiss: () => {
+      cardCount--;  // Find empty card
+      console.log(`cardCount: ${cardCount}`);
+      if (cardCount <= 0) {
+        cardsEmpty();
+      }
+      appendNewCard;
+    },
     onLike: () => {
       console.log(`${carData.carName} liked`); // CONFIRMATION
       like.style.animationPlayState = 'running';
@@ -33,7 +40,7 @@ function appendNewCard(carData) {
    * When console.log is in the onLike: scope, it does not get caught ever.
    * This suggests the dismiss, onLike/Dislike are never caught
   */ 
-  cardCount++;
+  cardCount++;  // For the number of cards
   console.log(`card${cardCount} added`);  
   swiper.append(card.element);
 
@@ -47,3 +54,21 @@ function appendNewCard(carData) {
 cars.forEach((carData) => {
   appendNewCard(carData);
 });
+
+function cardsEmpty() {
+  console.log("All cards have been swiped!");
+  fetch('/cards-depleted', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ isEmpty: true })
+    })
+    .then(response => response.json())
+    .then(data =>{
+      console.log(data);
+      document.getElementById('no-more-cards-message').style.display = 'block';
+    })
+    .catch(error => console.error('Error:', error));
+
+}

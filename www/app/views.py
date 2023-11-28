@@ -149,43 +149,43 @@ def pre_populate_tblCars():
         # Format: Car(car_name, make, model, year, body_type, horsepower, monthly_payment, mileage)
         cars_to_add = [
             Car(image='astonMartinSILagonda1', car_name='Aston Martin Lagonda Series 1', make='Aston Martin', model='Lagonda',
-                year=1974, body_type='4-door saloon', horsepower=280, monthly_payment=54611.96, mileage=18324),
+                year=1974, body_type='4-door saloon', horsepower=280, monthly_payment=4611.96, mileage=18324),
 
             Car(image='astonMartinSIILagonda2', car_name='Aston Martin Lagonda Series 2', make='Aston Martin', model='Lagonda',
-                year=1976, body_type='4-door saloon', horsepower=280, monthly_payment=15461.56, mileage=103633),
+                year=1976, body_type='4-door saloon', horsepower=280, monthly_payment=1461.56, mileage=103633),
 
             Car(image='astonMartinSIIILagonda3', car_name='Aston Martin Lagonda Series 3', make='Aston Martin', model='Lagonda',
                 year=1986, body_type='4-door saloon', horsepower=0, monthly_payment=7766.58, mileage=132084),
 
             Car(image='astonMartinSIVLagonda4', car_name='Aston Martin Lagonda Series 4', make='Aston Martin', model='Lagonda',
-                year=1987, body_type='4-door saloon', horsepower=0, monthly_payment=33633.98, mileage=123117),
+                year=1987, body_type='4-door saloon', horsepower=0, monthly_payment=3633.98, mileage=123117),
 
             Car(image='ferrariTestarossa1', car_name='Ferrari Testarossa', make='Ferrari', model='Testarossa',
-                year=1984, body_type='2-door berlinetta', horsepower=385, monthly_payment=34185.91, mileage=146545),
+                year=1984, body_type='2-door berlinetta', horsepower=385, monthly_payment=4185.91, mileage=146545),
 
             Car(image='ferrariF512M2', car_name='Ferrari F512 M', make='Ferrari', model='F512 M',
                 year=1994, body_type='2-door berlinetta', horsepower=434, monthly_payment=6352.03, mileage=196267),
 
             Car(image='ferrariF512TR3', car_name='Ferrari F512 TR', make='Ferrari', model='512 TR',
-                year=1991, body_type='2-door berlinetta', horsepower=422, monthly_payment=31245.32, mileage=198978),
+                year=1991, body_type='2-door berlinetta', horsepower=422, monthly_payment=3245.32, mileage=198978),
 
             Car(image='ferrari308GTRainbow4', car_name='Ferrari 308 GT Bertone Rainbow', make='Ferrari', model='308 GT',
-                year=1976, body_type='2-door coupe', horsepower=255, monthly_payment=52585.91, mileage=89017),
+                year=1976, body_type='2-door coupe', horsepower=255, monthly_payment=5585.91, mileage=89017),
 
             Car(image='countachLP400Lamborghini1', car_name='Lamborghini Countach LP400', make='Lamborghini', model='LP400',
-                year=1974, body_type='2-door coupe', horsepower=375, monthly_payment=82042.47, mileage=167228),
+                year=1974, body_type='2-door coupe', horsepower=375, monthly_payment=8042.47, mileage=167228),
 
             Car(image='countachLP500Lamborghini2', car_name='Lamborghini Countach LP500', make='Lamborghini', model='LP500',
-                year=1982, body_type='2-door coupe', horsepower=370, monthly_payment=27854.73, mileage=100220),
+                year=1982, body_type='2-door coupe', horsepower=370, monthly_payment=2854.73, mileage=100220),
 
-            Car(image='countachLP5000LamborghiniQuattrovalvole3', car_name='Lamborghini Countach LP5000 Quattrovalvole', make='Lamborghini', model='LP5000 Quattrovalvole',
-                year=1985, body_type='2-door coupe', horsepower=455, monthly_payment=81930.27, mileage=103074),
+            Car(image='countachLP5000LamborghiniQuattrovalvole3', car_name='Lamborghini Countach Quattrovalvole', make='Lamborghini', model='LP5000',
+                year=1985, body_type='2-door coupe', horsepower=455, monthly_payment=8930.27, mileage=103074),
 
-            Car(image='countach25thAnniversaryLamborghini4', car_name='Lamborghini Countach 25th Anniversary', make='Lamborghini', model='25th Anniversary Edition',
-                year=1988, body_type='2-door coupe', horsepower=414, monthly_payment=36409.78, mileage=140320),
+            Car(image='countach25thAnniversaryLamborghini4', car_name='Lamborghini Countach 25th Anniversary', make='Lamborghini', model='25th Anniversary',
+                year=1988, body_type='2-door coupe', horsepower=414, monthly_payment=6409.78, mileage=140320),
 
             Car(image='mercedesBenz300SLGullwing1', car_name='Mercedes-Benz 300SL Gullwing', make='Mercedes-Benz', model='300SL',
-                year=1954, body_type='2-door coupe', horsepower=215, monthly_payment=22230.65, mileage=92350)
+                year=1954, body_type='2-door coupe', horsepower=215, monthly_payment=2230.65, mileage=92350)
         ]
 
         # Add cars to the database
@@ -277,6 +277,20 @@ def react():
         return jsonify({"status": "error", "message": str(e)}), 500
 
     
+@app.route('/cards-depleted', methods=['POST'])
+def cards_depleted():
+    data = request.get_json()
+    card_count = data['isEmpty']
+    
+    if data and data.get('isEmpty'):
+        print("All cards have been swiped.")
+
+        # Respond back to the frontend
+        return jsonify({"message": "No more cards available"})
+
+    return jsonify({"error": "Invalid request"}), 400
+
+
 
 @views.route('/test')
 def test():
@@ -340,12 +354,8 @@ def saved():
 @views.route('/saved/single_view')
 @login_required
 def single_view():
-    #tblCars = Car.query.first()  # all()
-    
     # Query car by ID and Name (Only one car at a time)
     cars = [Car.query.first().card_info()]
-    #for car in tblCars:
-    #    cars.append(car.card_info())
     
     return render_template('/site/single_view.html', title='Car', user=current_user, cars=cars)
     

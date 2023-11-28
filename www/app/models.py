@@ -59,11 +59,15 @@ class Car(BaseModel):
     
     # Key details for card display
     def card_info(self):
+        width = 20
         return {
             'carID': int(str(self.id)),
             'imageUrl': f'{self.image}',
-            'carName': f'{self.car_name}',
-            'details': f'Price: £{self.monthly_payment}pm\t\tBody: {self.body_type}\nHorsepower: {self.horsepower}bhp\t\tMake: {self.make}'
+            'carName': f'{self.car_name}'.center(width),
+            'details': f'Price: £{self.monthly_payment}pm'.ljust(width) +
+                    f'Body: {self.body_type}'.rjust(width) + '\n' +
+                    f'Horsepower: {self.horsepower}bhp'.ljust(width) +
+                    f'Make: {self.make}'.rjust(width)
         }
     
     # Full details to display in 'Saved (single_view)' section

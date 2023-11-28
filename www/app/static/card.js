@@ -58,7 +58,7 @@ class Card {
     }
   }
 
-    // Listener methods
+  // Listener methods
   #listenToTouchEvents = () => {
     this.element.addEventListener('touchstart', (e) => {
       const touch = e.changedTouches[0];

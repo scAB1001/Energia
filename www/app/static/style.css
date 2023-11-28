@@ -507,7 +507,7 @@ marquee {
 
 .after-cards h1 {
     color: white;
-    transform: translateY(-380%);
+    transform: translateY(-400%);
     z-index: 1000;
 }
 
@@ -731,3 +731,9 @@ marquee {
         slideOut 1.75s ease forwards 2.25s;
 }
 
+#no-more-cards-message h1, h2 {
+    text-align: center;
+    place-items: center;
+    color: white;
+    padding-top: 15%;
+}
