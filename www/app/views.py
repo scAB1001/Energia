@@ -411,17 +411,16 @@ def saved():
             liked_cars.append(car.grid_view())
 
     liked_cars_exist = liked_cars != []
-    print(liked_cars, liked_cars_exist)
 
     return render_template('/site/saved.html', title='Saved', liked_cars_exist=liked_cars_exist, liked_cars=liked_cars, user=current_user)
 
 
-@views.route('/saved/single_view/<int:carID>')
+@views.route('/saved/single-view/<int:carID>')
 @login_required
-def single_view():
-    # Query car by ID and Name (Only one car at a time)
-    cars = [Car.query.first().card_info()]
-    
+def single_view(carID):
+    # Query car by ID (Only one car at a time)
+    cars = [Car.query.get(carID).card_info()]
+
     return render_template('/site/single_view.html', title='Car', user=current_user, cars=cars)
 
 
@@ -483,6 +482,7 @@ def delete_account():
 
 @app.errorhandler(404)
 def not_found_error(error):
+    db.session.rollback()  # Rollback the session in case of database errors
     return render_template('/error/404.html', title='Error: 404', user=current_user), 404
 
 

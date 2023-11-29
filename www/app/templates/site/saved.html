@@ -2,13 +2,9 @@
 
 {% block content %}
 <div class="saved">
-    <section class="intro">
-        <br><br><br><h1>Your Favourite Cars</h1>
-    </section>
-    
     <!-- User Guide Section -->
-    <section class="user-guide">
-        <h1>View your liked cards here</h1><br>
+    <br><br><br><section class="user-guide">
+        <h1>View Your Favourite Cars</h1><br>
         <ol class="guide-steps">
             <li>
                 <h3>Review Your Favourites and Get In Touch</h3>
@@ -16,20 +12,26 @@
             </li>
         </ol>
     </section>
-    
-    <main class="grid">
-        {% for car in liked_cars %}
-        <article>
-            <img class="full-view" src="{{ url_for('static', filename='cars/' ~ car['imageUrl'] ~ '.jpg') }}"
-            alt="{{ car['carName'] }}">
-            <div class="grid-text">
-                <h3>{{ car['carName'] }}</h3>
-                <a href="/site/single-view/{{ car['carID'] }}" class="cta-button">See more</a>
-            </div>
-        </article>
-        {% endfor %}        
-    </main>
-    <h2><a href="/saved/single_view" title="**Car Name**">Car X</a></h2>
+    {% if liked_cars_exist %}
+    <div class="scrollable-table">
+        <main class="grid">
+            <article>
+                {% for car in liked_cars %}
+                <img class="full-view" 
+                src="{{ url_for('static', filename='cars/' ~ car['imageUrl'] ~ '.jpg') }}"
+                alt="{{ car['carName'] }}">
+                <div class="grid-text">
+                    <h1>{{ car['carName'] }}</h1>
+                    <a href="/saved/single-view/{{ car['carID'] }}" class="cta-button">See more</a>
+                </div>
+                {% endfor %}        
+            </article>
+        </main>
+    </div>
+    {% else %}
+    <h3>You haven't liked anything! Go explore our range.</h3>
+    {% endif %}
+    <h2><a href="/saved/single-view" title="**Car Name**" style="display: none;">Car X</a></h2>
     
 
 

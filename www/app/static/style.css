@@ -543,25 +543,17 @@ marquee {
     background: #ffffff;
     border-radius: 15px; /* Softer corners */
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25); /* More pronounced shadow */
-    padding: 30px; /* More internal space */
+    padding: 15px; /* More internal space */
     margin: 20px auto; /* Centered card */
     width: 80%;
     max-width: 500px; /* Larger card for better readability */
     border-left: 5px solid #fd267d; /* Accent border */
 }
 
-.single-title {
-    color: #fd267d; /* Complementary title color */
-    font-size: 24px; /* Larger font size */
-    margin-bottom: 20px; /* Increased spacing */
-    text-align: center;
-    font-weight: bold; /* Bold font weight for better visibility */
-}
-
 .single-content p {
     text-align: left;
     color: #333; /* Darker font for better contrast and readability */
-    font-size: 18px; /* Larger font size */
+    font-size: 20px; /* Larger font size */
     line-height: 1.8; /* Increased line height for readability */
     margin-bottom: 15px;
 }
@@ -738,39 +730,40 @@ marquee {
     padding-top: 15%;
 }
 
+/* Grid */
 .grid {
     display: flex;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     grid-gap: 20px;
     align-items: start;
-}
 
-.grid>article {
-    border: 2px solid #ccc;
-    box-shadow: 2px 2px 6px 0px rgba(0, 0, 0, 0.3);
 }
 
 .grid>article img {
     max-width: 100%;
     min-height: 100%;
+    display: flex;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+    object-fit: contain;
 }
 
 .grid-text {
-    padding: 0 20px 20px;
+    text-align: center;
+    padding-bottom: 12px;
 }
 
-.grid-text>button {
-    background: gray;
-    border: 0;
-    color: white;
-    align-items: right;
-    padding: 10px;
-    width: 100%;
+.grid-text h1 {
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 10px;
 }
 
 .scrollable-table {
-    max-height: 500px;
-    /* Adjust the max-height as needed */
+    max-height: 600px;
+    border: 4px solid #1f0101;
     overflow-y: auto;
-    background-color: #e8cfed;
+    background-color: rgb(235, 120, 44);
+    box-shadow: 10px 10px 16px 4px rgba(0, 0, 0, 0.3);
 }

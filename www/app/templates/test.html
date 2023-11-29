@@ -6,16 +6,16 @@
     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
 <div class="single-view">
-  <br><br>
+  <br><br><br>
   <div id="entriesAccordion">
     <div class="card">
       <div class="card-header" id="entriesHeading" style="background-color: #ecc6f3">
-        <h2 class="mb-0">
+        <h3>
           <button class="btnShift" data-toggle="collapse" data-target="#entriesCollapse" aria-expanded="true"
             aria-controls="entriesCollapse">
             <span> {{ car['carName'] }} </span>
           </button>
-        </h2>
+        </h3>
       </div>
 
     <div id="entriesCollapse" class="collapse show" aria-labelledby="entriesHeading" data-parent="#entriesAccordion"
@@ -41,12 +41,12 @@
 
   <div class="card">
     <div class="card-header" id="summaryHeading" style="background-color: #ecc6f3">
-      <h2 class="mb-0">
+      <h3>
         <button class="btnShift" data-toggle="collapse" data-target="#summaryCollapse" aria-expanded="true"
           aria-controls="summaryCollapse">
           <span> Click to see more details </span>
         </button>
-      </h2>
+      </h3>
     </div>
 
     <div id="summaryCollapse" class="collapse" aria-labelledby="summaryHeading" data-parent="#entriesAccordion"
@@ -55,9 +55,6 @@
 
       <div class="single-card-container">
         <article class="single-card" id="cardInfo">
-          <header>
-            <h2 class="single-title" id="cardTitle">{{ car['carName'] }}</h2>
-          </header>
           <section class="single-content" aria-labelledby="cardTitle">
             <p><strong>Make:</strong> {{ car['make'] }}</p>
             <p><strong>Model:</strong> {{ car['model'] }}</p>
