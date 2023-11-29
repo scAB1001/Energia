@@ -767,3 +767,10 @@ marquee {
     background-color: rgb(235, 120, 44);
     box-shadow: 10px 10px 16px 4px rgba(0, 0, 0, 0.3);
 }
+
+.scrollable-table2 {
+    max-height: 500px;
+    border: 2px solid #0c0101;
+    overflow-y: auto;
+    box-shadow: 10px 10px 16px 4px rgba(0, 0, 0, 0.3);
+}

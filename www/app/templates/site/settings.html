@@ -2,14 +2,17 @@
 
 {% block content %}
 <div class="settings">
-    <section class="intro">
-        <br><br><h1>Settings</h1>
-        <p>Customise on your own terms.</p>
-    </section>
-    <section class="cta">
-        <form action="{{ url_for('views.delete_account') }}" method="POST">
-            <button type="submit" class="cta-button">Delete My Account</button>
-        </form>
+    <br><br>
+    <section class="user-guide">
+        <ol class="guide-steps">
+            <h1>Settings</h1>
+            <p>Customise on your own terms.</p>
+            <section class="cta">
+                <form action="{{ url_for('views.delete_account') }}" method="POST">
+                    <button type="submit" class="cta-button">Delete My Account</button>
+                </form>
+            </section>
+        </ol>
     </section>
 </div>
 {% endblock %}

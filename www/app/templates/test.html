@@ -23,13 +23,9 @@
       <div class="card-body">
         <div class="table-responsive" style="background-color: #ecc6f3">
           
-          <!-- If we make the car a clickable image in the grid view section 
-            and have a link to each single_view of the car -->
           <div class="image-container">
-            <a href="/test" class="**IMG CAR**" title="Test">
               <img class="full-view" src="{{ url_for('static', filename='cars/' ~ car['imageUrl'] ~ '.jpg') }}"
                 alt="{{ car['carName'] }}">
-            </a>
           </div>
 
           

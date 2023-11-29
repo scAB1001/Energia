@@ -29,6 +29,7 @@ def register_blueprints(app):
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
 
+
 register_blueprints(app)
 
 # Configure the login manager for user authentication
