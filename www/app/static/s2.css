@@ -1,0 +1,159 @@
+/* Define color palette with high contrast and color-blind friendly colors */
+:root {
+    --background-default: #3F6634;
+    --struct-default: #412E25;
+    --text-default: #F2F4F3;
+    --accent-default: #B84D00;
+    --accent-section: #7B886F;
+    --border-default: solid 3px black;
+    --font-size-normal: 18px;
+    --font-size-large: 24px;
+}
+
+/* General styles for high contrast and readability */
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: var(--background-default);
+    color: var(--text-default);
+    font-family: 'Courier New', monospace;
+    font-size: var(--font-size-normal);
+    /* If the line-height is greater than the font-size,
+        it creates additional space above and below the text,
+        making blocks of text easier to read. */
+    line-height: 1.6;
+    border: var(--border-default);
+    width: 100vw;
+    height: 100vh;
+    /* Ensure that elements with padding and borders 
+        will not unexpectedly overflow their containers. */
+    box-sizing: border-box;
+    /* Adds scroll if content overflows */
+    overflow: auto;
+}
+
+.navbar {
+    border-bottom: var(--border-default);
+    background: var(--struct-default);
+    font-size: var(--font-size-large);
+}
+
+main {
+    text-align: center;
+}
+
+#logo {
+    font-size: var(--font-size-large);
+}
+
+.nav-link {
+    margin-right: 30px;
+    color: var(--text-default);
+}
+
+.nav-icon {
+    width: 32px;
+    height: 32px;
+    vertical-align: middle;
+}
+
+button,
+input,
+select,
+textarea {
+    font-size: var(--font-size-normal);
+    color: var(--text-default);
+    background: var(--struct-default);
+    border: 2px solid var(--text-default);
+    /* Ensuring visible borders */
+}
+
+/* Ensure buttons have a high contrast for accessibility */
+button {
+    background: var(--accent-default);
+    color: white;
+    padding: 10px 20px;
+    font-size: var(--font-size-large);
+    border: none;
+    cursor: pointer;
+}
+
+
+/* Accessibility improvements for visual focus on interactive elements */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 3px solid var(--accent-default);
+    outline-offset: 2px;
+}
+
+/* Responsive design for screen readers and other assistive technologies */
+@media screen and (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Container for the heading and explanatory boxes */
+.heading-container {
+    display: inline-block;
+    margin: 2rem auto;
+    text-align: center;
+}
+
+/* Styles for the rounded box behind the heading */
+.rounded-box {
+    background-color: var(--accent-default);
+    /* Assuming you have a color variable defined */
+    border-radius: 15px;
+    /* Rounded corners */
+    padding: 1rem 2rem;
+    display: inline-block;
+    margin-bottom: 1rem;
+    /* Space between the heading box and explanatory box */
+}
+
+/* Heading styles for proper spacing and readability */
+.heading {
+    font-size: calc(1.5rem + 1vw);
+    /* Responsive font size */
+    color: var(--contrast-text);
+    /* High contrast text for readability */
+}
+
+/* Styles for the explanatory box */
+.explanatory-box {
+    background-color: var(--accent-section);
+    border-radius: 10px;
+    padding: 0.5rem 2rem;
+    /* Center the box */
+    margin: 0 auto;
+    /* Making the box thinner */
+    width: 80%;
+    /* Subtle shadow for depth */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Responsive font size */
+    font-size: calc(1rem + 0.5vw);
+}
+
+/* Ensure the content is always centered and responsive */
+@media (min-width: 768px) {
+    .heading-container {
+        width: 50%;
+        /* Adjust width for larger screens */
+        margin: 2rem auto;
+    }
+}
+
+/* Accessibility considerations */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none;
+        transition: none;
+    }
+}

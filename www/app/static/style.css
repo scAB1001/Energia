@@ -173,11 +173,10 @@ body {
     color: #5c5c5c;
 }
 
+
 .nav-icon {
     width: 48px;
     height: 48px;
-    /* This ensures that the aspect ratio is maintained without the image being stretched */
-    /* You can also set object-fit property if needed */
     object-fit: contain;
 }
 
