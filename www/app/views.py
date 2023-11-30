@@ -246,13 +246,13 @@ def cards_depleted():
 
 ##########################################
 @views.route('/test')
-@login_required
+#@login_required
 def test():
-    car = Car.query.first().full_details()
+    #car = Car.query.first().full_details()
     #display_table_nicely(1, [car])
     
-    clear_tables()
-    return render_template('test.html', title='Test', user=current_user, car=car)
+    #clear_tables()
+    return render_template('test.html', title='Test', user=current_user)#, car=car)
 ##########################################
     
 

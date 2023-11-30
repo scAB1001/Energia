@@ -1,85 +1,11 @@
-{% extends "base.html" %}
+{% extends "b2.html" %}
 
 {% block content %}
 <head>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
-<div class="single-view">
-  <br><br><br>
-  <div id="entriesAccordion">
-    <div class="card">
-      <div class="card-header" id="entriesHeading" style="background-color: #ecc6f3">
-        <h3>
-          <button class="btnShift" data-toggle="collapse" data-target="#entriesCollapse" aria-expanded="true"
-            aria-controls="entriesCollapse">
-            <span> {{ car['carName'] }} </span>
-          </button>
-        </h3>
-      </div>
 
-    <div id="entriesCollapse" class="collapse show" aria-labelledby="entriesHeading" data-parent="#entriesAccordion"
-      style="background-color: #ecc6f3">
-      <div class="card-body">
-        <div class="table-responsive" style="background-color: #ecc6f3">
-          
-          <div class="image-container">
-              <img class="full-view" src="{{ url_for('static', filename='cars/' ~ car['imageUrl'] ~ '.jpg') }}"
-                alt="{{ car['carName'] }}">
-          </div>
+<div></div>
 
-          
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <div class="card">
-    <div class="card-header" id="summaryHeading" style="background-color: #ecc6f3">
-      <h3>
-        <button class="btnShift" data-toggle="collapse" data-target="#summaryCollapse" aria-expanded="true"
-          aria-controls="summaryCollapse">
-          <span> Click to see more details </span>
-        </button>
-      </h3>
-    </div>
-
-    <div id="summaryCollapse" class="collapse" aria-labelledby="summaryHeading" data-parent="#entriesAccordion"
-      style="background-color: #ecc6f3">
-
-
-      <div class="single-card-container">
-        <article class="single-card" id="cardInfo">
-          <section class="single-content" aria-labelledby="cardTitle">
-            <p><strong>Make:</strong> {{ car['make'] }}</p>
-            <p><strong>Model:</strong> {{ car['model'] }}</p>
-            <p><strong>Year:</strong> {{ car['year'] }}</p>
-            <p><strong>Body Type:</strong> {{ car['body_type'] }}</p>
-            <p><strong>Horsepower:</strong> {{ car['horsepower'] }} bhp</p>
-            <p><strong>Monthly Fee:</strong> £{{ car['monthly_payment'] }}</p>
-            <p><strong>Mileage:</strong> {{ car['mileage'] }}</p>
-          </section>
-          <footer class="card-footer">
-            <button class="animated-button" aria-label="Contact Lessor">Contact Lessor</button>
-          </footer>
-        </article>
-      </div>
-      
-
-    </div>
-  </div>
-</div>
-
-<div>
-  <!-- Script from code.jquery.com allows the nav bar to be interactive (drop downs) -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
-
-  <!-- Script from bootstrap also aids in nav bar interactivity -->
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
-    integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
-    crossorigin="anonymous"></script>
-</div>
 {% endblock %}
