@@ -14,7 +14,7 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
     integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
   
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='s2.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
 </head>
 
 <!-- Navbar -->
@@ -31,38 +31,36 @@
   <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
       
-      <li class="nav-link" href="/logout">Sign out
-        <a title="Sign out">
-          <img src="{{ url_for('static', filename='icons/logout.png') }}"
-          alt="Sign out icon" class="nav-icon">
+      <li class="nav-item">
+        <a class="nav-link" href="/logout" title="Sign out">
+          Sign out
+          <img src="{{ url_for('static', filename='icons/logout.png') }}" alt="Sign out icon" class="nav-icon">
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/settings" title="Settings">
+          Settings
+          <img src="{{ url_for('static', filename='icons/cog.png') }}" alt="Settings icon" class="nav-icon">
         </a>
       </li>
 
-      <li class="nav-link" href="/settings">Settings
-        <a title="Settings">
-          <img src="{{ url_for('static', filename='icons/cog.png') }}"
-          alt="Settings icon" class="nav-icon">
-        </a>
-      </li>
-
-      <li class="nav-link" href="/explore">Explore
-        <a title="Explore">
-        <img src="{{ url_for('static', filename='icons/search.png') }}" 
-        alt="Explore icon" class="nav-icon">
+      <li class="nav-item">
+        <a class="nav-link" href="/explore" title="Explore">
+          Explore
+          <img src="{{ url_for('static', filename='icons/search.png') }}" alt="Explore icon" class="nav-icon">
         </a>
       </li>
             
-      <li class="nav-link" href="/history">History
-        <a title="History">
-          <img src="{{ url_for('static', filename='icons/history.png') }}"
-          alt="History icon" class="nav-icon">
+      <li class="nav-item">
+        <a class="nav-link" href="/history" title="History">
+          History
+          <img src="{{ url_for('static', filename='icons/history.png') }}" alt="History icon" class="nav-icon">
         </a>
-
       </li>
-      <li class="nav-link" href="/saved">Liked
-        <a title="Saved">
-          <img src="{{ url_for('static', filename='icons/bookmark.png') }}" 
-          alt="Saved icon" class="nav-icon">
+      <li class="nav-item">
+        <a class="nav-link" href="/saved" title="Liked">
+          Liked
+          <img src="{{ url_for('static', filename='icons/bookmark.png') }}" alt="Saved icon" class="nav-icon">
         </a>
       </li>
 

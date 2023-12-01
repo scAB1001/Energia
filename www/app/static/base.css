@@ -6,6 +6,8 @@
     --accent-default: #B84D00;
     --accent-section: #7B886F;
     --border-default: solid 3px black;
+    --font-family-thick: 'Robot Serif', monospace;
+    --font-family-mono: 'Courier New', monospace;
     --font-size-normal: 18px;
     --font-size-large: 24px;
 }
@@ -17,7 +19,7 @@ body {
     box-sizing: border-box;
     background-color: var(--background-default);
     color: var(--text-default);
-    font-family: 'Courier New', monospace;
+    font-family: var(--font-family-mono);
     font-size: var(--font-size-normal);
     /* If the line-height is greater than the font-size,
         it creates additional space above and below the text,
@@ -37,6 +39,7 @@ body {
     border-bottom: var(--border-default);
     background: var(--struct-default);
     font-size: var(--font-size-large);
+    font-family: var(--font-family-thick);
 }
 
 main {
@@ -48,7 +51,6 @@ main {
 }
 
 .nav-link {
-    margin-right: 30px;
     color: var(--text-default);
 }
 
@@ -78,7 +80,6 @@ button {
     border: none;
     cursor: pointer;
 }
-
 
 /* Accessibility improvements for visual focus on interactive elements */
 button:focus,
@@ -120,10 +121,11 @@ textarea:focus {
 
 /* Heading styles for proper spacing and readability */
 .heading {
-    font-size: calc(1.5rem + 1vw);
+    font-family: var(--font-family-thick);
     /* Responsive font size */
-    color: var(--contrast-text);
+    font-size: calc(1.5rem + 1vw);
     /* High contrast text for readability */
+    color: var(--contrast-text);
 }
 
 /* Styles for the explanatory box */

@@ -222,7 +222,7 @@ def react():
     )
     db.session.add(new_interaction)
     
-    try:
+    try:    
         db.session.commit()
         return jsonify({"status": "success", "carID": carID, "liked": status})
     except Exception as e:
