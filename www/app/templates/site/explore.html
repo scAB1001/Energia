@@ -1,34 +1,43 @@
-{% extends "base.html" %}
+{% extends "b2.html" %}
 
 {% block content %}
-<div class="explore">
 
-    <!-- Source: https://github.com/CodeSteppe/card-swiper -->
-    <div class="card-container">
-        <ion-icon id="dislike" name="close"></ion-icon>
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='cards.css') }}">
+</head>
 
-        <div id="swiper">
-            <div id="no-more-cards-message" style="display: none;">
-                <br>
-                <h1>No more cars available.</h1>
-                <h2>Please check back later!</h2>
-            </div>
+<div class="mention-container">
+    <section class="user-guide">
+        <ol class="guide-steps">
+            <li>
+                <h3>Explore</h3>
+                <p>Swipe left to pass or right to save for later.</p>
+            </li>
+        </ol>
+    </section>
+</div>
+
+<!-- Source: https://github.com/CodeSteppe/card-swiper -->
+<div class="card-container">
+    <ion-icon id="dislike" name="close"></ion-icon>
+
+    <div id="swiper">
+        <div id="no-more-cards-message" style="display: none;">
+            <br>
+            <h1>No more cars available.</h1>
+            <h2>Please check back later!</h2>
         </div>
-
-        <ion-icon id="like" name="heart-circle"></ion-icon>
-        
-        <!-- Local Scripts -->
-        <script type="text/javascript">const cars = {{ cars | tojson | safe }};</script>
-        <script src="{{ url_for('static', filename='card.js') }}"></script>
-        <script src="{{ url_for('static', filename='cardContainer.js') }}"></script>
-
-        <!-- Ionicons Scripts -->
-        <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-        <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     </div>
 
-    <div class="after-cards">
-        <h1>Swipe right to like and left to dislike</h1>
-    </div>
+    <ion-icon id="like" name="heart-circle"></ion-icon>
+
+    <!-- Local Scripts -->
+    <script type="text/javascript">const cars = {{ cars | tojson | safe }};</script>
+    <script src="{{ url_for('static', filename='card.js') }}"></script>
+    <script src="{{ url_for('static', filename='cardContainer.js') }}"></script>
+
+    <!-- Ionicons Scripts -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </div>
 {% endblock %}
