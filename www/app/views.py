@@ -248,11 +248,21 @@ def cards_depleted():
 @views.route('/test')
 #@login_required
 def test():
-    #car = Car.query.first().full_details()
-    #display_table_nicely(1, [car])
-    
-    #clear_tables()
-    return render_template('test.html', title='Test', user=current_user)#, car=car)
+    if not current_user.is_authenticated:
+        prep_db()
+        
+    first_name = 'Guest'
+    if current_user.is_authenticated:
+        first_name = current_user.first_name
+
+    numCards = db.session.query(Car).count()
+    tblCars = Car.query.all()
+
+    cars = []
+    for car in tblCars:
+        cars.append(car.card_info())
+        
+    return render_template('test.html', title='Test', user=current_user, cars=cars)
 ##########################################
     
 

@@ -1,40 +1,42 @@
 {% extends "b2.html" %}
 
 {% block content %}
+<head>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='cards.css') }}">
+</head>
 
-<div class="heading-container">
-  
-  <div class="rounded-box">
-    <h1 class="heading">Welcome to AutoSwipe, {{ first_name }}.</h1>
-    <p>You've landed on the AutoSwipe homepage!</p>
-  </div>
-
+<div class="mention-container">
   <section class="user-guide">
     <ol class="guide-steps">
-      {% if not user.is_authenticated %}
       <li>
-        <h3>Create an Account or Sign into an existing one</h3>
-        <p>Sign up for a new account to get started. It's quick and easy!</p>
-      </li>
-      {% endif %}
-      <li>
-        <h3>Swipe Through Vehicles</h3>
-        <p>Swipe left to pass or swipe right to save any vehicle for later.</p>
-      </li>
-      <li>
-        <h3>Review Your Favourites and Get In Touch</h3>
-        <p>Access your favourites anytime and contact the lessor.</p>
+        <h3>Explore</h3>
+        <p>Swipe left to pass or right to save for later.</p>
       </li>
     </ol>
   </section>
-
 </div>
 
-<section class="cta">
-  {% if not user.is_authenticated %}
-  <a href="/login" class="cta-button">Sign in</a>
-  {% endif %}
-  <a href="/signup" class="cta-button">Sign up</a>
-</section>
+<!-- Source: https://github.com/CodeSteppe/card-swiper -->
+<div class="card-container">
+  <ion-icon id="dislike" name="close"></ion-icon>
 
+  <div id="swiper">
+    <div id="no-more-cards-message" style="display: none;">
+      <br>
+      <h1>No more cars available.</h1>
+      <h2>Please check back later!</h2>
+    </div>
+  </div>
+
+  <ion-icon id="like" name="heart-circle"></ion-icon>
+
+  <!-- Local Scripts -->
+  <script type="text/javascript">const cars = {{ cars | tojson | safe }};</script>
+  <script src="{{ url_for('static', filename='card.js') }}"></script>
+  <script src="{{ url_for('static', filename='cardContainer.js') }}"></script>
+
+  <!-- Ionicons Scripts -->
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</div>
 {% endblock %}

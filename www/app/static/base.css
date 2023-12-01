@@ -30,6 +30,7 @@ body {
         making blocks of text easier to read. */
     line-height: 1.6;
     border: var(--border-default);
+    border-bottom: none;
     width: 100vw;
     height: 100vh;
     /* Ensure that elements with padding and borders 
@@ -106,30 +107,36 @@ textarea:focus {
 
 /* Container for the heading and explanatory boxes */
 .heading-container {
+    margin-top: 2rem;
     display: inline-block;
     margin: 2rem auto;
+    text-align: center;
+}
+
+/* Container for the heading and explanatory boxes */
+.mention-container {
+    margin-top: 1rem;
+    display: inline-block;
     text-align: center;
 }
 
 /* Styles for the rounded box behind the heading */
 .rounded-box {
     background-color: var(--accent-default);
-    /* Assuming you have a color variable defined */
     border-radius: 15px;
-    /* Rounded corners */
     padding: 1rem 2rem;
     display: inline-block;
-    margin-bottom: 1rem;
     /* Space between the heading box and explanatory box */
+    margin-bottom: 1rem;
 }
 
 /* Heading styles for proper spacing and readability */
 .heading {
-    font-family: var(--font-family-thick);
     /* Responsive font size */
     font-size: calc(1.5rem + 1vw);
     /* High contrast text for readability */
     color: var(--contrast-text);
+    font-family: var(--font-family-thick);
 }
 
 /* Styles for the explanatory box */
