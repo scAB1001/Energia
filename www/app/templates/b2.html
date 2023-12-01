@@ -28,6 +28,7 @@
     <span class="navbar-toggler-icon"></span>
   </button>
 
+  {% if user.is_authenticated %}
   <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
       
@@ -66,6 +67,11 @@
 
     </ul>
   </div>
+  {% else %}
+  <marquee direction="right">
+    <h3>Sign in to use AutoSwipe.</h3>
+  </marquee>
+  {% endif %}
 </nav>
 
 <body>

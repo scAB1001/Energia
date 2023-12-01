@@ -5,11 +5,15 @@
     --text-default: #F2F4F3;
     --accent-default: #B84D00;
     --accent-section: #7B886F;
+    --accent-warning: #CDA43C;
     --border-default: solid 3px black;
     --font-family-thick: 'Robot Serif', monospace;
     --font-family-mono: 'Courier New', monospace;
-    --font-size-normal: 18px;
-    --font-size-large: 24px;
+    --font-size-text: 18px;
+    --font-size-h3: 22px;
+    --font-size-h1: 24px;
+    --font-size-button: 26px;
+    --struct-subtle-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);;
 }
 
 /* General styles for high contrast and readability */
@@ -20,7 +24,7 @@ body {
     background-color: var(--background-default);
     color: var(--text-default);
     font-family: var(--font-family-mono);
-    font-size: var(--font-size-normal);
+    font-size: var(--font-size-text);
     /* If the line-height is greater than the font-size,
         it creates additional space above and below the text,
         making blocks of text easier to read. */
@@ -38,7 +42,7 @@ body {
 .navbar {
     border-bottom: var(--border-default);
     background: var(--struct-default);
-    font-size: var(--font-size-large);
+    font-size: var(--font-size-h1);
     font-family: var(--font-family-thick);
 }
 
@@ -47,7 +51,7 @@ main {
 }
 
 #logo {
-    font-size: var(--font-size-large);
+    font-size: var(--font-size-h1);
 }
 
 .nav-link {
@@ -64,11 +68,11 @@ button,
 input,
 select,
 textarea {
-    font-size: var(--font-size-normal);
+    font-size: var(--font-size-text);
     color: var(--text-default);
     background: var(--struct-default);
-    border: 2px solid var(--text-default);
     /* Ensuring visible borders */
+    border: 2px solid var(--text-default);
 }
 
 /* Ensure buttons have a high contrast for accessibility */
@@ -76,7 +80,7 @@ button {
     background: var(--accent-default);
     color: white;
     padding: 10px 20px;
-    font-size: var(--font-size-large);
+    font-size: var(--font-size-h1);
     border: none;
     cursor: pointer;
 }
@@ -138,7 +142,7 @@ textarea:focus {
     /* Making the box thinner */
     width: 80%;
     /* Subtle shadow for depth */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--struct-subtle-shadow);
     /* Responsive font size */
     font-size: calc(1rem + 0.5vw);
 }
@@ -158,4 +162,91 @@ textarea:focus {
         animation: none;
         transition: none;
     }
+}
+
+.user-guide {
+    /* Default display value for section */
+    display: block;
+    /* Maximum width you want for the user guide */
+    max-width: 100%;
+    /* Auto margins for horizontal centering */
+    margin: 0 auto;
+    padding: 1rem;
+    padding: 0.8rem;
+    border-radius: 10px;
+    background: var(--struct-default);
+    box-shadow: var(--struct-subtle-shadow);
+}
+
+.user-guide h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.guide-steps {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    list-style: none;
+}
+
+.guide-steps li {
+    padding: 0.75rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    background: var(--accent-section);
+    box-shadow: var(--struct-subtle-shadow);
+}
+
+.guide-steps h3 {
+    font-family: var(--font-family-thick);
+    font-size: var(--font-size-h3);
+    margin-top: 0;
+}
+
+.guide-steps p {
+    margin-bottom: 0;
+}
+
+marquee {
+    width: 100%;
+    height: 100%;
+    font-weight: bold;
+    font-size: var(--font-size-h3);
+    font-family: var(--font-family-mono);
+}
+
+.cta {
+    text-align: center;
+    margin-top: 0.75rem;
+    font-size: var(--font-size-button);
+}
+
+.cta-button {
+    background: var(--text-default);
+    color: var(--struct-default);
+    padding: 1.5rem 2rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: var(--struct-subtle-shadow);
+    transition: transform 0.2s ease-in-out;
+}
+
+.cta-button-danger {
+    color: black;
+    font-weight: bold;
+    border-radius: 20px;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    transition: transform 0.2s ease-in-out;
+    background: var(--accent-warning);
+    box-shadow: var(--struct-subtle-shadow);
+}
+
+.cta-button:hover,
+.cta-button:focus {
+    transform: scale(1.05);
+    color: var(--text-default);
+    background: var(--accent-default);
 }

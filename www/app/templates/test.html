@@ -3,13 +3,38 @@
 {% block content %}
 
 <div class="heading-container">
+  
   <div class="rounded-box">
-    <h1 class="heading">Main Heading</h1>
+    <h1 class="heading">Welcome to AutoSwipe, {{ first_name }}.</h1>
+    <p>You've landed on the AutoSwipe homepage!</p>
   </div>
-  <div class="explanatory-box">
-    <p>This section contains explanatory information that provides context to the heading above. It's longer and thinner
-      to distinguish its purpose but remains centered and easily readable.</p>
-  </div>
+
+  <section class="user-guide">
+    <ol class="guide-steps">
+      {% if not user.is_authenticated %}
+      <li>
+        <h3>Create an Account or Sign into an existing one</h3>
+        <p>Sign up for a new account to get started. It's quick and easy!</p>
+      </li>
+      {% endif %}
+      <li>
+        <h3>Swipe Through Vehicles</h3>
+        <p>Swipe left to pass or swipe right to save any vehicle for later.</p>
+      </li>
+      <li>
+        <h3>Review Your Favourites and Get In Touch</h3>
+        <p>Access your favourites anytime and contact the lessor.</p>
+      </li>
+    </ol>
+  </section>
+
 </div>
+
+<section class="cta">
+  {% if not user.is_authenticated %}
+  <a href="/login" class="cta-button">Sign in</a>
+  {% endif %}
+  <a href="/signup" class="cta-button">Sign up</a>
+</section>
 
 {% endblock %}
