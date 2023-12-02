@@ -267,8 +267,8 @@ def test():
 
 @views.route('/')
 def home():
-    if not current_user.is_authenticated:
-        prep_db()
+    #if not current_user.is_authenticated:
+    #    prep_db()
         
     first_name = 'Guest'
     if current_user.is_authenticated:
@@ -290,7 +290,6 @@ def explore():
     return render_template('/site/explore.html', title='Explore', user=current_user, cars=cars, numCards=numCards)
 
 
-# Rm this of history
 @views.route('/saved')
 @login_required
 def saved():
@@ -317,7 +316,7 @@ def saved():
 def single_view(carID):
     # Query car by ID (Only one car at a time)
     car = Car.query.get(carID).full_details()
-
+    print(car)
     return render_template('/site/single_view.html', title='Car', user=current_user, car=car)
 
 
