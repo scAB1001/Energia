@@ -1,18 +1,21 @@
-{% extends "base.html" %}
+{% extends "b2.html" %}
 
 {% block content %}
-<div class="saved">
-    <!-- User Guide Section -->
-    <br><br><br><section class="user-guide">
-        <h1>View Your Favourite Cars</h1><br>
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='cards.css') }}">
+</head>
+
+<div class="heading-container">
+    <section class="user-guide">
         <ol class="guide-steps">
             <li>
                 <h3>Review Your Favourites and Get In Touch</h3>
-                <p>Access your favourites anytime and contact the lessor.</p>
+                <p>Scroll through your favourites and contact the owner.</p>
             </li>
         </ol>
     </section>
-    {% if liked_cars_exist %}
+    
+    {% if liked_exist %}
     <div class="scrollable-table">
         <main class="grid">
             <article>
@@ -21,8 +24,8 @@
                 src="{{ url_for('static', filename='cars/' ~ car['imageUrl'] ~ '.jpg') }}"
                 alt="{{ car['carName'] }}">
                 <div class="grid-text">
-                    <h1>{{ car['carName'] }}</h1>
-                    <a href="/saved/single-view/{{ car['carID'] }}" class="cta-button">See more</a>
+                    <h3><a href="/saved/single-view/{{ car['carID'] }}" 
+                    class="cta-button frame">{{ car['carName'] }}</a></h3>
                 </div>
                 {% endfor %}        
             </article>
@@ -31,9 +34,6 @@
     {% else %}
     <h3>You haven't liked anything! Go explore our range.</h3>
     {% endif %}
-    <h2><a href="/saved/single-view" title="**Car Name**" style="display: none;">Car X</a></h2>
-    
-
 
 </div>
 {% endblock %}

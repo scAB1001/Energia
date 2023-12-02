@@ -1,12 +1,11 @@
-{% extends "base.html" %}
+{% extends "b2.html" %}
 
 {% block content %}
 <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
-<div class="history">
-
+<div class="heading-container">
     <!-- User Guide Section -->
     <section class="user-guide">
         <ol class="guide-steps">
@@ -17,22 +16,25 @@
         </ol>
     </section>
 
-    <div id="entriesAccordion">
+
+    <div id="historyAccordion">
+        <!-- Liked Cars Section -->
         <div class="card">
-            <div class="card-header" id="entriesHeading" style="background-color: #ecc6f3">
-                    <button class="cta-button" data-toggle="collapse" data-target="#entriesCollapse" aria-expanded="true"
-                        aria-controls="entriesCollapse">
-                        <span> View History </span>
-                    </button>
+            <div class="card-header" id="likedCarsHeading">
+                <button class="cta-button" data-toggle="collapse" data-target="#likedCarsCollapse" aria-expanded="false"
+                    aria-controls="likedCarsCollapse">
+                    <span>View Liked Cars</span>
+                </button>
             </div>
-    
-            {% if liked_cars_exist %}
-            <div id="entriesCollapse" class="collapse show" aria-labelledby="entriesHeading" data-parent="#entriesAccordion"
-                style="background-color: #ecc6f3">
+
+            {% if liked_exist %}
+            <div id="likedCarsCollapse" class="collapse show" aria-labelledby="likedCarsHeading"
+                data-parent="#historyAccordion">
                 <div class="card-body">
                     <div class="table-responsive" style="background-color: #ecc6f3">
                         <div class="scrollable-table2">
-                            <table class="table table-striped table-bordered" style="background-color: #e8cfed; font-size: 20px;">
+                            <table class="table table-striped table-bordered"
+                                style="background-color: #e8cfed; font-size: 20px;">
                                 <thead class="thead-dark">
                                     <tr class="hover-highlight">
                                         <th>Name</th>
@@ -64,8 +66,61 @@
             <h3>You haven't liked anything! Go explore our range.</h3>
             {% endif %}
         </div>
+
+        <!-- Disliked Cars Section -->
+        <div class="card">
+            <div class="card-header" id="dislikedCarsHeading">
+                <button class="cta-button" data-toggle="collapse" data-target="#dislikedCarsCollapse" aria-expanded="false"
+                    aria-controls="dislikedCarsCollapse">
+                    Disliked Cars
+                </button>
+            </div>
+        
+            {% if disliked_exist %}
+            <div id="dislikedCarsCollapse" class="collapse" aria-labelledby="dislikedCarsHeading"
+                data-parent="#historyAccordion">
+                <div class="card-body">
+                    <div class="table-responsive" style="background-color: #ecc6f3">
+                        <div class="scrollable-table2">
+                            <table class="table table-striped table-bordered"
+                                style="background-color: #e8cfed; font-size: 20px;">
+                                <thead class="thead-dark">
+                                    <tr class="hover-highlight">
+                                        <th>Name</th>
+                                        <th>Year</th>
+                                        <th>Body</th>
+                                        <th>Monthly (£)</th>
+                                        <th>Mileage</th>
+                                        <th>Liked</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for time_diff, car in disliked_cars %}
+                                    <tr>
+                                        <td>{{ car['carName'] }}</td>
+                                        <td>{{ car['year'] }}</td>
+                                        <td>{{ car['body_type'] }}</td>
+                                        <td>{{ car['monthly_payment'] }}</td>
+                                        <td>{{ car['mileage'] }}</td>
+                                        <td>{{ time_diff }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <h3>You haven't disliked anything yet.</h3>
+            {% endif %}
+        </div>
+        </div>
+        </div>
+        
     </div>
- 
+
+
 </div>
 
 <div>

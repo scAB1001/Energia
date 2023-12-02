@@ -1,18 +1,20 @@
 /* Define color palette with high contrast and color-blind friendly colors */
 :root {
-    --background-default: #3F6634;
+    --background-default: #374f2f;
     --struct-default: #412E25;
     --text-default: #F2F4F3;
     --accent-default: #B84D00;
     --accent-section: #7B886F;
+    --accent-flash: #175616;
     --accent-warning: #CDA43C;
+    --accent-danger: #b20000;
     --border-default: solid 3px black;
     --font-family-thick: 'Robot Serif', monospace;
     --font-family-mono: 'Courier New', monospace;
     --font-size-text: 18px;
     --font-size-h3: 22px;
     --font-size-h1: 24px;
-    --font-size-button: 26px;
+    --font-size-button: 20px;
     --struct-subtle-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);;
 }
 
@@ -21,7 +23,7 @@ body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    background-color: var(--background-default);
+    background: var(--background-default);
     color: var(--text-default);
     font-family: var(--font-family-mono);
     font-size: var(--font-size-text);
@@ -68,7 +70,8 @@ main {
 button,
 input,
 select,
-textarea {
+textarea,
+article {
     font-size: var(--font-size-text);
     color: var(--text-default);
     background: var(--struct-default);
@@ -229,7 +232,8 @@ marquee {
     font-size: var(--font-size-button);
 }
 
-.cta-button {
+.cta-button, .btn {
+    font-size: var(--font-size-button);
     background: var(--text-default);
     color: var(--struct-default);
     padding: 1.5rem 2rem;
@@ -240,15 +244,16 @@ marquee {
     transition: transform 0.2s ease-in-out;
 }
 
-.cta-button-danger {
-    color: black;
-    font-weight: bold;
-    border-radius: 20px;
-    text-decoration: none;
-    padding: 0.75rem 1.5rem;
-    transition: transform 0.2s ease-in-out;
+.warning {
     background: var(--accent-warning);
-    box-shadow: var(--struct-subtle-shadow);
+    color: black;
+    padding: 0.75rem 1.5rem;
+}
+
+.btn-danger {
+    background: var(--accent-danger);
+    color: white;
+    padding: 0.75rem 1.5rem;
 }
 
 .cta-button:hover,
@@ -292,16 +297,23 @@ marquee {
     position: fixed;
     font-size: 18px;
     transform: translateX(-50%);
-    background: rgba(254, 234, 234, 0.95);
-    color: #282727;
+    background: var(--accent-flash);
+    color: var(--text-default);
     padding: 18px 32px;
     border-radius: 16px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    border: 2px solid #6a6969;
+    box-shadow: var(--struct-subtle-shadow);
+    border: var(--border-default);
     opacity: 0;
     /* Above other elements */
     z-index: 1001;
     animation:
         slideIn 0.80s ease forwards,
         slideOut 1.75s ease forwards 2.25s;
+}
+
+.scrollable-table2 {
+    max-height: 500px;
+    border: 2px solid #0c0101;
+    overflow-y: auto;
+    box-shadow: 10px 10px 16px 4px rgba(0, 0, 0, 0.3);
 }

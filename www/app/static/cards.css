@@ -136,6 +136,60 @@ body {
     font-style: normal;
 }
 
+#no-more-cards-message h1,
+h2 {
+    text-align: center;
+    place-items: center;
+    padding-top: 15%;
+}
+
+/* Grid */
+.grid {
+    display: flex;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 20px;
+    align-items: start;
+}
+
+.grid>article img {
+    max-width: 100%;
+    min-height: 100%;
+    display: flex;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+    object-fit: contain;
+}
+
+.grid-text {
+    margin: 1.5rem auto;
+    text-align: center;
+    padding-bottom: 12px;
+    color: black;
+}
+
+.grid-text h3 {
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 10px;
+}
+
+article {
+    border: none;
+}
+
+.scrollable-table {
+    margin: 1rem auto;
+    max-height: 600px;
+    border: 4px solid black;
+    overflow-y: auto;
+    box-shadow: 10px 10px 16px 4px rgba(0, 0, 0, 0.3);
+}
+
+.cta-button {
+    color: black
+}
+
 /* Styles for the single-view image */
 .image-container {
     width: 920px;
@@ -156,13 +210,12 @@ body {
 }
 
 .single-card-container {
-    width: 100%;
-    /* Increased padding for more white space */
-    padding: 40px;
-    display: flex;
     cursor: pointer;
-    align-items: center;
+    display: flex;
     justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 40px;
 }
 
 .single-card {
@@ -194,11 +247,46 @@ body {
 }
 
 .single-content p strong {
-    /* Complementary strong tag color */
     color: #ff7854;
+    /* Complementary strong tag color */
 }
 
 .card-footer {
     text-align: center;
     margin-top: 20px;
 }
+
+.animated-button {
+    position: relative;
+    padding: 20px 40px;
+    margin: 12px;
+    background: linear-gradient(-30deg, #b06ab3 50%, #4568dc 50%);
+    color: white;
+    font-size: 20px;
+    letter-spacing: 2.5px;
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.animated-button:hover {
+    background: linear-gradient(-30deg, #4568dc 50%, #b06ab3 50%);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Accessibility */
+.animated-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px #fff, 0 0 0 4px #b06ab3;
+}
+
+.animated-button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+}
+

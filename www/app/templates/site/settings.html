@@ -1,15 +1,16 @@
-{% extends "base.html" %}
+{% extends "b2.html" %}
 
 {% block content %}
-<div class="settings">
-    <br><br>
+<div class="heading-container">
     <section class="user-guide">
         <ol class="guide-steps">
-            <h1>Settings</h1>
-            <p>Customise on your own terms.</p>
+            <li>
+                <h3>Settings</h3>
+                <p>Customise on your own terms.</p>
+            </li>
             <section class="cta">
                 <form action="{{ url_for('views.delete_account') }}" method="POST">
-                    <button type="submit" class="cta-button">Delete My Account</button>
+                    <button type="submit" class="btn btn-danger">Delete My Account</button>
                 </form>
             </section>
         </ol>

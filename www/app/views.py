@@ -307,9 +307,10 @@ def saved():
         if car:
             liked_cars.append(car.grid_view())
 
-    liked_cars_exist = liked_cars != []
+    liked_exist = liked_cars != []
     #delete_user_interactions(current_user.id)
-    return render_template('/site/saved.html', title='Saved', liked_cars_exist=liked_cars_exist, liked_cars=liked_cars, user=current_user)
+    return render_template('/site/saved.html', title='Saved', 
+        liked_exist=liked_exist, liked_cars=liked_cars, user=current_user)
 
 
 @views.route('/saved/single-view/<int:carID>')
@@ -325,24 +326,31 @@ def single_view(carID):
 @views.route('/history')
 @login_required
 def history():   
-    # Fetch details of cars based on liked interactions
+    # Fetch all interactions for the current user
     interactions = UserInteraction.query.filter_by(
-        user_id=current_user.id,
-        swiped_right=True
+        user_id=current_user.id
     ).all()
 
-    time_diff = 0
     liked_cars = []
+    disliked_cars = []
+
+    # Iterate through interactions and classify cars
     for interaction in interactions:
         car = Car.query.get(interaction.car_id)
         if car:
-            # Using tuples to allow non-unique time entries
             time_diff = time_since(interaction.timestamp)
-            liked_cars.append((time_diff, car.log()))
+            car_info = (time_diff, car.log())
+            if interaction.swiped_right:
+                liked_cars.append(car_info)
+            else:
+                disliked_cars.append(car_info)
 
-    liked_cars_exist = liked_cars != []
-    #delete_user_interactions(current_user.id)
-    return render_template('/site/history.html', title='History', time_diff=time_diff, liked_cars_exist=liked_cars_exist, liked_cars=liked_cars, user=current_user)
+    liked_exist = bool(liked_cars)
+    disliked_exist = bool(disliked_cars)
+
+    return render_template('/site/history.html', title='History',
+        liked_exist=liked_exist, disliked_exist=disliked_exist,
+        liked_cars=liked_cars, disliked_cars=disliked_cars, user=current_user)
 
 
 @views.route('/settings')
