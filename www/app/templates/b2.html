@@ -33,6 +33,13 @@
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
       
       <li class="nav-item">
+        <a class="nav-link" href="/" title="Home">
+          Home
+          <img src="{{ url_for('static', filename='icons/home.png') }}" alt="Home icon" class="nav-icon">
+        </a>
+      </li>
+
+      <li class="nav-item">
         <a class="nav-link" href="/logout" title="Sign out">
           Sign out
           <img src="{{ url_for('static', filename='icons/logout.png') }}" alt="Sign out icon" class="nav-icon">
@@ -51,13 +58,7 @@
           <img src="{{ url_for('static', filename='icons/search.png') }}" alt="Explore icon" class="nav-icon">
         </a>
       </li>
-            
-      <li class="nav-item">
-        <a class="nav-link" href="/history" title="History">
-          History
-          <img src="{{ url_for('static', filename='icons/history.png') }}" alt="History icon" class="nav-icon">
-        </a>
-      </li>
+
       <li class="nav-item">
         <a class="nav-link" href="/saved" title="Liked">
           Liked

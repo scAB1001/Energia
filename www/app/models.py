@@ -75,16 +75,6 @@ class Car(BaseModel):
                 f' Make: {self.make}'.rjust(width)
         }
 
-    # Log details to display in 'History' section
-    def log(self):
-        return {
-            'carName': f'{self.car_name}',
-            'year': f'{self.year}',
-            'body_type': f'{self.body_type}',
-            'monthly_payment': f'{self.monthly_payment}',
-            'mileage': f'{self.mileage}'
-        }
-    
     # Full details to display in 'Saved (single_view)' section
     def full_details(self):
         return {

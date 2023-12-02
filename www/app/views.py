@@ -11,7 +11,6 @@ admin.add_view(ModelView(Car, db.session))
 admin.add_view(ModelView(UserInteraction, db.session))
 
 import json
-from datetime import datetime, timedelta
 
 # Flash message flags
 DANGER, SUCCESS = 'danger', 'success'
@@ -320,37 +319,6 @@ def single_view(carID):
     car = Car.query.get(carID).full_details()
 
     return render_template('/site/single_view.html', title='Car', user=current_user, car=car)
-
-
-# Rm this of saved
-@views.route('/history')
-@login_required
-def history():   
-    # Fetch all interactions for the current user
-    interactions = UserInteraction.query.filter_by(
-        user_id=current_user.id
-    ).all()
-
-    liked_cars = []
-    disliked_cars = []
-
-    # Iterate through interactions and classify cars
-    for interaction in interactions:
-        car = Car.query.get(interaction.car_id)
-        if car:
-            time_diff = time_since(interaction.timestamp)
-            car_info = (time_diff, car.log())
-            if interaction.swiped_right:
-                liked_cars.append(car_info)
-            else:
-                disliked_cars.append(car_info)
-
-    liked_exist = bool(liked_cars)
-    disliked_exist = bool(disliked_cars)
-
-    return render_template('/site/history.html', title='History',
-        liked_exist=liked_exist, disliked_exist=disliked_exist,
-        liked_cars=liked_cars, disliked_cars=disliked_cars, user=current_user)
 
 
 @views.route('/settings')
