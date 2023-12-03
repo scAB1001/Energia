@@ -29,7 +29,7 @@ def login():
 
     # Check if max attempts reached and redirect to signup if so
     if session.get('login_attempts', 0) >= MAX_LOGIN_ATTEMPTS:
-        flash('Maximum sign-in attempts reached. Please sign up.', category=DANGER)
+        flash('Maximum sign-in attempts reached. ', category=DANGER)
         return redirect(url_for('auth.signup'))
 
     if form.validate_on_submit():
@@ -85,8 +85,8 @@ def handle_registration(email, first_name, password1, password2):
 
 @auth.route('/signup', methods=['GET', 'POST'])
 def signup():
-    if not current_user.is_authenticated and session.get('login_attempts', 0) >= MAX_LOGIN_ATTEMPTS: ##
-        flash(f'Too many sing-in attempts, create a new account.', category=DANGER)
+    #if not current_user.is_authenticated and session.get('login_attempts', 0) >= MAX_LOGIN_ATTEMPTS: 
+    #    flash(f'Please create a new account.', category=DANGER)
 
     # If user is already logged in and wants to create another account,
     #   they will be logged out of the initial upon creation

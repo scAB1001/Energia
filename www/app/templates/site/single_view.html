@@ -21,13 +21,20 @@
         
         <div class="single-card-container">
             <article class="single-card" id="cardInfo">
-                <p>Make: {{ car['make'] }}</p>
-                <p>Model: {{ car['model'] }}</p>
-                <p>Year: {{ car['year'] }}</p>
-                <p>Body Type: {{ car['body_type'] }}</p>
-                <p>Horsepower: {{ car['horsepower'] }} bhp</p>
-                <p>Monthly Fee: £{{ car['monthly_payment'] }}</p>
-                <p>Mileage: {{ car['mileage'] }}</p>
+                <strong><p>Make </strong>
+                {{ car['make'] }}</p>
+                <strong><p>Model </strong>
+                {{ car['model'] }}</p>
+                <strong><p>Year </strong>
+                {{ car['year'] }}</p>
+                <strong><p>Body Type </strong>
+                {{ car['body_type'] }}</p>
+                <strong><p>Horsepower </strong>
+                {{ car['horsepower'] }} bhp</p>
+                <strong><p>Monthly Fee </strong>
+                £{{ car['monthly_payment'] }}</p>
+                <strong><p>Mileage </strong>
+                {{ car['mileage'] }}</p>
                 <footer class="card-footer">
                     <button class="animated-button" aria-label="Contact Owner">Contact Owner</button>
                 </footer>

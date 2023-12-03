@@ -141,7 +141,7 @@ h2 {
     padding-top: 15%;
 }
 
-/* Grid */
+/* Grid styles */
 .grid {
     display: flex;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -188,22 +188,23 @@ article {
     color: black
 }
 
+/* Single view styles */
 .detail-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 40px;
+    padding: 30px;
 }
 
 /* Container for the frame and the car image */
 .frame-container {
+    flex: none;
     /* Set maximum dimensions for the frame 
     against the details section */
-    width: 100%;
-    height: 100%;
-    /* Center the frame container */
-    margin: auto;
+    width: 95%;
+    height: 95%;
     position: relative;
+    margin: auto;
 }
 
 /* Style for the frame itself */
@@ -220,9 +221,7 @@ article {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    /* Adjust the centering */
     max-width: 90%;
-    /* Make the car image a bit smaller than the frame */
     max-height: 90%;
     /* Keep the aspect ratio of the car image */
     height: auto;
@@ -230,11 +229,12 @@ article {
 
 .single-card-container {
     cursor: pointer;
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
-    padding: 40px;
+    padding: 20px;
 }
 
 .single-card {
@@ -242,7 +242,6 @@ article {
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
     padding: 20px;
     margin: 20px auto;
-    width: 100%;
     border-left: 5px solid rgb(114, 61, 4);
     text-align: left;
 }
