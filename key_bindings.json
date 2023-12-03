@@ -8,11 +8,11 @@
     "command": "workbench.action.terminal.resizePaneDown"
   },
   {
-    "key": "ctrl+left ctrl+left",
+    "key": "ctrl+shift+left ctrl+shift+left",
     "command": "workbench.action.terminal.resizePaneLeft"
   },
   {
-    "key": "ctrl+right ctrl+right",
+    "key": "ctrl+shift+right ctrl+shift+right",
     "command": "workbench.action.terminal.resizePaneRight"
   },
   {

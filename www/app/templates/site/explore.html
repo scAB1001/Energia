@@ -6,30 +6,26 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='cards.css') }}">
 </head>
 
-<div class="heading-container">
-    <section class="user-guide">
-        <ol class="guide-steps">
-            <li>
-                <h3>Explore our Range</h3>
-                <p>Swipe right to like and save the card, left to skip</p>
-            </li>
-        </ol>
+<div class="heading-container" role="region" aria-labelledby="explore-heading">
+    <section class="user-guide" aria-label="User Guide">
+        <h3 id="explore-heading">Explore our Range</h3>
+        <p>Swipe right to like and save the card, left to skip</p>
     </section>
 </div>
 
 <!-- Source: https://github.com/CodeSteppe/card-swiper -->
-<div class="card-container">
+<div class="card-container" role="application" aria-live="polite">
     {% if cars_remain %}
-    <ion-icon id="dislike" name="close"></ion-icon>
+    <ion-icon id="dislike" name="close" role="button" aria-label="Dislike"></ion-icon>
 
-    <div id="swiper">
-        <div id="no-more-cards-message" style="display: none;">
+    <div id="swiper" role="region" aria-label="Card Swiper">
+        <div id="no-more-cars-message" role="alert" style="display: none;">
             <h1>No more cars available.</h1>
             <p>Please check back later!</p>
         </div>
     </div>
 
-    <ion-icon id="like" name="heart-circle"></ion-icon>
+    <ion-icon id="like" name="heart-circle" role="button" aria-label="Like"></ion-icon>
 
     <!-- Local Scripts -->
     <script type="text/javascript">const cars = {{ cars | tojson | safe }};</script>
@@ -41,7 +37,7 @@
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 
     {% else %}
-    <div id="no-more-cards-message" style="display: block;">
+    <div id="no-more-cards-message" role="alert" style="display: block;">
         <h1>No more cars available.</h1>
         <p>Please check back later!</p>
     </div>

@@ -342,8 +342,8 @@ marquee {
     /* Above other elements */
     z-index: 1001;
     animation:
-        slideIn 0.80s ease forwards,
-        slideOut 1.75s ease forwards 2.25s;
+        slideIn 1s ease forwards,
+        slideOut 2.75s ease forwards 2.25s;
 }
 
 .scrollable-table2 {

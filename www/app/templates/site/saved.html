@@ -1,39 +1,43 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <head>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='cards.css') }}">
 </head>
 
-<div class="heading-container">
-    <section class="user-guide">
+<div class="heading-container" role="main">
+    <section class="user-guide" aria-label="Guide to Reviewing Favourites">
         <ol class="guide-steps">
-            <li>
-                <h3>Review Your Favourites and Get In Touch</h3>
+            <li role="article" aria-labelledby="review-favourites-heading">
+                <h3 id="review-favourites-heading">Review Your Favourites and Get In Touch</h3>
                 <p>Scroll down and click to see more details.</p>
             </li>
         </ol>
     </section>
-    
+
     {% if liked_exist %}
-    <div class="scrollable-table">
-        <main class="grid">
+    <div class="scrollable-table" role="region" aria-live="polite" aria-label="Favourites List">
+        <main class="grid" aria-label="List of Favourite Cars">
             <article>
                 {% for car in liked_cars %}
-                <img class="full-view" 
-                src="{{ url_for('static', filename='cars/' ~ car['imageUrl'] ~ '.jpg') }}"
-                alt="{{ car['carName'] }}">
+                <img class="full-view" src="{{ url_for('static', filename='cars/' ~ car['imageUrl'] ~ '.jpg') }}"
+                    alt="{{ car['carName'] }}" role="img" aria-label="Image of {{ car['carName'] }}">
 
                 <div class="grid-text">
-                    <h3><a href="/saved/single-view/{{ car['carID'] }}" 
-                    class="cta-button btn-grid">{{ car['carName'] }}</a></h3>
+                    <h3>
+                        <a href="/saved/single-view/{{ car['carID'] }}" class="cta-button btn-grid" role="link"
+                            aria-label="View details of {{ car['carName'] }}">
+                            {{ car['carName'] }}
+                        </a>
+                    </h3>
                 </div>
-                {% endfor %}        
+                {% endfor %}
             </article>
         </main>
     </div>
     {% else %}
-    <h3>You haven't liked anything! Go explore our range.</h3>
+    <h3 id="no-favourites-message">You haven't liked anything! Go explore our range.</h3>
     {% endif %}
 
 </div>

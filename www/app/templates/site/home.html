@@ -2,42 +2,40 @@
 
 {% block content %}
 
-<div class="heading-container">
-
-    <div class="rounded-box">
-        <h1 class="heading">Welcome to AutoSwipe, {{ first_name }}.</h1>
+<div class="heading-container" role="main">
+    <div class="rounded-box" role="region" aria-labelledby="welcome-heading">
+        <h1 class="heading" id="welcome-heading">Welcome to AutoSwipe, {{ first_name }}.</h1>
         <p>You've landed on the AutoSwipe homepage!</p>
     </div>
 
-    <section class="user-guide">
+    <section class="user-guide" aria-label="User Guide">
         <ol class="guide-steps">
             {% if not user.is_authenticated %}
-            <li>
-                <h3>Create an Account</h3>
+            <li role="article" aria-labelledby="create-account-heading">
+                <h3 id="create-account-heading">Create an Account</h3>
                 <p>Sign to create a new account and get started. It's quick and easy!</p>
             </li>
-            <li>
-                <h3>Already Have an Account?</h3>
+            <li role="article" aria-labelledby="already-have-account-heading">
+                <h3 id="already-have-account-heading">Already Have an Account?</h3>
                 <p>Click the sign in button below!</p>
             </li>
             {% endif %}
-            <li>
-                <h3>Swipe Through Vehicles</h3>
+            <li role="article" aria-labelledby="swipe-vehicles-heading">
+                <h3 id="swipe-vehicles-heading">Swipe Through Vehicles</h3>
                 <p>Swipe left to pass or swipe right to save any vehicle for later.</p>
             </li>
-            <li>
-                <h3>Review Your Favourites and Get In Touch</h3>
+            <li role="article" aria-labelledby="review-favourites-heading">
+                <h3 id="review-favourites-heading">Review Your Favourites and Get In Touch</h3>
                 <p>Access your favourites anytime and contact the lessor.</p>
             </li>
         </ol>
     </section>
-
 </div>
 
-<section class="cta">
+<section class="cta" aria-label="Call to Action">
     {% if not user.is_authenticated %}
-    <a href="/signup" class="cta-button">Sign up</a>
-    <a href="/login" class="cta-button">Sign in</a>
+    <a href="/signup" class="cta-button" role="button" aria-label="Sign up for AutoSwipe">Sign up</a>
+    <a href="/login" class="cta-button" role="button" aria-label="Sign in to AutoSwipe">Sign in</a>
     {% endif %}
 </section>
 
