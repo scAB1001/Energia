@@ -80,9 +80,26 @@ def pre_populate_tblCars():
     """
     if is_table_empty(Car):
         try:
+            # Car instances to be added
             cars_to_add = [
-                # Car instances to be added
-                # Format: Car(image, car_name, make, model, year, body_type, horsepower, monthly_payment, mileage)
+                Car(image='astonMartinSILagonda1', car_name='Aston Martin Lagonda Series 1', make='Aston Martin', model='Lagonda',
+                    year=1974, body_type='4-door saloon', horsepower=280, monthly_payment=4611.96, mileage=18324),
+                Car(image='astonMartinSIIILagonda3', car_name='Aston Martin Lagonda Series 3', make='Aston Martin', model='Lagonda',
+                    year=1986, body_type='4-door saloon', horsepower=230, monthly_payment=7766.58, mileage=132084),
+                Car(image='astonMartinSIVLagonda4', car_name='Aston Martin Lagonda Series 4', make='Aston Martin', model='Lagonda',
+                    year=1987, body_type='4-door saloon', horsepower=240, monthly_payment=3633.98, mileage=123117),
+                Car(image='ferrariTestarossa1', car_name='Ferrari Testarossa', make='Ferrari', model='Testarossa',
+                    year=1984, body_type='2-door berlinetta', horsepower=385, monthly_payment=4185.91, mileage=146545),
+                Car(image='ferrariF512TR3', car_name='Ferrari F512 TR', make='Ferrari', model='512 TR',
+                    year=1991, body_type='2-door berlinetta', horsepower=422, monthly_payment=3245.32, mileage=198978),
+                Car(image='ferrari308GTRainbow4', car_name='Ferrari 308 GT Bertone Rainbow', make='Ferrari', model='308 GT',
+                    year=1976, body_type='2-door coupe', horsepower=255, monthly_payment=5585.91, mileage=89017),
+                Car(image='countachLP400Lamborghini1', car_name='Lamborghini Countach LP400', make='Lamborghini', model='LP400',
+                    year=1974, body_type='2-door coupe', horsepower=375, monthly_payment=8042.47, mileage=167228),
+                Car(image='countachLP5000LamborghiniQuattrovalvole3', car_name='Lamborghini Countach Quattrovalvole', make='Lamborghini', 
+                    model='LP5000', year=1985, body_type='2-door coupe', horsepower=455, monthly_payment=8930.27, mileage=103074),
+                Car(image='countach25thAnniversaryLamborghini4', car_name='Lamborghini Countach 25th Anniversary', make='Lamborghini', 
+                    model='25th Anniversary', year=1988, body_type='2-door coupe', horsepower=414, monthly_payment=6409.78, mileage=140320)
             ]
             db.session.add_all(cars_to_add)
             db.session.commit()
@@ -164,23 +181,14 @@ def test():
     Route for testing purposes.
 
     GET:
-    Renders a test page with all available car cards.
+    Renders a test page with ...
 
     Returns:
-    Rendered HTML: A test page displaying all car cards.
+    Rendered HTML: A test page displaying ...
     """
     prep_db()  # Prepares database with necessary data
 
-    first_name = 'Guest'
-    if current_user.is_authenticated:
-        first_name = current_user.first_name
-
-    numCards = db.session.query(Car).count()
-    tblCars = Car.query.all()
-
-    cars = [car.card_info() for car in tblCars]
-
-    return render_template('test.html', title='Test', user=current_user, cars=cars)
+    return render_template('test.html', title='Test', user=current_user)
 ##########################################
 
 
