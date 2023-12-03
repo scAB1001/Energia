@@ -176,11 +176,12 @@ textarea:focus {
     border-radius: 10px;
     background: var(--struct-default);
     box-shadow: var(--struct-subtle-shadow);
+    margin-bottom: 0.75rem;
 }
 
 .user-guide h2 {
     text-align: center;
-    margin-bottom: 0rem;
+    margin-bottom: 0.75rem;
 }
 
 .guide-steps {
@@ -191,6 +192,7 @@ textarea:focus {
 }
 
 .guide-steps li {
+    padding: 0.75rem;
     border-radius: 10px;
     margin-bottom: 1rem;
     background: var(--accent-section);

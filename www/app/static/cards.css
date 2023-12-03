@@ -7,7 +7,7 @@ body {
 }
 
 .card-container {
-    margin: 2rem auto;
+    margin: 1rem auto;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
@@ -43,9 +43,7 @@ body {
 /* You might need to adjust the height of .card img to make room for .card-info */
 .card img {
     width: 100%;
-    /* height: 100%; */
     height: calc(100% - 50px);
-    /* Adjust the 60px to the height of your .card-info */
     object-fit: cover;
     object-position: 50% 50%;
 }
@@ -197,14 +195,37 @@ article {
     padding: 40px;
 }
 
-/* Styles for the single-view image */
-.image-container {
-    flex: 1;
-    max-width: 50%;
-    min-height: 600px;
-    /* Ensures the image doesn't exceed the container */
-    overflow: hidden;
-    z-index: 1000;
+/* Container for the frame and the car image */
+.frame-container {
+    /* Set maximum dimensions for the frame 
+    against the details section */
+    width: 100%;
+    height: 100%;
+    /* Center the frame container */
+    margin: auto;
+    position: relative;
+}
+
+/* Style for the frame itself */
+.frame {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Style for the car image */
+.car-image {
+    position: absolute;
+    /* Center horizontally & vertically */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* Adjust the centering */
+    max-width: 90%;
+    /* Make the car image a bit smaller than the frame */
+    max-height: 90%;
+    /* Keep the aspect ratio of the car image */
+    height: auto;
 }
 
 .single-card-container {
@@ -224,19 +245,6 @@ article {
     width: 100%;
     border-left: 5px solid rgb(114, 61, 4);
     text-align: left;
-}
-
-.single-content p {
-    padding-left: 20px;
-    color: #333;
-    font-size: 20px;
-    line-height: 1.8;
-    margin-bottom: 15px;
-}
-
-.single-content p strong {
-    color: #ff7854;
-    /* Complementary strong tag color */
 }
 
 .card-footer {

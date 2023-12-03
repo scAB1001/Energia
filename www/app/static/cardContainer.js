@@ -36,10 +36,7 @@ function appendNewCard(carData) {
     }
 
   });
-  /* ERROR: Like/dislike don't get animated
-   * When console.log is in the onLike: scope, it does not get caught ever.
-   * This suggests the dismiss, onLike/Dislike are never caught
-  */ 
+  
   cardCount++;  // For the number of cards
   console.log(`card${cardCount} added`);  
   swiper.append(card.element);

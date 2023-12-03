@@ -6,14 +6,19 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='cards.css') }}">
 </head>
 
-<div class="heading-container">
 
+
+<div class="heading-container">
     <div class="detail-container">
-        <div class="image-container">
-            <img src="{{ url_for('static', filename='cars/' ~ car['imageUrl'] ~ '.jpg') }}"
+        <!-- Picture frame container -->
+        <div class="frame-container">
+            <!-- Picture frame -->
+            <img class="frame" src="{{ url_for('static', filename='icons/frame.png') }}" alt="Antique Picture Frame">
+            <!-- Car image -->
+            <img class="car-image" src="{{ url_for('static', filename='cars/' ~ car['imageUrl'] ~ '.jpg') }}"
                 alt="{{ car['carName'] }}">
         </div>
-
+        
         <div class="single-card-container">
             <article class="single-card" id="cardInfo">
                 <p>Make: {{ car['make'] }}</p>
@@ -24,11 +29,12 @@
                 <p>Monthly Fee: £{{ car['monthly_payment'] }}</p>
                 <p>Mileage: {{ car['mileage'] }}</p>
                 <footer class="card-footer">
-                    <button class="animated-button" aria-label="Contact Lessor">Contact Owner</button>
+                    <button class="animated-button" aria-label="Contact Owner">Contact Owner</button>
                 </footer>
             </article>
         </div>
     </div>
 
 </div>
+
 {% endblock %}
