@@ -1,39 +1,35 @@
-{% extends "base.html" %}
+{% extends "b2.html" %}
 
 {% block content %}
-<div class="login">
-    <br><br><section class="user-guide">
-        <h1>How to Use AutoSwipe</h1><br>
+
+<div class="heading-container">
+    <section class="user-guide">
         <ol class="guide-steps">
             <li>
-                <h3>Create an Account</h3>
-                <p>Don't have an account? <a href="/signup" class="cta-button">Sign up here</a></p>
-            </li>
-            <li>
                 <h3>Sign In</h3>
-                <p>Already have an account? Sign in to get started.</p>
+                <p>Sign in to use AutoSwipe</p>
             </li>
         </ol>
     </section>
-    <div>
-        <form method="POST" class="form-signin">
-            {{ form.hidden_tag() }}
-            <div class="form-group">
-                {{ form.email.label(class="form-label") }}
-                {{ form.email(class="form-control") }}
-                {% if form.email.errors %}
-                <div class="error">{{ form.email.errors[0] }}</div>
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.password.label(class="form-label") }}
-                {{ form.password(class="form-control") }}
-                {% if form.password.errors %}
-                <div class="error">{{ form.password.errors[0] }}</div>
-                {% endif %}
-            </div>
-            <button type="submit" class="cta-button">Submit</button>
-        </form>
-    </div>
+
+    <form method="POST" class="form-signin">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.email.label(class="form-label") }}
+            {{ form.email(class="form-control") }}
+            {% if form.email.errors %}
+            <div class="error">{{ form.email.errors[0] }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.password.label(class="form-label") }}
+            {{ form.password(class="form-control") }}
+            {% if form.password.errors %}
+            <div class="error">{{ form.password.errors[0] }}</div>
+            {% endif %}
+        </div>
+        <button type="submit" class="cta-button btn-form">Submit</button>
+    </form>
 </div>
+
 {% endblock %}

@@ -1,10 +1,28 @@
-{% extends "base.html" %}
+{% extends "b2.html" %}
 
 {% block content %}
-<div class="error-page">
-    <h1>404</h1>
-    <h2>Oops! Page Not Found</h2>
-    <p>We can't seem to find the page you're looking for.</p>
-    <p><a href="/" class="cta-button">Go Home</a></p>
+
+<div class="heading-container">
+
+    <div class="rounded-box">
+        <h1 class="heading">404</h1>
+        <p>We can't seem to find the page you're looking for.</p>
+    </div>
+
+    <section class="user-guide">
+        <ol class="guide-steps">
+            <li>
+                <h3>Go Back</h3>
+                <p>Return to the homepage and try again!</p>
+            </li>
+        </ol>
+    </section>
+    
+    
+    <section class="cta">
+        <a href="/" class="cta-button">Go Home</a>  
+    </section>
+
 </div>
+
 {% endblock %}
