@@ -20,24 +20,6 @@ migrate = Migrate(app, db, render_as_batch=True)
 admin = Admin(app, template_mode='bootstrap4')
 
 
-#@app.after_request
-#def add_cache_control(response):
-#    """
-#    After-request function to modify the response headers.
-#
-#    Adds a Cache-Control header to the response to prevent caching of static files.
-#    This is useful during development to avoid stale files being served by the browser.
-#
-#    Parameters:
-#    response: The response object from a Flask view function.
-#
-#    Returns:
-#    Modified response object with updated headers.
-#    """
-#    response.headers['Cache-Control'] = 'no-store'
-#    return response
-
-
 # Import views and models after app initialization to avoid circular imports
 from app import views, models
 

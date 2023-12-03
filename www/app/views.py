@@ -174,24 +174,6 @@ def cards_depleted():
     return jsonify({"error": "Invalid request"}), 400
 
 
-##########################################
-@views.route('/test')
-def test():
-    """
-    Route for testing purposes.
-
-    GET:
-    Renders a test page with ...
-
-    Returns:
-    Rendered HTML: A test page displaying ...
-    """
-    prep_db()  # Prepares database with necessary data
-
-    return render_template('test.html', title='Test', user=current_user)
-##########################################
-
-
 @views.route('/')
 def home():
     """
