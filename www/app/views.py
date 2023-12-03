@@ -5,12 +5,12 @@ from .models import User, Car, UserInteraction
 from .forms import LoginForm, RegistrationForm
 from app import app, db, admin
 from flask_admin.contrib.sqla import ModelView
+import json
 
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Car, db.session))
 admin.add_view(ModelView(UserInteraction, db.session))
 
-import json
 
 # Flash message flags
 DANGER, SUCCESS = 'danger', 'success'
@@ -162,10 +162,6 @@ def prep_db():
     pre_populate_tblCars()
 
 
-#def user_liked_cars():
-#    pass
-
-
 
 """
     
@@ -235,8 +231,7 @@ def cards_depleted():
 @views.route('/test')
 #@login_required
 def test():
-    if not current_user.is_authenticated:
-        prep_db()
+    prep_db()
         
     first_name = 'Guest'
     if current_user.is_authenticated:
@@ -268,14 +263,25 @@ def home():
 @views.route('/explore')
 @login_required
 def explore():
-    numCards = db.session.query(Car).count()
-    tblCars = Car.query.all()
+    # Get the IDs of the cars that the user has already interacted with
+    interacted_car_ids = UserInteraction.query.with_entities(
+        UserInteraction.car_id
+    ).filter_by(user_id=current_user.id).all()
+
+    # Flatten the list of tuples to a list of integer IDs
+    interacted_car_ids = [car_id for (car_id,) in interacted_car_ids]
+
+    # Query for cars that the user has not interacted with
+    cars_to_swipe = Car.query.filter(
+        Car.id.notin_(interacted_car_ids)
+    ).all()
+
+    cars_remaining = [car.card_info() for car in cars_to_swipe]
     
-    cars = []
-    for car in tblCars:
-        cars.append(car.card_info())
-        
-    return render_template('/site/explore.html', title='Explore', user=current_user, cars=cars, numCards=numCards)
+    cars_remain = bool(cars_remaining)
+
+    return render_template('/site/explore.html', title='Explore', 
+        user=current_user, cars_remain=cars_remain, cars=cars_remaining)
 
 
 @views.route('/saved')
@@ -293,8 +299,8 @@ def saved():
         if car:
             liked_cars.append(car.grid_view())
 
-    liked_exist = liked_cars != []
-    #delete_user_interactions(current_user.id)
+    liked_exist = bool(liked_cars)
+
     return render_template('/site/saved.html', title='Saved', 
         liked_exist=liked_exist, liked_cars=liked_cars, user=current_user)
 

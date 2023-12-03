@@ -134,8 +134,7 @@ body {
     font-style: normal;
 }
 
-#no-more-cards-message h1,
-h2 {
+#no-more-cards-message h1 {
     text-align: center;
     place-items: center;
     padding-top: 15%;

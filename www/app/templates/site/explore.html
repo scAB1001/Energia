@@ -6,12 +6,12 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='cards.css') }}">
 </head>
 
-<div class="mention-container">
+<div class="heading-container">
     <section class="user-guide">
         <ol class="guide-steps">
             <li>
-                <h3>Explore</h3>
-                <p>Swipe left to pass or right to save for later.</p>
+                <h3>Explore our Range</h3>
+                <p>Swipe right to like and save the card, left to skip</p>
             </li>
         </ol>
     </section>
@@ -19,12 +19,13 @@
 
 <!-- Source: https://github.com/CodeSteppe/card-swiper -->
 <div class="card-container">
+    {% if cars_remain %}
     <ion-icon id="dislike" name="close"></ion-icon>
 
     <div id="swiper">
         <div id="no-more-cards-message" style="display: none;">
             <h1>No more cars available.</h1>
-            <h2>Please check back later!</h2>
+            <p>Please check back later!</p>
         </div>
     </div>
 
@@ -38,5 +39,13 @@
     <!-- Ionicons Scripts -->
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+    {% else %}
+    <div id="no-more-cards-message" style="display: block;">
+        <h1>No more cars available.</h1>
+        <p>Please check back later!</p>
+    </div>
+    {% endif %}
 </div>
+
 {% endblock %}

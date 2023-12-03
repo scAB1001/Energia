@@ -15,7 +15,8 @@
     --font-size-h3: 22px;
     --font-size-h1: 24px;
     --font-size-button: 20px;
-    --struct-subtle-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);;
+    --struct-subtle-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    ;
 }
 
 /* General styles for high contrast and readability */
@@ -223,7 +224,8 @@ marquee {
     font-size: var(--font-size-button);
 }
 
-.cta-button, .btn {
+.cta-button,
+.btn {
     font-size: var(--font-size-button);
     background: var(--text-default);
     color: var(--struct-default);
@@ -281,7 +283,7 @@ marquee {
     }
 }
 
-.form-signin, 
+.form-signin,
 .form-signup {
     max-width: 60%;
     margin: 50px auto;
@@ -381,4 +383,3 @@ marquee {
     color: var(--text-default);
     margin-bottom: 1rem;
 }
-

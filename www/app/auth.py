@@ -76,7 +76,7 @@ def handle_registration(email, first_name, password1, password2):
             return False
         if user:
             login_user(user, remember=True)
-            flash('Account created!', category=SUCCESS)
+            flash("Account created! We've signed you in.", category=SUCCESS)
             return True
         else:
             flash('Unable to create an account at this time. Try again.', category=DANGER)
