@@ -22,44 +22,6 @@ views = Blueprint('views', __name__)
     Helper variables and methods
 
 """
-def time_since(timestamp):
-    now = datetime.now()
-    diff = now - timestamp
-
-    minutes = diff.total_seconds() / 60
-    hours = minutes / 60
-    days = diff.days
-    weeks = days / 7
-    months = days / 30
-    years = days / 365
-
-    if minutes < 1:
-        return "Just now"
-    elif minutes < 5:
-        return "1+ minutes ago"
-    elif minutes < 10:
-        return "5+ minutes ago"
-    elif minutes < 30:
-        return "10+ minutes ago"
-    elif hours < 1:
-        return "30+ minutes ago"
-    elif hours < 6:
-        return "1+ hour ago"
-    elif hours < 12:
-        return "6+ hours ago"
-    elif days < 1:
-        return "12+ hours ago"
-    elif weeks < 1:
-        return "1 day ago"
-    elif months < 1:
-        return "1+ week ago"
-    elif months < 6:
-        return "1+ month ago"
-    elif years < 1:
-        return "6+ months ago"
-    else:
-        return "1+ year ago"
-
 
 def is_table_empty(model):
     # Returns True if the table is empty, False otherwise

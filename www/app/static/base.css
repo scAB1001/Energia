@@ -257,6 +257,7 @@ marquee {
 }
 
 /* Keyframes for the slide- in/out animation */
+
 @keyframes slideIn {
     from {
         /* Start from off-screen */

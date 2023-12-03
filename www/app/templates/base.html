@@ -2,41 +2,86 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
   <title>{% if title %}{{ title }}{% else %}Oops! Reload the page{% endif %}</title>
+
+  <!-- From bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+    integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+  
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='icons/favicon.png') }}" width="16px" height="16px">
 </head>
 
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <a class="navbar-brand nav-link" id="logo" href="/">
+    <img src="{{ url_for('static', filename='icons/logo.png') }}" width="20%" height="20%" class="d-inline-block" alt="AutoSwipe Logo">
+    AutoSwipe
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
+    aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  {% if user.is_authenticated %}
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      
+      <li class="nav-item">
+        <a class="nav-link" href="/" title="Home">
+          Home
+          <img src="{{ url_for('static', filename='icons/home.png') }}" alt="Home icon" class="nav-icon">
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="/logout" title="Sign out">
+          Sign out
+          <img src="{{ url_for('static', filename='icons/logout.png') }}" alt="Sign out icon" class="nav-icon">
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/settings" title="Settings">
+          Settings
+          <img src="{{ url_for('static', filename='icons/cog.png') }}" alt="Settings icon" class="nav-icon">
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="/explore" title="Explore">
+          Explore
+          <img src="{{ url_for('static', filename='icons/search.png') }}" alt="Explore icon" class="nav-icon">
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="/saved" title="Liked">
+          Liked
+          <img src="{{ url_for('static', filename='icons/bookmark.png') }}" alt="Saved icon" class="nav-icon">
+        </a>
+      </li>
+
+    </ul>
+  </div>
+  {% else %}
+  <marquee direction="right">
+    <h3>Sign in to use AutoSwipe.</h3>
+  </marquee>
+  {% endif %}
+</nav>
+
 <body>
-  <header class="top-bar">
-    <nav class="settings-nav">
-      {% if user.is_authenticated %}
-      <ul>
-        <li><a href="/logout" title="Sign out"><img src="{{ url_for('static', filename='icons/logout.png') }}" alt="Sign out icon" class="nav-icon"></a>Sign out</li>
-        <li><a href="/settings" title="Settings"><img src="{{ url_for('static', filename='icons/cog.png') }}" alt="Settings icon" class="nav-icon"></a>Settings</li>
-        <li><a href="/history" title="History"><img src="{{ url_for('static', filename='icons/history.png') }}" alt="History icon" class="nav-icon"></a>History</li>
-      </ul>
-      {% else %}
-      <marquee direction="right"><h3>Login to use AutoSwipe.</h3></marquee>
-      {% endif %}
-    </nav>
-  </header>
 
-  <br><br><main class="content">{% block content %}{% endblock %}</main>
-
-  <footer class="bottom-bar">
-    <nav class="main-nav">
-      <ul>
-        <li><a href="/" class="icon-home" title="Home"><img src="{{ url_for('static', filename='icons/home.png') }}" alt="Home icon" class="nav-icon"></a>Home</li>
-        {% if user.is_authenticated %}
-        <li><a href="/explore" class="icon-explore" title="Explore"><img src="{{ url_for('static', filename='icons/search.png') }}" alt="Explore icon" class="nav-icon"></a>Explore</li>
-        <li><a href="/saved" class="icon-saved" title="Saved"><img src="{{ url_for('static', filename='icons/bookmark.png') }}" alt="Saved icon" class="nav-icon"></a>Liked</li>
-        {% endif %}
-      </ul>
-    </nav>
-  </footer>
+  <main>{% block content %}{% endblock %}</main>
   
- <!-- Flash messages -->
+  <!-- Flash messages -->
   <div class="flash messages">
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -48,5 +93,6 @@
     {% endif %}
     {% endwith %}
   </div>
-</body>
+
+</body>  
 </html>
