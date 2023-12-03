@@ -21,11 +21,11 @@
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark" role="navigation">
-  <a class="navbar-brand nav-link" id="logo" href="/" aria-label="AutoSwipe Home">
+  <div class="navbar-brand" id="logo" aria-label="AutoSwipe Home">
     <img src="{{ url_for('static', filename='icons/logo.png') }}" width="20%" height="20%" class="d-inline-block"
       alt="AutoSwipe Logo">
     AutoSwipe
-  </a>
+  </div>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
     aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -33,36 +33,36 @@
 
   {% if user.is_authenticated %}
   <div class="collapse navbar-collapse" id="navbarTogglerDemo02" role="navigation">
-    <ul class="navbar-nav mr-auto mt-2 mt-lg-0" role="menu">
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0" role="menu-options">
       
-      <li class="nav-item">
+      <li class="nav-item" id="menu-options">
         <a class="nav-link" href="/" title="Home">
           <img src="{{ url_for('static', filename='icons/home.png') }}" alt="Home icon" class="nav-icon">
           Home
         </a>
       </li>
 
-      <li class="nav-item">
+      <li class="nav-item" id="menu-options">
         <a class="nav-link" href="/logout" title="Sign out">
           <img src="{{ url_for('static', filename='icons/logout.png') }}" alt="Sign out icon" class="nav-icon">
           Sign out
         </a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" id="menu-options">
         <a class="nav-link" href="/settings" title="Settings">
           <img src="{{ url_for('static', filename='icons/cog.png') }}" alt="Settings icon" class="nav-icon">
           Settings
         </a>
       </li>
 
-      <li class="nav-item">
+      <li class="nav-item" id="menu-options">
         <a class="nav-link" href="/explore" title="Explore">
           <img src="{{ url_for('static', filename='icons/search.png') }}" alt="Explore icon" class="nav-icon">
           Explore
         </a>
       </li>
 
-      <li class="nav-item">
+      <li class="nav-item" id="menu-options">
         <a class="nav-link" href="/saved" title="Liked">
           <img src="{{ url_for('static', filename='icons/bookmark.png') }}" alt="Saved icon" class="nav-icon">
           Liked
@@ -72,15 +72,15 @@
     </ul>
   </div>
   {% else %}
-  <marquee direction="right" aria-label="Notify User to sign in notification">
-    <h3>Sign in to use AutoSwipe.</h3>
+  <marquee direction="right" aria-label="notify-user-to-signin">
+    <h3 id="notify-user-to-signin">Sign in to use AutoSwipe.</h3>
   </marquee>
   {% endif %}
 </nav>
 
 <body>
 
-  <main role="main" aria-labelledby="Main Content Area">{% block content %}{% endblock %}</main>
+  <main role="main-content-aria">{% block content %}{% endblock %}</main>
   
   <!-- Flash messages -->
   <div class="flash messages" role="alert">

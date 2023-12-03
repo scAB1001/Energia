@@ -10,8 +10,8 @@
     <section class="user-guide" aria-label="User Guide to the Explore Page">
         <ol class="guide-steps">
             <li role="article" aria-labelledby="explore-cars">
-                <h3 id="explore-heading">Explore our Range</h3>
-                <p>Swipe right to like and save the card, left to skip</p>
+                <h2 id="explore-heading">Explore our Range</h2>
+                <p id="explore-cars">Swipe right to like and save the card, left to skip</p>
             </li>
         </ol>
     </section>
@@ -41,8 +41,8 @@
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 
     {% else %}
-    <div id="no-more-cards-message" role="alert" style="display: block;">
-        <h1>No more cars available.</h1>
+    <div id="no-more-cards-message" role="alert" aria-labelledby="no-cards-remaining-heading" style="display: block;">
+        <h1 id="no-cards-remaining-heading">No more cars available.</h1>
         <p>Please check back later!</p>
     </div>
     {% endif %}

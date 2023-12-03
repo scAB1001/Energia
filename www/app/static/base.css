@@ -3,8 +3,8 @@
     --background-default: #374f2f;
     --struct-default: #412E25;
     --text-default: #F2F4F3;
-    --accent-default: #d76d1c;
-    --accent-section: #7B886F;
+    --accent-default: #5A2E0C;
+    --accent-section: #353B30;
     --accent-flash: #175616;
     --accent-warning: #CDA43C;
     --accent-danger: #b20000;
@@ -12,7 +12,7 @@
     --font-family-thick: 'Robot Serif', monospace;
     --font-family-mono: 'Courier New', monospace;
     --font-size-text: 18px;
-    --font-size-h3: 22px;
+    --font-size-h2: 22px;
     --font-size-h1: 24px;
     --font-size-button: 20px;
     --struct-subtle-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -141,6 +141,13 @@ textarea:focus {
     font-family: var(--font-family-thick);
 }
 
+h2 {
+    /* Responsive font size */
+    font-size: var(--font-size-h2);
+    color: var(--text-default);
+    font-family: var(--font-family-thick);
+}
+
 /* Styles for the explanatory box */
 .explanatory-box {
     background-color: var(--accent-section);
@@ -202,7 +209,7 @@ textarea:focus {
 
 .guide-steps h3 {
     font-family: var(--font-family-thick);
-    font-size: var(--font-size-h3);
+    font-size: var(--font-size-h2);
     margin-top: 0;
 }
 
@@ -214,7 +221,7 @@ marquee {
     width: 100%;
     height: 100%;
     font-weight: bold;
-    font-size: var(--font-size-h3);
+    font-size: var(--font-size-h2);
     font-family: var(--font-family-mono);
 }
 
@@ -374,7 +381,7 @@ marquee {
 .error-page h3 {
     font-size: 2rem;
     margin-bottom: 1rem;
-    font-size: var(--font-size-h3);
+    font-size: var(--font-size-h2);
     font-family: var(--font-family-thick);
 }
 
