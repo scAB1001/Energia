@@ -39,8 +39,8 @@ body {
     /* Ensure that elements with padding and borders 
         will not unexpectedly overflow their containers. */
     box-sizing: border-box;
-    /* Adds scroll if content overflows */
-    overflow: auto;
+    /* Allows scroll if content overflows vertically */
+    overflow-x: hidden;
 }
 
 .navbar {
