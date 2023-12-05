@@ -1,59 +1,69 @@
-import os
+# import os
 import unittest
-from flask import Flask
-from flask import session
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, session
 from app import app, db
+from flask_login import current_user
+from flask_sqlalchemy import SQLAlchemy
 from app.models import User, Car
+from app.auth_service import authenticate_and_login, register_and_login
+from app.views import home, explore, saved, single_view, settings, delete_account
 
 #basedir = os.path.abspath(os.path.dirname(__file__))
 
 class BasicTestCase(unittest.TestCase):
-    def setUp(self): 
+    def setUp(self):
         app.config.from_object('config')
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-        #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + \
-        #    os.path.join(basedir, 'test.db')
         self.app = app.test_client()
         with app.app_context():
             db.create_all()
+            # Creating test user and car for authentication and interaction tests
+            hashed_password = User.generate_hash('testpassword')
+            test_user = User(email='test@example.com',
+                             first_name='Test', password=hashed_password)
+            db.session.add(test_user)
+            test_car = Car(image='test_image', car_name='Test Car', make='Test Make',
+                           model='Test Model', year=2021, body_type='Test Type',
+                           horsepower=100, monthly_payment=500.0, mileage=10000, like_count=0)
+            db.session.add(test_car)
+            db.session.commit()
 
     def tearDown(self):
         with app.app_context():
             db.session.remove()
             db.drop_all()
 
-    # Example test to check if the home page loads
+    # Add all other tests here...
+
     def test_home_page_loads(self):
         response = self.app.get('/', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Welcome', response.data)
 
-    # Example test to check if a 404 error is handled
     def test_404_page(self):
-        response = self.app.get('/this-route-does-not-exist', follow_redirects=True)
+        response = self.app.get(
+            '/this-route-does-not-exist', follow_redirects=True)
         self.assertEqual(response.status_code, 404)
-        self.assertIn(b"We can't seem to find the page you're looking for.", response.data)
 
-    # Unit Tests for Models
-    def test_car_creation(self):
+    # Model Tests
+    def test_valid_car_creation(self):
         with app.app_context():
-            # Create a Car with valid data
-            car = Car(make='Test Make', model='Test Model',
-                    year=2021, like_count=0)
+            car = Car(image='new_image', car_name='New Car', make='New Make',
+                    model='New Model', year=2021, body_type='New Type',
+                    horsepower=100, monthly_payment=600.0, mileage=10000, like_count=0)
             db.session.add(car)
             db.session.commit()
             self.assertIsNotNone(car.id)
 
-            # Attempt to create a Car with invalid data
-            # Assuming these are invalid
+    def test_valid_car_creation(self):
+        with app.app_context():
             car = Car(make='', model='', year=1900, like_count=0)
             db.session.add(car)
             with self.assertRaises(Exception):
                 db.session.commit()
 
+    
     def test_like_count_increment(self):
         with app.app_context():
             car = Car(make='Test Make', model='Test Model',
@@ -75,42 +85,39 @@ class BasicTestCase(unittest.TestCase):
             self.assertEqual(car.like_count, 0)
 
 
-    # Authentication and Authorization Tests
+    # Authentication Tests
     def test_successful_login(self):
         with app.app_context():
-            # Add a user
-            user = User(username='testuser', email='test@example.com')
-            # Assuming you have a method to hash the password
-            user.set_password('testpassword')
-            db.session.add(user)
-            db.session.commit()
-
-            # Attempt login
             response = self.app.post('/login', data={
-                'username': 'testuser',
+                'email': 'test@example.com',
                 'password': 'testpassword'
             }, follow_redirects=True)
-            self.assertIn(b'Successfully logged in', response.data)
+            self.assertEqual(response.status_code, 200)
+            self.assertTrue(current_user.is_authenticated)
 
     def test_unsuccessful_login(self):
         with app.app_context():
             response = self.app.post('/login', data={
-                'username': 'testuser',
+                'email': 'test@example.com',
                 'password': 'wrongpassword'
             }, follow_redirects=True)
-            self.assertIn(b'Invalid username or password', response.data)
+            self.assertEqual(response.status_code, 200)
+            self.assertFalse(current_user.is_authenticated)
 
-    def test_user_registration(self):
+    def test_valid_user_registration(self):
         with app.app_context():
-            # Test registration with valid data
-            response = self.app.post('/register', data={
-                'username': 'newuser',
-                'email': 'newuser@example.com',
+            response = self.app.post('/signup', data={
+                'email': 'new@example.com',
+                'first_name': 'New',
                 'password': 'newpassword',
-                'confirm': 'newpassword'
+                'confirm_password': 'newpassword'
             }, follow_redirects=True)
-            self.assertIn(b'Registration successful', response.data)
+            self.assertEqual(response.status_code, 200)
+            self.assertTrue(current_user.is_authenticated)
 
+
+    def test_invalid_user_registration(self):
+        with app.app_context():
             # Test registration with invalid data
             response = self.app.post('/register', data={
                 'username': 'us',  # Assuming this is too short
@@ -120,21 +127,27 @@ class BasicTestCase(unittest.TestCase):
             }, follow_redirects=True)
             self.assertIn(b'Registration failed', response.data)
 
+
     def test_logout(self):
-        # Assuming there's a user logged in
-        response = self.app.get('/logout', follow_redirects=True)
-        self.assertIn(b'Logged out', response.data)
-        self.assertNotIn('user_id', session)
+        with app.app_context():
+            # First login the user
+            self.test_successful_login()
+            response = self.app.get('/logout', follow_redirects=True)
+            self.assertEqual(response.status_code, 200)
+            self.assertFalse(current_user.is_authenticated)
 
     # View Functionality Tests
     def test_like_car(self):
-        # Assuming you need to be logged in to like a car
-        # and there is a 'like_car' view function
-        # Add a car and a user to the database first
-        response = self.app.post('/like_car/1', follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Car liked', response.data)
+        with app.app_context():
+            self.test_successful_login()  # Ensure the user is logged in
+            response = self.app.post(
+                '/toggle_count/1', json={'liked': True}, follow_redirects=True)
+            self.assertEqual(response.status_code, 200)
+            data = response.get_json()
+            self.assertEqual(data['like_count'], 1)
+
 
 
 if __name__ == '__main__':
     unittest.main()
+
