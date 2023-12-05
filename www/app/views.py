@@ -123,13 +123,24 @@ def prep_db():
 
 @views.route('/toggle_count/<int:car_id>', methods=['POST'])
 def toggle_count(car_id):
+    """
+    Route to handle like/dislike counts for cars.
+
+    POST:
+    Processes the user's like/dislike of a car and updates the like count in the database.
+
+    Returns:
+    JSON response: Contains the updated like count of the car.
+    """
     car = Car.query.get(car_id)
     if not car:
         return jsonify({"error": "Car not found"}), 404
 
     liked = request.json.get('liked')
     car.like_count += 1 if liked else -1
+    
     db.session.commit()
+
     return jsonify(like_count=car.like_count)
 
 
@@ -138,10 +149,10 @@ def toggle_count(car_id):
 @login_required
 def react():
     """
-    Route to handle user reactions to cars (like or dislike).
+    Route to handle user swipe reactions to cars (like or dislike).
 
     POST:
-    Processes the user's reaction to a car and records it in the database.
+    Processes the user's swipe reaction to a car and records it in the database.
 
     Returns:
     JSON response: Contains the status of the reaction, either success or error.
@@ -149,9 +160,11 @@ def react():
     data = request.json
 
     try:
-        carID = int(data.get('carID'))  # Extracts car ID from request
-        # Extracts like status (True or False)
-        status = data.get('liked') == True
+        # Extracts car ID from request
+        carID = int(data.get('carID'))  
+    
+        # Extracts swipe right status (True or False)
+        status = data.get('swiped_right') == True
     except (TypeError, ValueError):
         return jsonify({"status": "error", "message": "Invalid data"}), 400
 
@@ -164,7 +177,7 @@ def react():
 
     try:
         db.session.commit()
-        return jsonify({"status": "success", "carID": carID, "liked": status})
+        return jsonify({"status": "success", "carID": carID, "swiped_right": status})
     except Exception as e:
         db.session.rollback()
         return jsonify({"status": "error", "message": str(e)}), 500

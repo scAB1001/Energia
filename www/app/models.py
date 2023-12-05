@@ -66,6 +66,7 @@ class Car(BaseModel):
     - horsepower (Integer): The horsepower of the car.
     - monthly_payment (Float): The monthly payment amount for the car.
     - mileage (Integer): The mileage of the car.
+    - like_count (Integer): The number of likes the car has received from other users.
     - interactions (relationship): A list of interactions (likes/dislikes) associated with the car.
 
     The __repr__ method provides a simple representation of the car.
@@ -81,7 +82,7 @@ class Car(BaseModel):
     horsepower = db.Column(db.Integer, nullable=False)
     monthly_payment = db.Column(db.Float, nullable=False)
     mileage = db.Column(db.Integer, nullable=False)
-    like_count = db.Column(db.Integer, default=0, nullable=False)
+    like_count = db.Column(db.Integer, default=2, nullable=False)
     interactions = db.relationship('UserInteraction', backref='car', lazy=True)
 
 

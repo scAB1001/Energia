@@ -30,10 +30,12 @@
                             aria-label="View details of {{ car['carName'] }}">
                             {{ car['carName'] }}
                         </a>
-                        <button class="like-button" data-car-id="{{ car['carID'] }}" data-liked="false">
-                            Click <span class="like-count" data-car-id="{{ car['carID'] }}">{{ car['like_count'] }}</span> likes
-                        </button>
                     </h2>
+                    <a class="cta-button like-button btn-grid" data-car-id="{{ car['carID'] }}" data-liked="false" role="button"
+                        aria-label="View details">
+                        <img src="{{ url_for('static', filename='icons/heart.png') }}" alt="Like" class="like-img">
+                    </a>
+                    <span class="like-count" data-car-id="{{ car['carID'] }}">{{ car['like_count'] }}</span> likes
                 </div>
 
                 {% endfor %}

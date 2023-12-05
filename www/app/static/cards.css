@@ -143,29 +143,41 @@ body {
 /* Grid styles */
 .grid {
     display: flex;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    grid-gap: 20px;
-    align-items: start;
+    flex-direction: column;
+    /* Stack children vertically */
+    align-items: center;
+    /* Center children horizontally */
+    overflow: hidden;
+    /* Prevents children from overflowing */
+}
+
+.grid>article {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+    /* Prevents .grid-text from overflowing */
 }
 
 .grid>article img {
     max-width: 100%;
-    min-height: 100%;
-    display: flex;
-    overflow: hidden;
-    justify-content: center;
-    align-items: center;
-    object-fit: contain;
+    display: block;
 }
 
 .grid-text {
-    margin: 1.5rem auto;
-    text-align: center;
-    padding-bottom: 12px;
-    color: black;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0.5rem auto;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
 }
 
-.grid-text h3 {
+.grid-text h2 {
     text-align: center;
     padding-top: 5px;
     padding-bottom: 10px;

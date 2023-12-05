@@ -151,7 +151,7 @@ class Card {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ carID: `${this.carID}`, liked: isLiked })
+      body: JSON.stringify({ carID: `${this.carID}`, swiped_right: isLiked })
     })
       .then(response => response.json())
       .then(data => console.log(data))

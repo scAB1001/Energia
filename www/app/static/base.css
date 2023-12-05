@@ -235,8 +235,7 @@ marquee {
 }
 
 .cta-button,
-.btn,
-.like-button {
+.btn {
     font-size: var(--font-size-button);
     background: var(--text-default);
     color: var(--struct-default);
@@ -248,18 +247,39 @@ marquee {
     transition: transform 0.2s ease-in-out;
 }
 
+/* Ensure that the like button only affects its content */
 .like-button {
-    margin-left: 0.5rem;
-    background: var(--accent-danger);
-    color: var(--text-default);
-    border-radius: 40px;
-    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    /* Use flex to center image inside the button */
+    align-items: center;
+    justify-content: center;
+}
+
+.like-img {
+    width: 60px;
+    height: 60px;
+    transition: transform 0.3s ease;
+}
+
+/* Style changes when hovering over the like button */
+.like-button:hover .like-img {
+    transform: scale(1.1);
+}
+
+/* The like-count class is used to style the number of likes */
+.like-count {
+    font-size: var(--font-size-button);
+    /* Align the text with the buttons */
+    align-self: center;
 }
 
 .warning {
     background: var(--accent-warning);
     color: black;
-    padding: 0.75rem 1.5rem;
 }
 
 .btn-danger {
@@ -276,7 +296,6 @@ marquee {
 }
 
 /* Keyframes for the slide- in/out animation */
-
 @keyframes slideIn {
     from {
         /* Start from off-screen */
