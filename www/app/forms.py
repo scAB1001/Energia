@@ -1,12 +1,14 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+import re
 
 # Constants for validation error messages
 NAME_LEN_MSG = "ERROR: Enter a name between 2 and 20 characters long."
 PWD_LEN_MSG = "ERROR: Password must be at least 7 characters long."
 PWD_MATCH_MSG = "ERROR: Passwords must match."
 NAME_CHARS_ONLY_MSG = "ERROR: Name must contain only letters."
+PWD_LETTERS_NUMBERS_MSG = "ERROR: Password must include both letters and numbers."
 
 
 class BaseUserForm(FlaskForm):
@@ -92,3 +94,17 @@ class RegistrationForm(BaseUserForm):
         """
         if not field.data.isalpha():
             raise ValidationError(NAME_CHARS_ONLY_MSG)
+        
+    def validate_password(form, field):
+        """
+        Custom validation method for the password field to ensure it includes both letters and numbers.
+
+        Parameters:
+            form: The instance of the form where the field exists.
+            field: The field to be validated.
+
+        Raises:
+            ValidationError: If the password does not contain both letters and numbers.
+        """
+        if not re.search(r"[a-zA-Z]", field.data) or not re.search(r"[0-9]", field.data):
+            raise ValidationError(PWD_LETTERS_NUMBERS_MSG)

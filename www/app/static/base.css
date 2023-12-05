@@ -11,10 +11,10 @@
     --border-default: solid 3px black;
     --font-family-thick: 'Robot Serif', monospace;
     --font-family-mono: 'Courier New', monospace;
-    --font-size-text: 18px;
-    --font-size-h2: 22px;
-    --font-size-h1: 24px;
-    --font-size-button: 20px;
+    --font-size-text: 16px;
+    --font-size-h2: 20px;
+    --font-size-h1: 22px;
+    --font-size-button: 18px;
     --struct-subtle-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     ;
 }
@@ -41,6 +41,7 @@ body {
     box-sizing: border-box;
     /* Allows scroll if content overflows vertically */
     overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .navbar {
@@ -48,10 +49,12 @@ body {
     background: var(--struct-default);
     font-size: var(--font-size-h1);
     font-family: var(--font-family-thick);
+    padding: 0;
 }
 
 main {
     text-align: center;
+    margin-bottom: 5rem;
 }
 
 #logo {
@@ -63,8 +66,8 @@ main {
 }
 
 .nav-icon {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     vertical-align: middle;
 }
 
