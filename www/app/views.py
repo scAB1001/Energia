@@ -144,7 +144,6 @@ def toggle_count(car_id):
     return jsonify(like_count=car.like_count)
 
 
-
 @app.route('/react', methods=['POST'])
 @login_required
 def react():
