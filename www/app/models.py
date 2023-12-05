@@ -81,7 +81,9 @@ class Car(BaseModel):
     horsepower = db.Column(db.Integer, nullable=False)
     monthly_payment = db.Column(db.Float, nullable=False)
     mileage = db.Column(db.Integer, nullable=False)
+    like_count = db.Column(db.Integer, default=0, nullable=False)
     interactions = db.relationship('UserInteraction', backref='car', lazy=True)
+
 
     def __repr__(self):
         return f"Car {self.id}: {self.make}, {self.model}, {self.year}"

@@ -235,7 +235,8 @@ marquee {
 }
 
 .cta-button,
-.btn {
+.btn,
+.like-button {
     font-size: var(--font-size-button);
     background: var(--text-default);
     color: var(--struct-default);
@@ -245,6 +246,14 @@ marquee {
     font-weight: bold;
     box-shadow: var(--struct-subtle-shadow);
     transition: transform 0.2s ease-in-out;
+}
+
+.like-button {
+    margin-left: 0.5rem;
+    background: var(--accent-danger);
+    color: var(--text-default);
+    border-radius: 40px;
+    padding: 0.75rem 1.5rem;
 }
 
 .warning {

@@ -30,8 +30,12 @@
                             aria-label="View details of {{ car['carName'] }}">
                             {{ car['carName'] }}
                         </a>
+                        <button class="like-button" data-car-id="{{ car['carID'] }}" data-liked="false">
+                            Click <span class="like-count" data-car-id="{{ car['carID'] }}">{{ car['like_count'] }}</span> likes
+                        </button>
                     </h2>
                 </div>
+
                 {% endfor %}
             </article>
         </main>
@@ -40,5 +44,6 @@
     <h2 id="no-favourites-message">You haven't liked anything! Go explore our range.</h2>
     {% endif %}
 
+    <script src="{{ url_for('static', filename='ajax.js') }}"></script>
 </div>
 {% endblock %}

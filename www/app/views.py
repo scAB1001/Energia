@@ -3,7 +3,7 @@ from flask_login import login_required, logout_user, current_user
 from .models import User, Car, UserInteraction
 from app import app, db, admin
 from flask_admin.contrib.sqla import ModelView
-import json
+import json, random as r
 
 # Adding models to the admin view for easy management
 admin.add_view(ModelView(User, db.session))
@@ -78,28 +78,29 @@ def pre_populate_tblCars():
 
     This function checks if the Car table is empty and, if so, adds a predefined list of cars to the database.
     """
+    like_count = r.randint(0, 100) ##
     if is_table_empty(Car):
         try:
             # Car instances to be added
             cars_to_add = [
                 Car(image='astonMartinSILagonda1', car_name='Aston Martin Lagonda Series 1', make='Aston Martin', model='Lagonda',
-                    year=1974, body_type='4-door saloon', horsepower=280, monthly_payment=4611.96, mileage=18324),
+                    year=1974, body_type='4-door saloon', horsepower=280, monthly_payment=4611.96, mileage=18324, like_count=random),
                 Car(image='astonMartinSIIILagonda3', car_name='Aston Martin Lagonda Series 3', make='Aston Martin', model='Lagonda',
-                    year=1986, body_type='4-door saloon', horsepower=230, monthly_payment=7766.58, mileage=132084),
+                    year=1986, body_type='4-door saloon', horsepower=230, monthly_payment=7766.58, mileage=132084, like_count=random),
                 Car(image='astonMartinSIVLagonda4', car_name='Aston Martin Lagonda Series 4', make='Aston Martin', model='Lagonda',
-                    year=1987, body_type='4-door saloon', horsepower=240, monthly_payment=3633.98, mileage=123117),
+                    year=1987, body_type='4-door saloon', horsepower=240, monthly_payment=3633.98, mileage=123117, like_count=random),
                 Car(image='ferrariTestarossa1', car_name='Ferrari Testarossa', make='Ferrari', model='Testarossa',
-                    year=1984, body_type='2-door berlinetta', horsepower=385, monthly_payment=4185.91, mileage=146545),
+                    year=1984, body_type='2-door berlinetta', horsepower=385, monthly_payment=4185.91, mileage=146545, like_count=random),
                 Car(image='ferrariF512TR3', car_name='Ferrari F512 TR', make='Ferrari', model='512 TR',
-                    year=1991, body_type='2-door berlinetta', horsepower=422, monthly_payment=3245.32, mileage=198978),
+                    year=1991, body_type='2-door berlinetta', horsepower=422, monthly_payment=3245.32, mileage=198978, like_count=random),
                 Car(image='ferrari308GTRainbow4', car_name='Ferrari 308 GT Bertone Rainbow', make='Ferrari', model='308 GT',
-                    year=1976, body_type='2-door coupe', horsepower=255, monthly_payment=5585.91, mileage=89017),
+                    year=1976, body_type='2-door coupe', horsepower=255, monthly_payment=5585.91, mileage=89017, like_count=random),
                 Car(image='countachLP400Lamborghini1', car_name='Lamborghini Countach LP400', make='Lamborghini', model='LP400',
-                    year=1974, body_type='2-door coupe', horsepower=375, monthly_payment=8042.47, mileage=167228),
+                    year=1974, body_type='2-door coupe', horsepower=375, monthly_payment=8042.47, mileage=167228, like_count=random),
                 Car(image='countachLP5000LamborghiniQuattrovalvole3', car_name='Lamborghini Countach Quattrovalvole', make='Lamborghini', 
-                    model='LP5000', year=1985, body_type='2-door coupe', horsepower=455, monthly_payment=8930.27, mileage=103074),
+                    model='LP5000', year=1985, body_type='2-door coupe', horsepower=455, monthly_payment=8930.27, mileage=103074, like_count=random),
                 Car(image='countach25thAnniversaryLamborghini4', car_name='Lamborghini Countach 25th Anniversary', make='Lamborghini', 
-                    model='25th Anniversary', year=1988, body_type='2-door coupe', horsepower=414, monthly_payment=6409.78, mileage=140320)
+                    model='25th Anniversary', year=1988, body_type='2-door coupe', horsepower=414, monthly_payment=6409.78, mileage=140320, like_count=random)
             ]
             db.session.add_all(cars_to_add)
             db.session.commit()
@@ -118,6 +119,19 @@ def prep_db():
     """
     clear_tables()
     pre_populate_tblCars()
+
+
+@views.route('/toggle_count/<int:car_id>', methods=['POST'])
+def toggle_count(car_id):
+    car = Car.query.get(car_id)
+    if not car:
+        return jsonify({"error": "Car not found"}), 404
+
+    liked = request.json.get('liked')
+    car.like_count += 1 if liked else -1
+    db.session.commit()
+    return jsonify(like_count=car.like_count)
+
 
 
 @app.route('/react', methods=['POST'])
@@ -226,7 +240,7 @@ def explore():
 @login_required
 def saved():
     """
-    Route to display the saved (liked) cars by the current user.
+    Route to display the saved cars by the current user.
 
     GET:
     Fetches all cars that the current user has liked and renders them on the saved page.
@@ -244,6 +258,12 @@ def saved():
     ) for interaction in liked_interactions if Car.query.get(interaction.car_id)]
 
     liked_exist = bool(liked_cars)
+
+    # Pass in like_count of each car
+    for car in liked_cars:
+        car['like_count'] = Car.query.get(car['carID']).like_count
+        print(car['like_count'])
+    
 
     return render_template('/site/saved.html', title='Saved',
                            liked_exist=liked_exist, liked_cars=liked_cars, user=current_user)
