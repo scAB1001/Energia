@@ -80,10 +80,8 @@ def pre_populate_tblCars():
             ]
             db.session.add_all(cars_to_add)
             db.session.commit()
-            #print("SUCCESS")
             return jsonify({"status": "success", "message": "Cars added successfully"})
         except IntegrityError:
-            #print("FAILED")
             db.session.rollback()
             return jsonify({"status": "error", "message": str(e)}), 500
 
@@ -260,16 +258,11 @@ def saved():
     liked_cars = [db.session.get(Car, interaction.car_id).grid_view(
     ) for interaction in liked_interactions if db.session.get(Car, interaction.car_id)]
     
-    #liked_cars = [Car.query.get(interaction.car_id).grid_view(
-    #) for interaction in liked_interactions if Car.query.get(interaction.car_id)]
-
     liked_exist = bool(liked_cars)
 
     # Pass in like_count of each car
     for car in liked_cars:
         car['like_count'] = db.session.get(Car, car['carID']).like_count
-        #car['like_count'] = Car.query.get(car['carID']).like_count
-    
 
     return render_template('/site/saved.html', title='Saved',
                            liked_exist=liked_exist, liked_cars=liked_cars, user=current_user)
@@ -292,7 +285,6 @@ def single_view(carID):
     """
     # Fetch full details of the specified car
     car = db.session.get(Car, carID).full_details()
-    #car = Car.query.get(carID).full_details()
 
     return render_template('/site/single_view.html', title='Car', user=current_user, car=car)
 
@@ -327,7 +319,7 @@ def delete_account():
     if current_user.is_authenticated:
         # Fetch current user from the database
         user = db.session.get(User, current_user.id)
-        #user = User.query.get(current_user.id)
+        
         # Delete user interactions
         delete_user_interactions(current_user.id)
         if user:

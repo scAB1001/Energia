@@ -10,18 +10,18 @@ import re
 HASH_TYPE = 'pbkdf2:sha256'
 SUCCESS = 'success'
 ERROR = 'error'
-PASSWORD_MISMATCH = 'Passwords do not match.'
-PASSWORD_LENGTH = 'Password must be at least 7 characters.'
+
 LOGIN_SUCCESS = 'Signed in successfully!'
 ACCOUNT_CREATED = "Account created! We've signed you in."
 ACCOUNT_EXISTS = 'An account with this email already exists.'
 
+PWD_LEN_MSG = "ERROR: Password must be between 7 and 18 characters long."
+PASSWORD_MISMATCH = 'Passwords do not match.'
+PWD_LETTERS_NUMBERS_MSG = "ERROR: Password must include both letters and numbers."
+
 EMAIL_LEN_MSG = "ERROR: Enter an E-mail between 2 and 20 characters long."
 NAME_LEN_MSG = "ERROR: Enter a name between 5 and 30 characters long."
-PWD_LEN_MSG = "ERROR: Password must be between 7 and 18 characters long."
-PWD_MATCH_MSG = "ERROR: Passwords must match."
 NAME_CHARS_ONLY_MSG = "ERROR: Name must contain only letters."
-PWD_LETTERS_NUMBERS_MSG = "ERROR: Password must include both letters and numbers."
 
 def generate_hash(password):
     """
@@ -51,7 +51,7 @@ def validate_password(password1, password2):
         flash(PASSWORD_MISMATCH, ERROR)
         return False
     if len(password1) < 7:
-        flash(PASSWORD_LENGTH, ERROR)
+        flash(PWD_LEN_MSG, ERROR)
         return False
     return True
 
@@ -123,13 +123,9 @@ def create_user(email, first_name, password):
     Returns:
     User: The newly created user object.
     """
-    # Check for email length
-    #if not valid_inputs(email, first_name, password):
-    x = valid_inputs(email, first_name, password)
-    print(x)
-    if not x:
+    # Check for input validity
+    if not valid_inputs(email, first_name, password):
         return None
-
 
     hashed_password = generate_hash(password)
     new_user = User(email=email, first_name=first_name, password=hashed_password)

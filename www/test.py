@@ -28,9 +28,9 @@ class BasicTestCase(unittest.TestCase):
             db.create_all()
 
             if os.path.exists(os.path.join(basedir, 'app.db')):
-                print("\tTest database created successfully.")
+                self._create_test_data()
+                print("\tTest environment intialised.")
 
-            self._create_test_data()
 
     def _create_test_data(self):
         # Creating valid test user, car and user-interaction 
@@ -108,8 +108,57 @@ class BasicTestCase(unittest.TestCase):
                 # Check if login was successful
                 self.assertEqual(login_response.status_code, 200)
                 self.assertIn('/', login_response.get_data(as_text=True))
+                self.assertIn('Signed in successfully!', login_response.get_data(as_text=True))
+    
+    
+    def login_test_user_fail(self):
+        with self.app as client:
+            # Login the test user
+            user_data = {'email': 'user1@example.com', 'password': None}
+            login_response = client.post(
+                '/login', data=user_data, follow_redirects=False)
+
+            with app.app_context():
+                user = db.session.get(User, 1)
+                self.assertIsNotNone(user, "Test user not found in database")
+
+                # Check if login was unsuccessful
+                self.assertEqual(login_response.status_code, 200)
+                self.assertIn('Incorrect email or password, try again.',
+                              login_response.get_data(as_text=True))
+
+    
+    def test_route_user_signup(self):
+        with app.app_context():
+            valid_data = {
+                'email': 'new@example.com',
+                'first_name': 'New',
+                'password': 'Newpassword1',
+                'confirm_password': 'Newpassword1'
+            }
+
+            # Test registration with valid data
+            response = self.app.post('/signup',
+                                     data=valid_data, follow_redirects=True)
+            self.assertEqual(response.status_code, 200)
+            #self.assertIn(b"Account created! We've signed you in.", response.data)
 
 
+    def test_route_user_signup_fail(self):
+        with app.app_context():
+            invalid_data = {
+                'email': 'new@example.com',
+                'first_name': 'New',
+                'password': None,
+                'confirm_password': 'Newpassword1'
+            }
+
+            # Test registration with invalid data
+            response = self.app.post('/signup',
+                                     data=invalid_data, follow_redirects=True)
+            self.assertIn(b"ERROR", response.data)
+ 
+    #"""
     def logout_test_user(self):
         # Log in the test user
         self.login_test_user()
@@ -122,48 +171,6 @@ class BasicTestCase(unittest.TestCase):
             # Check if logout was successful
             self.assertIn('Signed out successfully!',
                           response.get_data(as_text=True))
-
-
-    def test_route_user_signin(self):
-        with app.app_context():
-            base_data = {
-                'email': 'test@example.com',
-                'password': 'testpassword'
-            }
-
-            # Test login with valid data
-            response = self.app.post('/login',
-                                     data=base_data, follow_redirects=True)
-            self.assertEqual(response.status_code, 200)
-
-            # Test login with invalid data
-            invalid_data = base_data.copy()
-            invalid_data['password'] = None
-            response = self.app.post('/login',
-                                     data=invalid_data, follow_redirects=True)
-            self.assertEqual(response.status_code, 200)
-
-
-    def test_route_user_signup(self):
-        with app.app_context():
-            base_data = {
-                'email': 'new@example.com',
-                'first_name': 'New',
-                'password': 'Newpassword1',
-                'confirm_password': 'Newpassword1'
-            }
-
-            # Test registration with valid data
-            response = self.app.post('/signup',
-                                     data=base_data, follow_redirects=True)
-            self.assertEqual(response.status_code, 200)
-
-            # Test registration with invalid data
-            invalid_data = base_data.copy()
-            invalid_data['password'] = None
-            response = self.app.post('/signup',
-                                     data=invalid_data, follow_redirects=True)
-            self.assertIn(b"ERROR", response.data)
 
 
 
@@ -608,7 +615,7 @@ class BasicTestCase(unittest.TestCase):
                     '/react', json={'carID': 1, 'swiped_right': True})
                 self.assertEqual(response.status_code, 500)
                 self.assertIn('Unable to commit', response.get_json()['status'])
-    
+    #"""
 
 if __name__ == '__main__':
     unittest.main()

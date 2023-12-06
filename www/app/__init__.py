@@ -73,7 +73,6 @@ def configure_login_manager(app):
         """
         from .models import User
         return db.session.get(User, id)
-        #return User.query.get(int(id))
 
 
 # Call the function to configure the login manager
