@@ -28,32 +28,6 @@ def is_table_empty(model):
     return db.session.query(model).count() == 0
 
 
-def clear_tables():
-    """
-    Clears data from selected database tables.
-
-    This function checks if the UserInteraction, Car, and User tables are empty and clears them if they are not.
-    """
-    to_delete = []
-    if not is_table_empty(UserInteraction):
-        to_delete.append(UserInteraction)
-    if not is_table_empty(Car):
-        to_delete.append(Car)
-    if not is_table_empty(User):
-        to_delete.append(User)
-
-    if to_delete:
-        print("Wiping tables...")
-        for table in to_delete:
-            try:
-                table.query.delete()
-                db.session.commit()
-                print("SUCCESS")
-            except Exception as e:
-                db.session.rollback()
-                return f"FAILURE\n: {str(e)}", 500
-
-
 def delete_user_interactions(user_id):
     """
     Deletes all interaction entries for a specific user.
@@ -117,7 +91,8 @@ def prep_db():
 
     This function first clears data from the UserInteraction, Car, and User tables, and then pre-populates the Car table.
     """
-    clear_tables()
+    db.session.remove()
+    db.drop_all()
     pre_populate_tblCars()
 
 
