@@ -61,7 +61,7 @@ def configure_login_manager(app):
     login_manager.init_app(app)
 
     @login_manager.user_loader
-    def load_user(id):
+    def load_user(id: int):
         """
         Callback function for Flask-Login to load a user.
 
@@ -72,7 +72,8 @@ def configure_login_manager(app):
         The User object or None if not found.
         """
         from .models import User
-        return User.query.get(int(id))
+        return db.session.get(User, id)
+        #return User.query.get(int(id))
 
 
 # Call the function to configure the login manager

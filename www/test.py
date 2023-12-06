@@ -15,7 +15,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class BasicTestCase(unittest.TestCase):
-    
+    # Boilerplate code for setting up and tearing down the test environment
     def setUp(self):
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
@@ -92,19 +92,10 @@ class BasicTestCase(unittest.TestCase):
             db.session.remove()
             db.drop_all()
 
-    
+
+
+    # Authentication tests
     def login_test_user(self):
-        """# Implement the logic to log in a test user
-        #   for authentication and interaction tests
-        with app.app_context():
-            user = db.session.get(User, 1)
-            self.assertIsNotNone(user, "Test user not found in database")
-        
-        # Log in the user using session transaction
-        with self.app.session_transaction() as session:
-            session['user_id'] = user.id
-            session['_fresh'] = True
-            self.assertTrue(user.is_authenticated)"""
         with self.app as client:
             # Login the test user
             user_data = {'email': 'user1@example.com', 'password': 'Password1'}
@@ -119,9 +110,134 @@ class BasicTestCase(unittest.TestCase):
                 self.assertIn('/', login_response.get_data(as_text=True))
 
 
+    def logout_test_user(self):
+        # Log in the test user
+        self.login_test_user()
 
-    """
-    # Model Basic Tests
+        with app.app_context():
+            # Check if user is logged in
+            response = self.app.get('/logout', follow_redirects=True)
+            self.assertEqual(response.status_code, 200)
+
+            # Check if logout was successful
+            self.assertIn('Signed out successfully!',
+                          response.get_data(as_text=True))
+
+
+    def test_route_user_signin(self):
+        with app.app_context():
+            base_data = {
+                'email': 'test@example.com',
+                'password': 'testpassword'
+            }
+
+            # Test login with valid data
+            response = self.app.post('/login',
+                                     data=base_data, follow_redirects=True)
+            self.assertEqual(response.status_code, 200)
+
+            # Test login with invalid data
+            invalid_data = base_data.copy()
+            invalid_data['password'] = None
+            response = self.app.post('/login',
+                                     data=invalid_data, follow_redirects=True)
+            self.assertEqual(response.status_code, 200)
+
+
+    def test_route_user_signup(self):
+        with app.app_context():
+            base_data = {
+                'email': 'new@example.com',
+                'first_name': 'New',
+                'password': 'Newpassword1',
+                'confirm_password': 'Newpassword1'
+            }
+
+            # Test registration with valid data
+            response = self.app.post('/signup',
+                                     data=base_data, follow_redirects=True)
+            self.assertEqual(response.status_code, 200)
+
+            # Test registration with invalid data
+            invalid_data = base_data.copy()
+            invalid_data['password'] = None
+            response = self.app.post('/signup',
+                                     data=invalid_data, follow_redirects=True)
+            self.assertIn(b"ERROR", response.data)
+
+
+
+    #   Form tests
+    def test_login_form_validation(self):
+        with app.app_context():
+            # Base valid data
+            base_data = {'email': 'user@example.com',
+                         'password': 'ValidPass123'}
+
+            # Test valid input
+            form = LoginForm(data=base_data)
+            self.assertTrue(form.validate())
+
+            # Test invalid email
+            invalid_email_data = base_data.copy()
+            invalid_email_data['email'] = 'invalid-email'
+            form = LoginForm(data=invalid_email_data)
+            self.assertFalse(form.validate())
+
+            # Test invalid (empty) password
+            empty_pwd_data = base_data.copy()
+            empty_pwd_data['password'] = ''
+            form = LoginForm(data=empty_pwd_data)
+            self.assertFalse(form.validate())
+
+    def test_registration_form_validation(self):
+        with app.app_context():
+            # Base valid data
+            base_data = {
+                'email': 'newUser@example.com',
+                'first_name': 'NewUser',
+                'password': 'ValidPass123',
+                'confirm_password': 'ValidPass123'
+            }
+
+            # Test valid input
+            form = RegistrationForm(data=base_data)
+            self.assertTrue(form.validate())
+
+            # Test invalid (mismatch) password 1
+            mismatch_pwd_data = base_data.copy()
+            mismatch_pwd_data['confirm_password'] = 'DifferentPass123'
+            form = RegistrationForm(data=mismatch_pwd_data)
+            self.assertFalse(form.validate())
+
+            # Test invalid (too long) password 2
+            overflow_pwd_data = base_data.copy()
+            overflow_pwd_data['password'] = f"{'.' * 19}"
+            form = RegistrationForm(data=overflow_pwd_data)
+            self.assertFalse(form.validate())
+
+            # Test invalid (missing num/chars) password 3
+            weak_pwd_data = base_data.copy()
+            weak_pwd_data['password'] = 'weakpassword'
+            form = RegistrationForm(data=weak_pwd_data)
+            self.assertFalse(form.validate())
+
+            # Test invalid first name (contains numbers) 1
+            num_first_name_data = base_data.copy()
+            num_first_name_data['first_name'] = 'NewUser1'
+            form = RegistrationForm(data=num_first_name_data)
+            self.assertFalse(form.validate())
+
+            # Test invalid first name (empty) 2
+            empty_first_name_data = base_data.copy()
+            empty_first_name_data['first_name'] = ''
+            form = RegistrationForm(data=empty_first_name_data)
+            self.assertFalse(form.validate())
+
+
+    
+    # Model tests
+    #   Creation tests
     def test_valid_car_creation(self):
         with app.app_context():
             car1_id = db.session.get(Car, 1).id
@@ -169,6 +285,7 @@ class BasicTestCase(unittest.TestCase):
             self.assertIsNone(interaction.id)
     
 
+    #   Deletion tests
     def test_delete_user(self):
         with app.app_context():
             # Confirm that 2 users exist to begin with
@@ -215,159 +332,22 @@ class BasicTestCase(unittest.TestCase):
             new_interaction_count = len(new_interactions)
             self.assertEqual(new_interaction_count, interaction_count - 1)
     
-    def test_like_count_increment(self):
-        with app.app_context():
-            # Retrieve the test car from the database (entry 1)
-            car1 = Car.query.first()
-            self.assertIsNotNone(car1, "Car 1 not found in database")
 
-            # Save the car ID and like count for the test
-            car1_id = car1.id
-            before_increment = car1.like_count
-
-            # Simulate the AJAX call to increment like count
-            response = self.app.post(f'/toggle_count/{car1_id}', json={'liked': True})
-            data = response.get_json()
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(data['like_count'], before_increment + 1)
-
-            # Re-query the car to get the updated like count
-            car1 = db.session.get(Car, 1)
-            self.assertEqual(car1.like_count, before_increment + 1)
-
-    def test_like_count_decrement(self):
-        with app.app_context():
-            # Retrieve the test car from the database
-            car1 = Car.query.first()
-            self.assertIsNotNone(car1, "Car 1 not found in database")
-
-            # Save the car ID and like count for the test
-            car1_id = car1.id
-            before_decrement = car1.like_count
-
-            # Simulate the AJAX call to increment like count
-            response = self.app.post(
-                f'/toggle_count/{car1_id}', json={'liked': False})
-            data = response.get_json()
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(data['like_count'], before_decrement - 1)
-
-            # Re-query the car to get the updated like count
-            car1 = db.session.get(Car, 1)
-            self.assertEqual(car1.like_count, before_decrement - 1)
-
-    def test_invalid_like_count_action(self):
-        with app.app_context():
-            # Retrieve the test car from the database
-            car1 = Car.query.first()
-            self.assertIsNotNone(car1, "Car 1 not found in database")
-
-            # Save the car ID and like count for the test
-            car1_id = car1.id
-            before_decrement = car1.like_count
-
-            # Simulate the invalid AJAX call JSON response
-            response = self.app.post(
-                f'/toggle_count/{car1_id}', json={'liked': None})
-            data = response.get_json()
-            self.assertEqual(response.status_code, 400)
-            self.assertNotEqual(list(data.keys())[0], 'liked')
-
-            # Re-query the car to get the unchanged like count
-            car1 = db.session.get(Car, 1)
-            self.assertEqual(car1.like_count, before_decrement)
-
-    
-    def test_cards_depleted(self):
-        with app.app_context():
-            # Simulate a valid 'cards depleted' signal
-            base_data = {'isEmpty': True}
-
-            response = self.app.post(
-                '/cards-depleted', 
-                json=base_data
-            )
-            self.assertEqual(response.status_code, 200)
-            data = response.get_json()
-            self.assertEqual(data['message'], "No more cards available")
-
-
-            # Simulate another valid 'cards not depleted' signal
-            cards_full_data = base_data.copy()
-            cards_full_data['isEmpty'] = False
-            response = self.app.post(
-                '/cards-depleted', 
-                json=cards_full_data
-            )
-            self.assertEqual(response.status_code, 200)
-            data = response.get_json()
-            self.assertEqual(data['message'], "Cards still available")
-
-            # Simulate an invalid 'cards depleted' signal
-            invalid_card_data = base_data.copy()
-            invalid_card_data.clear()
-            response = self.app.post(
-                '/cards-depleted', 
-                json=invalid_card_data
-            )
-            self.assertEqual(response.status_code, 400)
-            data = response.get_json()
-            self.assertEqual(data['error'], "Invalid request")
-  
-
-    def test_reaction_validation(self):
+    def test_delete_account_route(self):
         # Log in the test user
         self.login_test_user()
 
         with app.app_context():
-            # Valid data
-            base_data = {'carID': 1, 'swiped_right': True}
-            response = self.app.post('/react', json=base_data)
+            response = self.app.post('/delete_account', follow_redirects=True)
             self.assertEqual(response.status_code, 200)
-            self.assertIn('success', response.get_json()['status'])
+            # self.assertIn('Logged Out', response.get_data(as_text=True))
 
-            # Invalid data (empty)
-            empty_reaction_data = base_data.copy()
-            empty_reaction_data.clear()
-            response = self.app.post('/react', json=empty_reaction_data)
-            self.assertEqual(response.status_code, 400)
-            self.assertIn('Invalid car ID and swiped_right provided',
-                          response.get_json()['status'])
-
-            # Invalid data (missing car ID)
-            invalid_car_id = base_data.copy()            
-            invalid_car_id['carID'] = None
-            response = self.app.post(
-                '/react', json=invalid_car_id)
-            self.assertEqual(response.status_code, 400)
-            self.assertIn('Invalid car ID provided',
-                          response.get_json()['status'])
-
-            # Invalid data (missing swiped_right)
-            invalid_swipe_action = base_data.copy()     
-            invalid_swipe_action['swiped_right'] = None       
-            response = self.app.post('/react', json=invalid_swipe_action)
-            self.assertEqual(response.status_code, 400)
-            self.assertIn('Invalid swiped_right provided',
-                          response.get_json()['status'])
+            # Verify that the user is actually deleted
+            user = db.session.get(User, 1)
+            self.assertIsNone(user)
 
 
-    # Mocking a database error
-    def test_database_error(self):
-        # Log in the test user
-        self.login_test_user()
-
-        with app.app_context():
-            with patch('app.views.db.session.commit') as mock_commit:
-                mock_commit.side_effect = IntegrityError('', '', '')
-                response = self.app.post(
-                    '/react', json={'carID': 1, 'swiped_right': True})
-                self.assertEqual(response.status_code, 500)
-                self.assertIn('Unable to commit', response.get_json()['status'])
-    
-    
-
-    # Model Relationship Tests
+    #   Model relationship tests
     def test_valid_user_interaction_relationship(self):
         with app.app_context():
             # Retrieve user 1 from the database
@@ -406,145 +386,229 @@ class BasicTestCase(unittest.TestCase):
             for interaction in interactions:
                 self.assertNotEqual(interaction.user, user2)
     
-        
-    def test_login_form_validation(self):
+
+ 
+    # Live-service tests
+    def test_like_count_increment(self):
         with app.app_context():
-            # Base valid data
-            base_data = {'email': 'user@example.com', 'password': 'ValidPass123'}
+            # Retrieve the test car from the database (entry 1)
+            car1 = Car.query.first()
+            self.assertIsNotNone(car1, "Car 1 not found in database")
 
-            # Test valid input
-            form = LoginForm(data=base_data)
-            self.assertTrue(form.validate())
+            # Save the car ID and like count for the test
+            car1_id = car1.id
+            before_increment = car1.like_count
 
-            # Test invalid email
-            invalid_email_data = base_data.copy()
-            invalid_email_data['email'] = 'invalid-email'
-            form = LoginForm(data=invalid_email_data)
-            self.assertFalse(form.validate())
-
-            # Test invalid (empty) password
-            empty_pwd_data = base_data.copy()
-            empty_pwd_data['password'] = ''
-            form = LoginForm(data=empty_pwd_data)
-            self.assertFalse(form.validate())
-
-
-    def test_registration_form_validation(self):
-        with app.app_context():
-            # Base valid data
-            base_data = {
-                'email': 'newUser@example.com',
-                'first_name': 'NewUser',
-                'password': 'ValidPass123',
-                'confirm_password': 'ValidPass123'
-            }
-
-            # Test valid input
-            form = RegistrationForm(data=base_data)
-            self.assertTrue(form.validate())
-
-            # Test invalid (mismatch) password 1
-            mismatch_pwd_data = base_data.copy()
-            mismatch_pwd_data['confirm_password'] = 'DifferentPass123'
-            form = RegistrationForm(data=mismatch_pwd_data)
-            self.assertFalse(form.validate())
-
-            # Test invalid (too long) password 2
-            overflow_pwd_data = base_data.copy()
-            overflow_pwd_data['password'] = f"{'.' * 19}"
-            form = RegistrationForm(data=overflow_pwd_data)
-            self.assertFalse(form.validate())
-
-            # Test invalid (missing num/chars) password 3
-            weak_pwd_data = base_data.copy()
-            weak_pwd_data['password'] = 'weakpassword'
-            form = RegistrationForm(data=weak_pwd_data)
-            self.assertFalse(form.validate())
-
-            # Test invalid first name (contains numbers) 1
-            num_first_name_data = base_data.copy()
-            num_first_name_data['first_name'] = 'NewUser1'
-            form = RegistrationForm(data=num_first_name_data)
-            self.assertFalse(form.validate())
-
-            # Test invalid first name (empty) 2
-            empty_first_name_data = base_data.copy()
-            empty_first_name_data['first_name'] = ''
-            form = RegistrationForm(data=empty_first_name_data)
-            self.assertFalse(form.validate())
-    
-
-    """
-
-    # Route tests
-    def test_home_page_loads(self):
-        response = self.app.get('/', follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-
-
-    def test_404_page(self):
-        response = self.app.get(
-            '/this-route-does-not-exist', follow_redirects=True)
-        self.assertEqual(response.status_code, 404)
-    
-    """
-    # Authentication Tests
-    def test_route_user_login(self):
-        with app.app_context():
-            base_data = {
-                'email': 'test@example.com',
-                'password': 'testpassword'
-            }
-
-            # Test login with valid data
-            response = self.app.post('/login',
-                data=base_data, follow_redirects=True)
+            # Simulate the AJAX call to increment like count
+            response = self.app.post(
+                f'/toggle_count/{car1_id}', json={'liked': True})
+            data = response.get_json()
             self.assertEqual(response.status_code, 200)
+            self.assertEqual(data['like_count'], before_increment + 1)
 
-            # Test login with invalid data
-            invalid_data = base_data.copy()
-            invalid_data['password'] = None
-            response = self.app.post('/login',
-                data=invalid_data, follow_redirects=True)
-            self.assertEqual(response.status_code, 200)
+            # Re-query the car to get the updated like count
+            car1 = db.session.get(Car, 1)
+            self.assertEqual(car1.like_count, before_increment + 1)
 
 
-    def test_route_user_registration(self):
+    def test_like_count_decrement(self):
         with app.app_context():
-            base_data = {
-                'email': 'new@example.com',
-                'first_name': 'New',
-                'password': 'Newpassword1',
-                'confirm_password': 'Newpassword1'
-            }
+            # Retrieve the test car from the database
+            car1 = Car.query.first()
+            self.assertIsNotNone(car1, "Car 1 not found in database")
 
-            # Test registration with valid data
-            response = self.app.post('/signup',
-                data=base_data, follow_redirects=True)
+            # Save the car ID and like count for the test
+            car1_id = car1.id
+            before_decrement = car1.like_count
+
+            # Simulate the AJAX call to increment like count
+            response = self.app.post(
+                f'/toggle_count/{car1_id}', json={'liked': False})
+            data = response.get_json()
             self.assertEqual(response.status_code, 200)
+            self.assertEqual(data['like_count'], before_decrement - 1)
 
-            # Test registration with invalid data
-            invalid_data = base_data.copy()
-            invalid_data['password'] = None
-            response = self.app.post('/signup',
-                data=invalid_data, follow_redirects=True)
-            self.assertIn(b"ERROR", response.data)
-            
-    
-    def logout_test_user(self):
+            # Re-query the car to get the updated like count
+            car1 = db.session.get(Car, 1)
+            self.assertEqual(car1.like_count, before_decrement - 1)
+
+
+    def test_invalid_like_count_action(self):
+        with app.app_context():
+            # Retrieve the test car from the database
+            car1 = Car.query.first()
+            self.assertIsNotNone(car1, "Car 1 not found in database")
+
+            # Save the car ID and like count for the test
+            car1_id = car1.id
+            before_decrement = car1.like_count
+
+            # Simulate the invalid AJAX call JSON response
+            response = self.app.post(
+                f'/toggle_count/{car1_id}', json={'liked': None})
+            data = response.get_json()
+            self.assertEqual(response.status_code, 400)
+            self.assertNotEqual(list(data.keys())[0], 'liked')
+
+            # Re-query the car to get the unchanged like count
+            car1 = db.session.get(Car, 1)
+            self.assertEqual(car1.like_count, before_decrement)
+
+
+    def test_cards_depleted(self):
+        with app.app_context():
+            # Simulate a valid 'cards depleted' signal
+            base_data = {'isEmpty': True}
+
+            response = self.app.post(
+                '/cards-depleted',
+                json=base_data
+            )
+            self.assertEqual(response.status_code, 200)
+            data = response.get_json()
+            self.assertEqual(data['message'], "No more cards available")
+
+            # Simulate another valid 'cards not depleted' signal
+            cards_full_data = base_data.copy()
+            cards_full_data['isEmpty'] = False
+            response = self.app.post(
+                '/cards-depleted',
+                json=cards_full_data
+            )
+            self.assertEqual(response.status_code, 200)
+            data = response.get_json()
+            self.assertEqual(data['message'], "Cards still available")
+
+            # Simulate an invalid 'cards depleted' signal
+            invalid_card_data = base_data.copy()
+            invalid_card_data.clear()
+            response = self.app.post(
+                '/cards-depleted',
+                json=invalid_card_data
+            )
+            self.assertEqual(response.status_code, 400)
+            data = response.get_json()
+            self.assertEqual(data['error'], "Invalid request")
+
+
+    def test_reaction_validation(self):
         # Log in the test user
         self.login_test_user()
 
         with app.app_context():
-            # Check if user is logged in
-            response = self.app.get('/logout', follow_redirects=True)
+            # Valid data
+            base_data = {'carID': 1, 'swiped_right': True}
+            response = self.app.post('/react', json=base_data)
             self.assertEqual(response.status_code, 200)
+            self.assertIn('success', response.get_json()['status'])
 
-            # Check if logout was successful
-            self.assertIn('Signed out successfully!',
-                response.get_data(as_text=True))
-    """
+            # Invalid data (empty)
+            empty_reaction_data = base_data.copy()
+            empty_reaction_data.clear()
+            response = self.app.post('/react', json=empty_reaction_data)
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('Invalid car ID and swiped_right provided',
+                          response.get_json()['status'])
 
+            # Invalid data (missing car ID)
+            invalid_car_id = base_data.copy()
+            invalid_car_id['carID'] = None
+            response = self.app.post(
+                '/react', json=invalid_car_id)
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('Invalid car ID provided',
+                          response.get_json()['status'])
+
+            # Invalid data (missing swiped_right)
+            invalid_swipe_action = base_data.copy()
+            invalid_swipe_action['swiped_right'] = None
+            response = self.app.post('/react', json=invalid_swipe_action)
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('Invalid swiped_right provided',
+                          response.get_json()['status'])
+
+
+
+    # Site route tests
+    def test_home_route_as_guest(self):
+        response = self.app.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Welcome to AutoSwipe, Guest.', response.get_data(as_text=True))
+    
+
+    def test_home_route_as_user(self):
+        # Log in the test user
+        self.login_test_user()
+
+        with app.app_context():
+            # Get the test user's first name
+            name = db.session.get(User, 1).first_name
+            self.assertIsNotNone(name)
+
+            # Test the home route
+            response = self.app.get('/')
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(f'Welcome to AutoSwipe, {name}.', response.get_data(as_text=True))
+    
+
+    def test_routes_as_guest(self):
+        # Test the routes that require a user to be logged in
+        routes = ['/explore', '/saved', '/settings']
+
+        for route in routes:
+            response = self.app.get(route, follow_redirects=True)
+            self.assertEqual(response.status_code, 200)
+            #self.assertIn('Please log in to access this page.', response.get_data(as_text=True))
+
+
+    def test_explore_route(self):
+        # Log in the test user
+        self.login_test_user() 
+
+        response = self.app.get('/explore')
+        self.assertEqual(response.status_code, 200)
+        #self.assertIn('Explore', response.get_data(as_text=True))
+    
+
+    def test_saved_route(self):
+        self.login_test_user()  # ensure a test user is logged in
+        response = self.app.get('/saved')
+        self.assertEqual(response.status_code, 200)
+        #self.assertIn('Saved Cars', response.get_data(as_text=True))
+    
+
+    def test_single_view_route(self):
+        self.login_test_user()
+        car_id = 1  # assuming there is a car with ID 1
+        response = self.app.get(f'/saved/single-view/{car_id}')
+        self.assertEqual(response.status_code, 200)
+        #self.assertIn('Car Details', response.get_data(as_text=True))
+    
+
+    def test_settings_route(self):
+        self.login_test_user()
+        response = self.app.get('/settings')
+        self.assertEqual(response.status_code, 200)
+        #self.assertIn('Settings', response.get_data(as_text=True))
+    
+    
+    def test_404_page(self):
+        response = self.app.get(
+            '/this-route-does-not-exist', follow_redirects=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_500_page(self):
+        # Log in the test user
+        self.login_test_user()
+
+        with app.app_context():
+            with patch('app.views.db.session.commit') as mock_commit:
+                mock_commit.side_effect = IntegrityError('', '', '')
+                response = self.app.post(
+                    '/react', json={'carID': 1, 'swiped_right': True})
+                self.assertEqual(response.status_code, 500)
+                self.assertIn('Unable to commit', response.get_json()['status'])
+    
 
 if __name__ == '__main__':
     unittest.main()

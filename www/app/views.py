@@ -112,7 +112,7 @@ def toggle_count(car_id):
     Returns:
     JSON response: Contains the updated like count of the car.
     """
-    car = Car.query.get(car_id)
+    car = db.session.get(Car, car_id)
     if not car:
         return jsonify({"error": "Car not found"}), 404
 
@@ -257,15 +257,18 @@ def saved():
     ).all()
 
     # Compile details of liked cars
-    liked_cars = [Car.query.get(interaction.car_id).grid_view(
-    ) for interaction in liked_interactions if Car.query.get(interaction.car_id)]
+    liked_cars = [db.session.get(Car, interaction.car_id).grid_view(
+    ) for interaction in liked_interactions if db.session.get(Car, interaction.car_id)]
+    
+    #liked_cars = [Car.query.get(interaction.car_id).grid_view(
+    #) for interaction in liked_interactions if Car.query.get(interaction.car_id)]
 
     liked_exist = bool(liked_cars)
 
     # Pass in like_count of each car
     for car in liked_cars:
-        car['like_count'] = Car.query.get(car['carID']).like_count
-        print(car['like_count'])
+        car['like_count'] = db.session.get(Car, car['carID']).like_count
+        #car['like_count'] = Car.query.get(car['carID']).like_count
     
 
     return render_template('/site/saved.html', title='Saved',
@@ -288,7 +291,8 @@ def single_view(carID):
     Rendered HTML: The single view page for the selected car.
     """
     # Fetch full details of the specified car
-    car = Car.query.get(carID).full_details()
+    car = db.session.get(Car, carID).full_details()
+    #car = Car.query.get(carID).full_details()
 
     return render_template('/site/single_view.html', title='Car', user=current_user, car=car)
 
@@ -322,7 +326,8 @@ def delete_account():
     """
     if current_user.is_authenticated:
         # Fetch current user from the database
-        user = User.query.get(current_user.id)
+        user = db.session.get(User, current_user.id)
+        #user = User.query.get(current_user.id)
         # Delete user interactions
         delete_user_interactions(current_user.id)
         if user:
@@ -339,32 +344,32 @@ def delete_account():
         return redirect(url_for('auth.login'))
 
 
-#@app.errorhandler(404)
-#def not_found_error(error):
-#    """
-#    Error handler for 404 Not Found error.
-#
-#    Parameters:
-#    error: The error object provided by Flask.
-#
-#    Returns:
-#    Rendered HTML: Custom 404 error page.
-#    """
-#    db.session.rollback()  # Rollback in case of any pending database transactions
-#    return render_template('/error/404.html', title='Error: 404', user=current_user), 404
-#
-#
-#@app.errorhandler(500)
-#def internal_error(error):
-#    """
-#    Error handler for 500 Internal Server Error.
-#
-#    Parameters:
-#    error: The error object provided by Flask.
-#
-#    Returns:
-#    Rendered HTML: Custom 500 error page.
-#    """
-#    db.session.rollback()  # Rollback in case of any pending database transactions
-#    return render_template('/error/500.html', title='Error: 500', user=current_user), 500
-#
+@app.errorhandler(404)
+def not_found_error(error):
+    """
+    Error handler for 404 Not Found error.
+
+    Parameters:
+    error: The error object provided by Flask.
+
+    Returns:
+    Rendered HTML: Custom 404 error page.
+    """
+    db.session.rollback()  # Rollback in case of any pending database transactions
+    return render_template('/error/404.html', title='Error: 404', user=current_user), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    """
+    Error handler for 500 Internal Server Error.
+
+    Parameters:
+    error: The error object provided by Flask.
+
+    Returns:
+    Rendered HTML: Custom 500 error page.
+    """
+    db.session.rollback()  # Rollback in case of any pending database transactions
+    return render_template('/error/500.html', title='Error: 500', user=current_user), 500
+
