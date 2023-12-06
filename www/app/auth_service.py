@@ -16,6 +16,12 @@ LOGIN_SUCCESS = 'Signed in successfully!'
 ACCOUNT_CREATED = "Account created! We've signed you in."
 ACCOUNT_EXISTS = 'An account with this email already exists.'
 
+EMAIL_LEN_MSG = "ERROR: Enter an E-mail between 2 and 20 characters long."
+NAME_LEN_MSG = "ERROR: Enter a name between 2 and 20 characters long."
+PWD_LEN_MSG = "ERROR: Password must be between 7 and 18 characters long."
+PWD_MATCH_MSG = "ERROR: Passwords must match."
+NAME_CHARS_ONLY_MSG = "ERROR: Name must contain only letters."
+PWD_LETTERS_NUMBERS_MSG = "ERROR: Password must include both letters and numbers."
 
 def generate_hash(password):
     """
@@ -52,7 +58,8 @@ def validate_password(password1, password2):
 
 def authenticate_and_login(email, password):
     """
-    Authenticates a user based on email and password. Logs the user in on successful authentication.
+    Authenticates a user based on email and password. 
+    Logs the user in on successful authentication.
 
     Parameters:
     email (str): The email of the user.
@@ -70,6 +77,40 @@ def authenticate_and_login(email, password):
         return False
 
 
+def valid_inputs(email, first_name, password):
+    """
+    Database validation for form input data. 
+    Returns True if all inputs are valid, False otherwise.
+
+    Parameters:
+    email (str): The email of the user.
+    first_name (str): The first name of the user.
+    password (str): The password of the user.
+
+    Returns:
+    bool: True if all inputs are valid, False otherwise.
+    """
+    
+    # Check for email length
+    if not (2 <= len(email) <= 20):
+        flash(EMAIL_LEN_MSG, ERROR)
+        return False
+
+    # Check for first name length and character composition
+    if not (2 <= len(first_name) <= 20) or not first_name.isalpha():
+        flash(NAME_LEN_MSG if not first_name.isalpha()
+            else NAME_CHARS_ONLY_MSG, ERROR)
+        return False
+
+    # Check for password length and alphanumeric composition
+    if not (7 <= len(password) <= 18) or not re.search(r"[a-zA-Z]", password) or not re.search(r"[0-9]", password):
+        flash(PWD_LEN_MSG if len(password) <
+            7 else PWD_LETTERS_NUMBERS_MSG, ERROR)
+        return False
+
+    return True
+
+
 def create_user(email, first_name, password):
     """
     Creates a new user and adds them to the database.
@@ -82,14 +123,8 @@ def create_user(email, first_name, password):
     Returns:
     User: The newly created user object.
     """
-    # Check for first name length and character composition
-    if not (2 <= len(first_name) <= 20) or not first_name.isalpha():
-        flash(NAME_LEN_MSG if not first_name.isalpha() else NAME_CHARS_ONLY_MSG, ERROR)
-        return None
-
-    # Check for password length and alphanumeric composition
-    if not (7 <= len(password) <= 18) or not re.search(r"[a-zA-Z]", password) or not re.search(r"[0-9]", password):
-        flash(PWD_LEN_MSG if len(password) < 7 else PWD_LETTERS_NUMBERS_MSG, ERROR)
+    # Check for email length
+    if valid_inputs(email, first_name, password) is False:
         return None
 
     hashed_password = generate_hash(password)

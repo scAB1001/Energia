@@ -4,7 +4,7 @@ from app import app, db
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
 from app.models import User, Car, UserInteraction
-from app.auth_service import generate_hash, validate_password, authenticate_and_login, create_user, register_and_login
+from app.auth_service import generate_hash, validate_password, valid_inputs, authenticate_and_login, create_user, register_and_login
 from app.views import home, explore, saved, single_view, settings, delete_account
 
 # C:\Users\AB\OneDrive\Documents\CODE\py\www
@@ -104,7 +104,7 @@ class BasicTestCase(unittest.TestCase):
     
     def test_invalid_user_creation(self):
         with app.app_context():
-            user = User(email='', first_name='', password='')
+            user = create_user(email='', first_name='', password='')
             db.session.add(user)
 
             with self.assertRaises(Exception):
@@ -135,20 +135,20 @@ class BasicTestCase(unittest.TestCase):
     def test_valid_user_interaction_relationship(self):
         with app.app_context():
             # Retrieve user 1 from the database
-            test_user = User.query.first()
-            self.assertIsNotNone(test_user, "Test user not found in database")
+            user1 = User.query.first()
+            self.assertIsNotNone(user1, "Test user not found in database")
 
             # Retrieve car 1 from the database
-            test_car = Car.query.first()
-            self.assertIsNotNone(test_car, "Test car not found in database")
+            car1 = Car.query.first()
+            self.assertIsNotNone(car1, "Test car not found in database")
 
             # Retrieve interaction 1 from the database
             test_interaction = UserInteraction.query.first()
             self.assertIsNotNone(test_interaction, "Test interaction not found in database")
 
             # Test the user 1 interaction relationship
-            self.assertEqual(test_interaction.user, test_user)
-            self.assertEqual(test_interaction.car, test_car)
+            self.assertEqual(test_interaction.user, user1)
+            self.assertEqual(test_interaction.car, car1)
 
     
     def test_invalid_user_interaction_relationship(self):
@@ -176,43 +176,43 @@ class BasicTestCase(unittest.TestCase):
     def test_like_count_increment(self):
         with app.app_context():
             # Retrieve the test car from the database (entry 1)
-            test_car = Car.query.first()
-            self.assertIsNotNone(test_car, "Test car not found in database")
+            car1 = Car.query.first()
+            self.assertIsNotNone(car1, "Car 1 not found in database")
 
             # Save the car ID and like count for the test
-            test_car_id = test_car.id
-            before_increment = test_car.like_count
+            car1_id = car1.id
+            before_increment = car1.like_count
 
             # Simulate the AJAX call to increment like count
-            response = self.app.post(f'/toggle_count/{test_car_id}', json={'liked': True})
+            response = self.app.post(f'/toggle_count/{car1_id}', json={'liked': True})
             data = response.get_json()
             self.assertEqual(response.status_code, 200)
             self.assertEqual(data['like_count'], before_increment + 1)
 
             # Re-query the car to get the updated like count
-            test_car = db.session.get(Car, 1)
-            self.assertEqual(test_car.like_count, before_increment + 1)
+            car1 = db.session.get(Car, 1)
+            self.assertEqual(car1.like_count, before_increment + 1)
 
     def test_like_count_decrement(self):
         with app.app_context():
             # Retrieve the test car from the database
-            test_car = Car.query.first()
-            self.assertIsNotNone(test_car, "Test car not found in database")
+            car1 = Car.query.first()
+            self.assertIsNotNone(car1, "Car 1 not found in database")
 
             # Save the car ID and like count for the test
-            test_car_id = test_car.id
-            before_decrement = test_car.like_count
+            car1_id = car1.id
+            before_decrement = car1.like_count
 
             # Simulate the AJAX call to increment like count
             response = self.app.post(
-                f'/toggle_count/{test_car_id}', json={'liked': False})
+                f'/toggle_count/{car1_id}', json={'liked': False})
             data = response.get_json()
             self.assertEqual(response.status_code, 200)
             self.assertEqual(data['like_count'], before_decrement - 1)
 
             # Re-query the car to get the updated like count
-            test_car = db.session.get(Car, 1)
-            self.assertEqual(test_car.like_count, before_decrement - 1)
+            car1 = db.session.get(Car, 1)
+            self.assertEqual(car1.like_count, before_decrement - 1)
 
 """
     def test_home_page_loads(self):

@@ -3,6 +3,7 @@ from flask_login import login_required, logout_user, current_user
 from .models import User, Car, UserInteraction
 from app import app, db, admin
 from flask_admin.contrib.sqla import ModelView
+from sqlalchemy.exc import IntegrityError
 import json
 from random import randint as r
 
@@ -81,8 +82,8 @@ def pre_populate_tblCars():
             db.session.commit()
             #print("SUCCESS")
             return jsonify({"status": "success", "message": "Cars added successfully"})
-        except Exception as e:
-            #print(f"FAILED: {e}")
+        except IntegrityError:
+            #print("FAILED")
             db.session.rollback()
             return jsonify({"status": "error", "message": str(e)}), 500
 
@@ -156,7 +157,7 @@ def react():
     try:
         db.session.commit()
         return jsonify({"status": "success", "carID": carID, "swiped_right": status})
-    except Exception as e:
+    except IntegrityError:
         db.session.rollback()
         return jsonify({"status": "error", "message": str(e)}), 500
 
