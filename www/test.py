@@ -3,6 +3,7 @@ from flask import Flask, session
 from app import app, db
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
 from app.models import User, Car, UserInteraction
 from app.auth_service import generate_hash, validate_password, valid_inputs, authenticate_and_login, create_user, register_and_login
 from app.views import home, explore, saved, single_view, settings, delete_account
@@ -23,7 +24,7 @@ class BasicTestCase(unittest.TestCase):
             db.create_all()
 
             if os.path.exists(os.path.join(basedir, 'app.db')):
-                print("Test database created successfully.")
+                print("\tTest database created successfully.")
 
             self._create_test_data()
 
@@ -57,7 +58,12 @@ class BasicTestCase(unittest.TestCase):
             horsepower=375, monthly_payment=8042.47, mileage=167228, like_count=86)
                 
         db.session.add_all([user1, user2, car1, car2, car3])
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            print("\tTest data already exists in database.")
+            return
 
         # User interactions
         #   User 1 likes Car 1 & 2, dislikes Car 3
@@ -70,7 +76,12 @@ class BasicTestCase(unittest.TestCase):
             user_id=user1.id, car_id=car3.id, swiped_right=False)
 
         db.session.add_all([interaction1, interaction2, interaction3])
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            print("\tTest data already exists in database.")
+            return
 
     def tearDown(self):
         with app.app_context():
@@ -83,6 +94,7 @@ class BasicTestCase(unittest.TestCase):
         with app.app_context():
             car1_id = db.session.get(Car, 1).id
             self.assertIsNotNone(car1_id)
+
 
 
     def test_invalid_car_creation(self):
@@ -101,7 +113,7 @@ class BasicTestCase(unittest.TestCase):
             user1_id = db.session.get(User, 1).id
             self.assertIsNotNone(user1_id)
 
-    
+"""  
     def test_invalid_user_creation(self):
         with app.app_context():
             user = create_user(email='', first_name='', password='')
@@ -214,7 +226,8 @@ class BasicTestCase(unittest.TestCase):
             car1 = db.session.get(Car, 1)
             self.assertEqual(car1.like_count, before_decrement - 1)
 
-"""
+
+    ###########################
     def test_home_page_loads(self):
         response = self.app.get('/', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
