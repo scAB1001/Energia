@@ -124,8 +124,12 @@ def create_user(email, first_name, password):
     User: The newly created user object.
     """
     # Check for email length
-    if not valid_inputs(email, first_name, password):
+    #if not valid_inputs(email, first_name, password):
+    x = valid_inputs(email, first_name, password)
+    print(x)
+    if not x:
         return None
+
 
     hashed_password = generate_hash(password)
     new_user = User(email=email, first_name=first_name, password=hashed_password)

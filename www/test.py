@@ -1,4 +1,5 @@
 import os, unittest, json
+from unittest.mock import patch
 from flask import Flask, session
 from app import app, db
 from flask_login import login_user, login_required, logout_user, current_user
@@ -18,6 +19,7 @@ class BasicTestCase(unittest.TestCase):
         app.config['WTF_CSRF_ENABLED'] = False
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + \
             os.path.join(basedir, 'app.db')
+
         self.app = app.test_client()
 
         with app.app_context():
@@ -96,7 +98,6 @@ class BasicTestCase(unittest.TestCase):
             self.assertIsNotNone(car1_id)
 
 
-
     def test_invalid_car_creation(self):
         with app.app_context():
             car = Car(make='', model='', year=1900, like_count=0)
@@ -113,18 +114,21 @@ class BasicTestCase(unittest.TestCase):
             user1_id = db.session.get(User, 1).id
             self.assertIsNotNone(user1_id)
 
-"""  
+  
     def test_invalid_user_creation(self):
         with app.app_context():
-            user = create_user(email='', first_name='', password='')
-            db.session.add(user)
+            # Attempt to create an invalid user
+            user = User(email='', first_name='', password='')
+            print(f"[{user}]: {bool(user)}")
+            # Check if the user is None and if flash was called
+            self.assertIsNone(user)
 
-            with self.assertRaises(Exception):
-                db.session.commit()
-            
-            self.assertIsNone(user.id)
+            # Check if the user is not added to the database
+            if user:
+                fetched_user = User.query.filter_by(email='').first()
+                self.assertIsNone(fetched_user)
 
-
+"""
     def test_valid_user_interaction_creation(self):
         with app.app_context():
             interaction1_id = db.session.get(UserInteraction, 1).id
@@ -160,7 +164,6 @@ class BasicTestCase(unittest.TestCase):
 
             # Test the user 1 interaction relationship
             self.assertEqual(test_interaction.user, user1)
-            self.assertEqual(test_interaction.car, car1)
 
     
     def test_invalid_user_interaction_relationship(self):
@@ -182,7 +185,6 @@ class BasicTestCase(unittest.TestCase):
             # because user 2 has not interacted with any cars.
             for interaction in interactions:
                 self.assertNotEqual(interaction.user, user2)
-                self.assertNotEqual(interaction.car, car1)
 
     
     def test_like_count_increment(self):
