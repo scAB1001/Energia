@@ -164,7 +164,7 @@ def react():
         return jsonify({"status": "success", "carID": carID, "swiped_right": status})
     except IntegrityError:
         db.session.rollback()
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"status": "Unable to commit"}), 500
 
 
 @app.route('/cards-depleted', methods=['POST'])

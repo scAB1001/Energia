@@ -107,8 +107,7 @@ class BasicTestCase(unittest.TestCase):
             self.assertTrue(user.is_authenticated)"""
         with self.app as client:
             # Login the test user
-            user_data = {'email': 'user1@example.com',
-                              'password': 'Password1'}
+            user_data = {'email': 'user1@example.com', 'password': 'Password1'}
             login_response = client.post('/login', data=user_data, follow_redirects=True)
         
             with app.app_context():
@@ -314,11 +313,8 @@ class BasicTestCase(unittest.TestCase):
             self.assertEqual(response.status_code, 400)
             data = response.get_json()
             self.assertEqual(data['error'], "Invalid request")
-    """
+  
 
-
-
-    """
     def test_reaction_validation(self):
         # Log in the test user
         self.login_test_user()
@@ -355,17 +351,19 @@ class BasicTestCase(unittest.TestCase):
             self.assertIn('Invalid swiped_right provided',
                           response.get_json()['status'])
 
-    
+
     # Mocking a database error
     def test_database_error(self):
+        # Log in the test user
+        self.login_test_user()
+
         with app.app_context():
             with patch('app.views.db.session.commit') as mock_commit:
                 mock_commit.side_effect = IntegrityError('', '', '')
                 response = self.app.post(
                     '/react', json={'carID': 1, 'swiped_right': True})
                 self.assertEqual(response.status_code, 500)
-                self.assertIn('error', response.get_json()['status'])
-    
+                self.assertIn('Unable to commit', response.get_json()['status'])
     
     
 
@@ -476,9 +474,9 @@ class BasicTestCase(unittest.TestCase):
             self.assertFalse(form.validate())
     
 
-    
+    """
 
-    ###########################
+    # Route tests
     def test_home_page_loads(self):
         response = self.app.get('/', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
@@ -489,73 +487,64 @@ class BasicTestCase(unittest.TestCase):
             '/this-route-does-not-exist', follow_redirects=True)
         self.assertEqual(response.status_code, 404)
     
-    
+    """
     # Authentication Tests
-    def test_successful_login(self):
+    def test_route_user_login(self):
         with app.app_context():
-            response = self.app.post('/login', data={
+            base_data = {
                 'email': 'test@example.com',
                 'password': 'testpassword'
-            }, follow_redirects=True)
+            }
+
+            # Test login with valid data
+            response = self.app.post('/login',
+                data=base_data, follow_redirects=True)
             self.assertEqual(response.status_code, 200)
-            self.assertTrue(current_user.is_authenticated)
 
-
-    def test_unsuccessful_login(self):
-        with app.app_context():
-            response = self.app.post('/login', data={
-                'email': 'test@example.com',
-                'password': 'wrongpassword'
-            }, follow_redirects=True)
+            # Test login with invalid data
+            invalid_data = base_data.copy()
+            invalid_data['password'] = None
+            response = self.app.post('/login',
+                data=invalid_data, follow_redirects=True)
             self.assertEqual(response.status_code, 200)
-            self.assertFalse(current_user.is_authenticated)
 
 
-    def test_valid_user_registration(self):
+    def test_route_user_registration(self):
         with app.app_context():
-            response = self.app.post('/signup', data={
+            base_data = {
                 'email': 'new@example.com',
                 'first_name': 'New',
-                'password': 'newpassword',
-                'confirm_password': 'newpassword'
-            }, follow_redirects=True)
+                'password': 'Newpassword1',
+                'confirm_password': 'Newpassword1'
+            }
+
+            # Test registration with valid data
+            response = self.app.post('/signup',
+                data=base_data, follow_redirects=True)
             self.assertEqual(response.status_code, 200)
-            self.assertTrue(current_user.is_authenticated)
 
-
-    def test_invalid_user_registration(self):
-        with app.app_context():
             # Test registration with invalid data
-            response = self.app.post('/register', data={
-                'username': 'us',  # Assuming this is too short
-                'email': 'newuser@example.com',
-                'password': 'newpassword',
-                'confirm': 'newpassword'
-            }, follow_redirects=True)
-            self.assertIn(b'Registration failed', response.data)
+            invalid_data = base_data.copy()
+            invalid_data['password'] = None
+            response = self.app.post('/signup',
+                data=invalid_data, follow_redirects=True)
+            self.assertIn(b"ERROR", response.data)
+            
+    
+    def logout_test_user(self):
+        # Log in the test user
+        self.login_test_user()
 
-
-    def test_logout(self):
         with app.app_context():
-            # First login the user
-            self.test_successful_login()
+            # Check if user is logged in
             response = self.app.get('/logout', follow_redirects=True)
             self.assertEqual(response.status_code, 200)
-            self.assertFalse(current_user.is_authenticated)
 
-
-    # View Functionality Tests
-    def test_like_car(self):
-        with app.app_context():
-            self.test_successful_login()  # Ensure the user is logged in
-            response = self.app.post(
-                '/toggle_count/1', json={'liked': True}, follow_redirects=True)
-            self.assertEqual(response.status_code, 200)
-            data = response.get_json()
-            self.assertEqual(data['like_count'], 1)
+            # Check if logout was successful
+            self.assertIn('Signed out successfully!',
+                response.get_data(as_text=True))
     """
 
 
 if __name__ == '__main__':
     unittest.main()
-
