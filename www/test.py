@@ -39,7 +39,7 @@ class BasicTestCase(unittest.TestCase):
         # Create users
         user1 = User(
             email='user1@example.com', first_name='User1',
-            password=generate_hash('password1'))
+            password=generate_hash('Password1'))
 
         user2 = User(
             email='user2@example.com', first_name='User2',
@@ -92,13 +92,42 @@ class BasicTestCase(unittest.TestCase):
             db.session.remove()
             db.drop_all()
 
+    
+    def login_test_user(self):
+        """# Implement the logic to log in a test user
+        #   for authentication and interaction tests
+        with app.app_context():
+            user = db.session.get(User, 1)
+            self.assertIsNotNone(user, "Test user not found in database")
+        
+        # Log in the user using session transaction
+        with self.app.session_transaction() as session:
+            session['user_id'] = user.id
+            session['_fresh'] = True
+            self.assertTrue(user.is_authenticated)"""
+        with self.app as client:
+            # Login the test user
+            user_data = {'email': 'user1@example.com',
+                              'password': 'Password1'}
+            login_response = client.post('/login', data=user_data, follow_redirects=True)
+        
+            with app.app_context():
+                user = db.session.get(User, 1)
+                self.assertIsNotNone(user, "Test user not found in database")
+                
+                # Check if login was successful
+                self.assertEqual(login_response.status_code, 200)
+                self.assertIn('/', login_response.get_data(as_text=True))
+
+
+
     """
     # Model Basic Tests
     def test_valid_car_creation(self):
         with app.app_context():
             car1_id = db.session.get(Car, 1).id
             self.assertIsNotNone(car1_id)
-
+    
 
     def test_invalid_car_creation(self):
         with app.app_context():
@@ -139,8 +168,207 @@ class BasicTestCase(unittest.TestCase):
                 db.session.commit()
             
             self.assertIsNone(interaction.id)
+    
+
+    def test_delete_user(self):
+        with app.app_context():
+            # Confirm that 2 users exist to begin with
+            users = User.query.all()
+            user_count = len(users)
+            self.assertEqual(user_count, 2)
+
+            user2 = db.session.get(User, 2)
+            self.assertIsNotNone(user2)
+        
+            db.session.delete(user2)
+            db.session.commit()
+
+            # Check if user 2 exists
+            new_user2 = db.session.get(User, 2)
+            self.assertIsNone(new_user2)
+
+            # Double check if user 2 was deleted
+            new_users = User.query.all()
+            new_user_count = len(new_users)
+            self.assertEqual(new_user_count, user_count - 1)
 
     
+    def test_delete_user_interactions(self):
+        with app.app_context():
+            # Confirm that 3 interactions exist for user 1 to begin with
+            interactions = UserInteraction.query.filter_by(user_id=1).all()
+            interaction_count = len(interactions)
+            self.assertEqual(interaction_count, 3)
+
+            # Delete interaction 3 for user 1
+            interaction3 = db.session.get(UserInteraction, 3)
+            self.assertIsNotNone(interaction3)
+
+            db.session.delete(interaction3)
+            db.session.commit()
+
+            # Check if interaction 3 exists
+            new_interaction3 = db.session.get(UserInteraction, 3)
+            self.assertIsNone(new_interaction3)
+
+            # Double check if interaction 3 was deleted
+            new_interactions = UserInteraction.query.filter_by(user_id=1).all()
+            new_interaction_count = len(new_interactions)
+            self.assertEqual(new_interaction_count, interaction_count - 1)
+    
+    def test_like_count_increment(self):
+        with app.app_context():
+            # Retrieve the test car from the database (entry 1)
+            car1 = Car.query.first()
+            self.assertIsNotNone(car1, "Car 1 not found in database")
+
+            # Save the car ID and like count for the test
+            car1_id = car1.id
+            before_increment = car1.like_count
+
+            # Simulate the AJAX call to increment like count
+            response = self.app.post(f'/toggle_count/{car1_id}', json={'liked': True})
+            data = response.get_json()
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(data['like_count'], before_increment + 1)
+
+            # Re-query the car to get the updated like count
+            car1 = db.session.get(Car, 1)
+            self.assertEqual(car1.like_count, before_increment + 1)
+
+    def test_like_count_decrement(self):
+        with app.app_context():
+            # Retrieve the test car from the database
+            car1 = Car.query.first()
+            self.assertIsNotNone(car1, "Car 1 not found in database")
+
+            # Save the car ID and like count for the test
+            car1_id = car1.id
+            before_decrement = car1.like_count
+
+            # Simulate the AJAX call to increment like count
+            response = self.app.post(
+                f'/toggle_count/{car1_id}', json={'liked': False})
+            data = response.get_json()
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(data['like_count'], before_decrement - 1)
+
+            # Re-query the car to get the updated like count
+            car1 = db.session.get(Car, 1)
+            self.assertEqual(car1.like_count, before_decrement - 1)
+
+    def test_invalid_like_count_action(self):
+        with app.app_context():
+            # Retrieve the test car from the database
+            car1 = Car.query.first()
+            self.assertIsNotNone(car1, "Car 1 not found in database")
+
+            # Save the car ID and like count for the test
+            car1_id = car1.id
+            before_decrement = car1.like_count
+
+            # Simulate the invalid AJAX call JSON response
+            response = self.app.post(
+                f'/toggle_count/{car1_id}', json={'liked': None})
+            data = response.get_json()
+            self.assertEqual(response.status_code, 400)
+            self.assertNotEqual(list(data.keys())[0], 'liked')
+
+            # Re-query the car to get the unchanged like count
+            car1 = db.session.get(Car, 1)
+            self.assertEqual(car1.like_count, before_decrement)
+
+    
+    def test_cards_depleted(self):
+        with app.app_context():
+            # Simulate a valid 'cards depleted' signal
+            base_data = {'isEmpty': True}
+
+            response = self.app.post(
+                '/cards-depleted', 
+                json=base_data
+            )
+            self.assertEqual(response.status_code, 200)
+            data = response.get_json()
+            self.assertEqual(data['message'], "No more cards available")
+
+
+            # Simulate another valid 'cards not depleted' signal
+            cards_full_data = base_data.copy()
+            cards_full_data['isEmpty'] = False
+            response = self.app.post(
+                '/cards-depleted', 
+                json=cards_full_data
+            )
+            self.assertEqual(response.status_code, 200)
+            data = response.get_json()
+            self.assertEqual(data['message'], "Cards still available")
+
+            # Simulate an invalid 'cards depleted' signal
+            invalid_card_data = base_data.copy()
+            invalid_card_data.clear()
+            response = self.app.post(
+                '/cards-depleted', 
+                json=invalid_card_data
+            )
+            self.assertEqual(response.status_code, 400)
+            data = response.get_json()
+            self.assertEqual(data['error'], "Invalid request")
+    """
+
+
+
+    """
+    def test_reaction_validation(self):
+        # Log in the test user
+        self.login_test_user()
+
+        with app.app_context():
+            # Valid data
+            base_data = {'carID': 1, 'swiped_right': True}
+            response = self.app.post('/react', json=base_data)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('success', response.get_json()['status'])
+
+            # Invalid data (empty)
+            empty_reaction_data = base_data.copy()
+            empty_reaction_data.clear()
+            response = self.app.post('/react', json=empty_reaction_data)
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('Invalid car ID and swiped_right provided',
+                          response.get_json()['status'])
+
+            # Invalid data (missing car ID)
+            invalid_car_id = base_data.copy()            
+            invalid_car_id['carID'] = None
+            response = self.app.post(
+                '/react', json=invalid_car_id)
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('Invalid car ID provided',
+                          response.get_json()['status'])
+
+            # Invalid data (missing swiped_right)
+            invalid_swipe_action = base_data.copy()     
+            invalid_swipe_action['swiped_right'] = None       
+            response = self.app.post('/react', json=invalid_swipe_action)
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('Invalid swiped_right provided',
+                          response.get_json()['status'])
+
+    
+    # Mocking a database error
+    def test_database_error(self):
+        with app.app_context():
+            with patch('app.views.db.session.commit') as mock_commit:
+                mock_commit.side_effect = IntegrityError('', '', '')
+                response = self.app.post(
+                    '/react', json={'carID': 1, 'swiped_right': True})
+                self.assertEqual(response.status_code, 500)
+                self.assertIn('error', response.get_json()['status'])
+    
+    
+    
+
     # Model Relationship Tests
     def test_valid_user_interaction_relationship(self):
         with app.app_context():
@@ -180,7 +408,7 @@ class BasicTestCase(unittest.TestCase):
             for interaction in interactions:
                 self.assertNotEqual(interaction.user, user2)
     
-"""    
+        
     def test_login_form_validation(self):
         with app.app_context():
             # Base valid data
@@ -246,49 +474,9 @@ class BasicTestCase(unittest.TestCase):
             empty_first_name_data['first_name'] = ''
             form = RegistrationForm(data=empty_first_name_data)
             self.assertFalse(form.validate())
-"""
+    
 
-    def test_like_count_increment(self):
-        with app.app_context():
-            # Retrieve the test car from the database (entry 1)
-            car1 = Car.query.first()
-            self.assertIsNotNone(car1, "Car 1 not found in database")
-
-            # Save the car ID and like count for the test
-            car1_id = car1.id
-            before_increment = car1.like_count
-
-            # Simulate the AJAX call to increment like count
-            response = self.app.post(f'/toggle_count/{car1_id}', json={'liked': True})
-            data = response.get_json()
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(data['like_count'], before_increment + 1)
-
-            # Re-query the car to get the updated like count
-            car1 = db.session.get(Car, 1)
-            self.assertEqual(car1.like_count, before_increment + 1)
-
-    def test_like_count_decrement(self):
-        with app.app_context():
-            # Retrieve the test car from the database
-            car1 = Car.query.first()
-            self.assertIsNotNone(car1, "Car 1 not found in database")
-
-            # Save the car ID and like count for the test
-            car1_id = car1.id
-            before_decrement = car1.like_count
-
-            # Simulate the AJAX call to increment like count
-            response = self.app.post(
-                f'/toggle_count/{car1_id}', json={'liked': False})
-            data = response.get_json()
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(data['like_count'], before_decrement - 1)
-
-            # Re-query the car to get the updated like count
-            car1 = db.session.get(Car, 1)
-            self.assertEqual(car1.like_count, before_decrement - 1)
-
+    
 
     ###########################
     def test_home_page_loads(self):
@@ -365,7 +553,7 @@ class BasicTestCase(unittest.TestCase):
             self.assertEqual(response.status_code, 200)
             data = response.get_json()
             self.assertEqual(data['like_count'], 1)
-"""
+    """
 
 
 if __name__ == '__main__':

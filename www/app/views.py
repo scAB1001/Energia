@@ -117,6 +117,11 @@ def toggle_count(car_id):
         return jsonify({"error": "Car not found"}), 404
 
     liked = request.json.get('liked')
+
+    # Check if liked is not a boolean
+    if liked not in [True, False]:
+        return jsonify({"error": "Invalid liked value"}), 400
+
     car.like_count += 1 if liked else -1
     
     db.session.commit()
@@ -136,16 +141,16 @@ def react():
     Returns:
     JSON response: Contains the status of the reaction, either success or error.
     """
-    data = request.json
+    carID = request.json.get('carID')
+    status = request.json.get('swiped_right')
+    if not carID and not status:
+        return jsonify({"status": "Invalid car ID and swiped_right provided"}), 400
 
-    try:
-        # Extracts car ID from request
-        carID = int(data.get('carID'))  
-    
-        # Extracts swipe right status (True or False)
-        status = data.get('swiped_right') == True
-    except (TypeError, ValueError):
-        return jsonify({"status": "error", "message": "Invalid data"}), 400
+    if not carID:
+        return jsonify({"status": "Invalid car ID provided"}), 400 
+
+    if status not in [True, False]:
+        return jsonify({"status": "Invalid swiped_right provided"}), 400
 
     new_interaction = UserInteraction(
         user_id=current_user.id,
@@ -177,6 +182,10 @@ def cards_depleted():
 
     if data and data.get('isEmpty'):
         return jsonify({"message": "No more cards available"})
+    
+    elif data and not data.get('isEmpty'): #
+        return jsonify({"message": "Cards still available"})
+    
     return jsonify({"error": "Invalid request"}), 400
 
 
@@ -330,32 +339,32 @@ def delete_account():
         return redirect(url_for('auth.login'))
 
 
-@app.errorhandler(404)
-def not_found_error(error):
-    """
-    Error handler for 404 Not Found error.
-
-    Parameters:
-    error: The error object provided by Flask.
-
-    Returns:
-    Rendered HTML: Custom 404 error page.
-    """
-    db.session.rollback()  # Rollback in case of any pending database transactions
-    return render_template('/error/404.html', title='Error: 404', user=current_user), 404
-
-
-@app.errorhandler(500)
-def internal_error(error):
-    """
-    Error handler for 500 Internal Server Error.
-
-    Parameters:
-    error: The error object provided by Flask.
-
-    Returns:
-    Rendered HTML: Custom 500 error page.
-    """
-    db.session.rollback()  # Rollback in case of any pending database transactions
-    return render_template('/error/500.html', title='Error: 500', user=current_user), 500
-
+#@app.errorhandler(404)
+#def not_found_error(error):
+#    """
+#    Error handler for 404 Not Found error.
+#
+#    Parameters:
+#    error: The error object provided by Flask.
+#
+#    Returns:
+#    Rendered HTML: Custom 404 error page.
+#    """
+#    db.session.rollback()  # Rollback in case of any pending database transactions
+#    return render_template('/error/404.html', title='Error: 404', user=current_user), 404
+#
+#
+#@app.errorhandler(500)
+#def internal_error(error):
+#    """
+#    Error handler for 500 Internal Server Error.
+#
+#    Parameters:
+#    error: The error object provided by Flask.
+#
+#    Returns:
+#    Rendered HTML: Custom 500 error page.
+#    """
+#    db.session.rollback()  # Rollback in case of any pending database transactions
+#    return render_template('/error/500.html', title='Error: 500', user=current_user), 500
+#
