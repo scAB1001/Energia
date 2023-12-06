@@ -21,11 +21,25 @@
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark" role="navigation">
+  
+  {% if user.is_authenticated %}
   <div class="navbar-brand" id="logo" aria-label="AutoSwipe Home">
+    
+  {% else %}
+  <a class="navbar-brand nav-link" id="logo" href="/" aria-label="AutoSwipe Home">
+
+  {% endif %}
+    
     <img src="{{ url_for('static', filename='icons/logo.png') }}" width="15%" height="15%" class="d-inline-block"
       alt="AutoSwipe Logo">
-    AutoSwipe
+      AutoSwipe
+    
+  {% if user.is_authenticated %}
   </div>
+  {% else %}
+  </a>
+  {% endif %}
+
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
     aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>

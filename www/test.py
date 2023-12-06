@@ -68,8 +68,10 @@ class BasicTestCase(unittest.TestCase):
         with app.app_context():
             test_car = Car(make='', model='', year=1900, like_count=0)
             db.session.add(test_car)
+
             with self.assertRaises(Exception):
                 db.session.commit()
+            
             self.assertIsNone(test_car.id)
 
     

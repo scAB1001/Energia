@@ -3,7 +3,8 @@ from flask_login import login_required, logout_user, current_user
 from .models import User, Car, UserInteraction
 from app import app, db, admin
 from flask_admin.contrib.sqla import ModelView
-import json, random as r
+import json
+from random import randint as r
 
 # Adding models to the admin view for easy management
 admin.add_view(ModelView(User, db.session))
@@ -52,35 +53,36 @@ def pre_populate_tblCars():
 
     This function checks if the Car table is empty and, if so, adds a predefined list of cars to the database.
     """
-    like_count = r.randint(0, 100) ##
+    # random.randint -> r(1, 100)
     if is_table_empty(Car):
         try:
             # Car instances to be added
             cars_to_add = [
                 Car(image='astonMartinSILagonda1', car_name='Aston Martin Lagonda Series 1', make='Aston Martin', model='Lagonda',
-                    year=1974, body_type='4-door saloon', horsepower=280, monthly_payment=4611.96, mileage=18324, like_count=random),
+                    year=1974, body_type='4-door saloon', horsepower=280, monthly_payment=4611.96, mileage=18324, like_count=r(1, 100)),
                 Car(image='astonMartinSIIILagonda3', car_name='Aston Martin Lagonda Series 3', make='Aston Martin', model='Lagonda',
-                    year=1986, body_type='4-door saloon', horsepower=230, monthly_payment=7766.58, mileage=132084, like_count=random),
+                    year=1986, body_type='4-door saloon', horsepower=230, monthly_payment=7766.58, mileage=132084, like_count=r(1, 100)),
                 Car(image='astonMartinSIVLagonda4', car_name='Aston Martin Lagonda Series 4', make='Aston Martin', model='Lagonda',
-                    year=1987, body_type='4-door saloon', horsepower=240, monthly_payment=3633.98, mileage=123117, like_count=random),
+                    year=1987, body_type='4-door saloon', horsepower=240, monthly_payment=3633.98, mileage=123117, like_count=r(1, 100)),
                 Car(image='ferrariTestarossa1', car_name='Ferrari Testarossa', make='Ferrari', model='Testarossa',
-                    year=1984, body_type='2-door berlinetta', horsepower=385, monthly_payment=4185.91, mileage=146545, like_count=random),
+                    year=1984, body_type='2-door berlinetta', horsepower=385, monthly_payment=4185.91, mileage=146545, like_count=r(1, 100)),
                 Car(image='ferrariF512TR3', car_name='Ferrari F512 TR', make='Ferrari', model='512 TR',
-                    year=1991, body_type='2-door berlinetta', horsepower=422, monthly_payment=3245.32, mileage=198978, like_count=random),
+                    year=1991, body_type='2-door berlinetta', horsepower=422, monthly_payment=3245.32, mileage=198978, like_count=r(1, 100)),
                 Car(image='ferrari308GTRainbow4', car_name='Ferrari 308 GT Bertone Rainbow', make='Ferrari', model='308 GT',
-                    year=1976, body_type='2-door coupe', horsepower=255, monthly_payment=5585.91, mileage=89017, like_count=random),
+                    year=1976, body_type='2-door coupe', horsepower=255, monthly_payment=5585.91, mileage=89017, like_count=r(1, 100)),
                 Car(image='countachLP400Lamborghini1', car_name='Lamborghini Countach LP400', make='Lamborghini', model='LP400',
-                    year=1974, body_type='2-door coupe', horsepower=375, monthly_payment=8042.47, mileage=167228, like_count=random),
+                    year=1974, body_type='2-door coupe', horsepower=375, monthly_payment=8042.47, mileage=167228, like_count=r(1, 100)),
                 Car(image='countachLP5000LamborghiniQuattrovalvole3', car_name='Lamborghini Countach Quattrovalvole', make='Lamborghini', 
-                    model='LP5000', year=1985, body_type='2-door coupe', horsepower=455, monthly_payment=8930.27, mileage=103074, like_count=random),
+                    model='LP5000', year=1985, body_type='2-door coupe', horsepower=455, monthly_payment=8930.27, mileage=103074, like_count=r(1, 100)),
                 Car(image='countach25thAnniversaryLamborghini4', car_name='Lamborghini Countach 25th Anniversary', make='Lamborghini', 
-                    model='25th Anniversary', year=1988, body_type='2-door coupe', horsepower=414, monthly_payment=6409.78, mileage=140320, like_count=random)
+                    model='25th Anniversary', year=1988, body_type='2-door coupe', horsepower=414, monthly_payment=6409.78, mileage=140320, like_count=r(1, 100))
             ]
             db.session.add_all(cars_to_add)
             db.session.commit()
-            print("SUCCESS")
+            #print("SUCCESS")
             return jsonify({"status": "success", "message": "Cars added successfully"})
         except Exception as e:
+            #print(f"FAILED: {e}")
             db.session.rollback()
             return jsonify({"status": "error", "message": str(e)}), 500
 
@@ -89,10 +91,12 @@ def prep_db():
     """
     Prepares the database by clearing tables and pre-populating them.
 
-    This function first clears data from the UserInteraction, Car, and User tables, and then pre-populates the Car table.
+    This function first clears the session data, drops all database tables, 
+    re-initialises all the database tables and then pre-populates the Car table.
     """
     db.session.remove()
     db.drop_all()
+    db.create_all()
     pre_populate_tblCars()
 
 
@@ -186,6 +190,8 @@ def home():
     Returns:
     Rendered HTML: The homepage with a personalized greeting if the user is authenticated.
     """
+    prep_db()
+    
     first_name = 'Guest'  # Default guest name
     if current_user.is_authenticated:
         first_name = current_user.first_name  # Personalized greeting for logged-in user

@@ -11,13 +11,9 @@
     <section class="user-guide" aria-label="User Guide">
         <ol class="guide-steps">
             {% if not user.is_authenticated %}
-            <li role="article" aria-labelledby="create-account-heading">
-                <h2 id="create-account-heading">Create an Account</h2>
-                <p>Sign to create a new account and get started.</p>
-            </li>
-            <li role="article" aria-labelledby="already-have-account-heading">
-                <h2 id="already-have-account-heading">Already Have an Account?</h2>
-                <p>Click the sign in button below!</p>
+            <li role="article" aria-labelledby="account-heading">
+                <h2 id="account-heading">Create an Account or Use an Existing One</h2>
+                <p>Sign up to create a new account or sign in to get started.</p>
             </li>
             {% endif %}
             <li role="article" aria-labelledby="swipe-vehicles-heading">
