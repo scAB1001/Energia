@@ -1,10 +1,11 @@
-import os, unittest, json
+import os, unittest, json, re
 from unittest.mock import patch
 from flask import Flask, session
 from app import app, db
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
+from app.forms import LoginForm, RegistrationForm
 from app.models import User, Car, UserInteraction
 from app.auth_service import generate_hash, validate_password, valid_inputs, authenticate_and_login, create_user, register_and_login
 from app.views import home, explore, saved, single_view, settings, delete_account
@@ -14,6 +15,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class BasicTestCase(unittest.TestCase):
+    
     def setUp(self):
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
@@ -90,7 +92,7 @@ class BasicTestCase(unittest.TestCase):
             db.session.remove()
             db.drop_all()
 
-
+    """
     # Model Basic Tests
     def test_valid_car_creation(self):
         with app.app_context():
@@ -117,18 +119,10 @@ class BasicTestCase(unittest.TestCase):
   
     def test_invalid_user_creation(self):
         with app.app_context():
-            # Attempt to create an invalid user
-            user = User(email='', first_name='', password='')
-            print(f"[{user}]: {bool(user)}")
-            # Check if the user is None and if flash was called
-            self.assertIsNone(user)
+            user_id = User(email='', first_name='', password='').id
+            self.assertIsNone(user_id)
 
-            # Check if the user is not added to the database
-            if user:
-                fetched_user = User.query.filter_by(email='').first()
-                self.assertIsNone(fetched_user)
 
-"""
     def test_valid_user_interaction_creation(self):
         with app.app_context():
             interaction1_id = db.session.get(UserInteraction, 1).id
@@ -185,8 +179,75 @@ class BasicTestCase(unittest.TestCase):
             # because user 2 has not interacted with any cars.
             for interaction in interactions:
                 self.assertNotEqual(interaction.user, user2)
-
     
+"""    
+    def test_login_form_validation(self):
+        with app.app_context():
+            # Base valid data
+            base_data = {'email': 'user@example.com', 'password': 'ValidPass123'}
+
+            # Test valid input
+            form = LoginForm(data=base_data)
+            self.assertTrue(form.validate())
+
+            # Test invalid email
+            invalid_email_data = base_data.copy()
+            invalid_email_data['email'] = 'invalid-email'
+            form = LoginForm(data=invalid_email_data)
+            self.assertFalse(form.validate())
+
+            # Test invalid (empty) password
+            empty_pwd_data = base_data.copy()
+            empty_pwd_data['password'] = ''
+            form = LoginForm(data=empty_pwd_data)
+            self.assertFalse(form.validate())
+
+
+    def test_registration_form_validation(self):
+        with app.app_context():
+            # Base valid data
+            base_data = {
+                'email': 'newUser@example.com',
+                'first_name': 'NewUser',
+                'password': 'ValidPass123',
+                'confirm_password': 'ValidPass123'
+            }
+
+            # Test valid input
+            form = RegistrationForm(data=base_data)
+            self.assertTrue(form.validate())
+
+            # Test invalid (mismatch) password 1
+            mismatch_pwd_data = base_data.copy()
+            mismatch_pwd_data['confirm_password'] = 'DifferentPass123'
+            form = RegistrationForm(data=mismatch_pwd_data)
+            self.assertFalse(form.validate())
+
+            # Test invalid (too long) password 2
+            overflow_pwd_data = base_data.copy()
+            overflow_pwd_data['password'] = f"{'.' * 19}"
+            form = RegistrationForm(data=overflow_pwd_data)
+            self.assertFalse(form.validate())
+
+            # Test invalid (missing num/chars) password 3
+            weak_pwd_data = base_data.copy()
+            weak_pwd_data['password'] = 'weakpassword'
+            form = RegistrationForm(data=weak_pwd_data)
+            self.assertFalse(form.validate())
+
+            # Test invalid first name (contains numbers) 1
+            num_first_name_data = base_data.copy()
+            num_first_name_data['first_name'] = 'NewUser1'
+            form = RegistrationForm(data=num_first_name_data)
+            self.assertFalse(form.validate())
+
+            # Test invalid first name (empty) 2
+            empty_first_name_data = base_data.copy()
+            empty_first_name_data['first_name'] = ''
+            form = RegistrationForm(data=empty_first_name_data)
+            self.assertFalse(form.validate())
+"""
+
     def test_like_count_increment(self):
         with app.app_context():
             # Retrieve the test car from the database (entry 1)

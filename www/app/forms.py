@@ -108,5 +108,5 @@ class RegistrationForm(BaseUserForm):
         Raises:
             ValidationError: If the password does not contain both letters and numbers.
         """
-        if not re.search(r"[a-zA-Z]", field.data) or not re.search(r"[0-9]", field.data):
+        if not re.search(r"[a-zA-Z]", field.data) or not re.search(r"[0-9]", field.data) or not (7 <= len(field.data) <= 18):
             raise ValidationError(PWD_LETTERS_NUMBERS_MSG)
