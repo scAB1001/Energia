@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, Car, UserInteraction
+from app.auth import login, logout, signup, MAX_LOGIN_ATTEMPTS
 from app.auth_service import generate_hash, validate_password, valid_inputs, authenticate_and_login, create_user, register_and_login
 from app.views import home, explore, saved, single_view, settings, delete_account
 
@@ -534,6 +535,36 @@ class BasicTestCase(unittest.TestCase):
             self.assertIn('Invalid swiped_right provided',
                           response.get_json()['status'])
 
+
+    def test_successful_login_resets_attempts(self):
+        with app.app_context():
+            # Simulate a failed login attempt
+            self.app.post('/login', data={'email': 'wrong@example.com', 'password': None})
+            session['login_attempts'] = 1
+
+            # Simulate a successful login
+            response = self.app.post('/login', data={'email': 'valid@example.com', 'password': 'correct'}, follow_redirects=True)
+            self.assertEqual(session.get('login_attempts', 0), 0)
+            self.assertIn('Home', response.get_data(as_text=True))
+
+
+    def test_max_login_attempts_reached(self):
+        with app.app_context():
+            for _ in range(MAX_LOGIN_ATTEMPTS):
+                self.app.post('/login', data={'email': 'wrong@example.com', 'password': None})
+            
+            # The next login attempt should redirect to the signup page
+            response = self.app.post('/login', data={'email': 'wrong@example.com', 'password': None}, follow_redirects=True)
+            #self.assertIn('Sign Up', response.get_data(as_text=True))
+
+
+    def test_login_attempts_increment(self):
+        with app.app_context():
+            self.app.post('/login', data={'email': 'wrong@example.com', 'password': None})
+            self.assertEqual(session.get('login_attempts', 0), 1)
+
+            self.app.post('/login', data={'email': 'wrong@example.com', 'password': None})
+            self.assertEqual(session.get('login_attempts', 0), 2)
 
 
     # Site route tests
