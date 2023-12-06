@@ -17,7 +17,7 @@ ACCOUNT_CREATED = "Account created! We've signed you in."
 ACCOUNT_EXISTS = 'An account with this email already exists.'
 
 EMAIL_LEN_MSG = "ERROR: Enter an E-mail between 2 and 20 characters long."
-NAME_LEN_MSG = "ERROR: Enter a name between 2 and 20 characters long."
+NAME_LEN_MSG = "ERROR: Enter a name between 5 and 30 characters long."
 PWD_LEN_MSG = "ERROR: Password must be between 7 and 18 characters long."
 PWD_MATCH_MSG = "ERROR: Passwords must match."
 NAME_CHARS_ONLY_MSG = "ERROR: Name must contain only letters."
@@ -92,7 +92,7 @@ def valid_inputs(email, first_name, password):
     """
     
     # Check for email length
-    if not (2 <= len(email) <= 20):
+    if not (5 <= len(email) <= 30):
         flash(EMAIL_LEN_MSG, ERROR)
         return False
 
