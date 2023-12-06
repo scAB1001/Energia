@@ -325,7 +325,7 @@ marquee {
 .form-signin,
 .form-signup {
     max-width: 60%;
-    margin: 50px auto;
+    margin: 20px auto;
     padding: 20px;
     background: var(--struct-default);
     box-shadow: var(--border-default);

@@ -97,7 +97,7 @@ def prep_db():
     db.session.remove()
     db.drop_all()
     db.create_all()
-    pre_populate_tblCars()
+    #pre_populate_tblCars()
 
 
 @views.route('/toggle_count/<int:car_id>', methods=['POST'])
@@ -190,7 +190,7 @@ def home():
     Returns:
     Rendered HTML: The homepage with a personalized greeting if the user is authenticated.
     """
-    prep_db()
+    #prep_db()
     
     first_name = 'Guest'  # Default guest name
     if current_user.is_authenticated:

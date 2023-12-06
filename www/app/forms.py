@@ -5,7 +5,7 @@ import re
 
 # Constants for validation error messages
 NAME_LEN_MSG = "ERROR: Enter a name between 2 and 20 characters long."
-PWD_LEN_MSG = "ERROR: Password must be at least 7 characters long."
+PWD_LEN_MSG = "ERROR: Password must be between 7 and 18 characters long."
 PWD_MATCH_MSG = "ERROR: Passwords must match."
 NAME_CHARS_ONLY_MSG = "ERROR: Name must contain only letters."
 PWD_LETTERS_NUMBERS_MSG = "ERROR: Password must include both letters and numbers."
@@ -73,7 +73,7 @@ class RegistrationForm(BaseUserForm):
                              DataRequired(), Length(min=2, max=20, message=NAME_LEN_MSG)])
     password = PasswordField('Password', validators=[
         DataRequired(),
-        Length(min=7, message=PWD_LEN_MSG)
+        Length(min=7, max=18, message=PWD_LEN_MSG)
     ])
     confirm_password = PasswordField('Confirm Password', validators=[
         DataRequired(),

@@ -43,8 +43,7 @@ class User(BaseModel, UserMixin):
     email = db.Column(db.String(30), unique=True, nullable=False)
     password = db.Column(db.String(20), nullable=False)
     first_name = db.Column(db.String(20), nullable=False)
-    interactions = db.relationship(
-        'UserInteraction', backref='user', lazy=True)
+    interactions = db.relationship('UserInteraction', backref='user', lazy=True)
 
     def __repr__(self):
         return f"User {self.id}: {self.first_name}, {self.email}"

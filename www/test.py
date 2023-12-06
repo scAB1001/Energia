@@ -3,7 +3,7 @@ from flask import Flask, session
 from app import app, db
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
-from app.models import User, Car
+from app.models import User, Car, UserInteraction
 from app.auth_service import generate_hash, validate_password, authenticate_and_login, create_user, register_and_login
 from app.views import home, explore, saved, single_view, settings, delete_account
 
@@ -28,18 +28,48 @@ class BasicTestCase(unittest.TestCase):
             self._create_test_data()
 
     def _create_test_data(self):
-        # Creating valid test user and car for authentication and interaction tests
-        test_user = User(
-            email='sc222ab@mail.com', first_name='Andreas',
-            password=generate_hash('password123'))
-        db.session.add(test_user)
+        # Creating valid test user, car and user-interaction 
+        #   for authentication and interaction tests
 
-        test_car = Car(
+        # Create users
+        user1 = User(
+            email='user1@example.com', first_name='User1',
+            password=generate_hash('password1'))
+
+        user2 = User(
+            email='user2@example.com', first_name='User2',
+            password=generate_hash('password2'))
+
+        # Create cars
+        car1 = Car(
             image='ferrariF512TR3', car_name='Ferrari F512 TR', make='Ferrari',
             model='F512 TR', year=1991, body_type='2-door berlinetta', horsepower=422,
             monthly_payment=3245.32, mileage=198978, like_count=11)
+        
+        car2 = Car(
+            image='astonMartinSILagonda1', car_name='Aston Martin Lagonda Series 1', 
+            make='Aston Martin', model='Lagonda', year=1974, body_type='4-door saloon', 
+            horsepower=280, monthly_payment=4611.96, mileage=18324, like_count=14)
+        
+        car3 = Car(
+            image='countachLP400Lamborghini1', car_name='Lamborghini Countach LP400', 
+            make='Lamborghini', model='LP400', year=1974, body_type='2-door coupe', 
+            horsepower=375, monthly_payment=8042.47, mileage=167228, like_count=86)
+                
+        db.session.add_all([user1, user2, car1, car2, car3])
+        db.session.commit()
 
-        db.session.add(test_car)
+        # User interactions
+        #   User 1 likes Car 1 & 2, dislikes Car 3
+        #   User 2 has not interacted with any cars
+        interaction1 = UserInteraction(
+            user_id=user1.id, car_id=car1.id, swiped_right=True)
+        interaction2 = UserInteraction(
+            user_id=user1.id, car_id=car2.id, swiped_right=True)
+        interaction3 = UserInteraction(
+            user_id=user1.id, car_id=car3.id, swiped_right=False)
+
+        db.session.add_all([interaction1, interaction2, interaction3])
         db.session.commit()
 
     def tearDown(self):
@@ -48,31 +78,99 @@ class BasicTestCase(unittest.TestCase):
             db.drop_all()
 
 
-    def test_home_page_loads(self):
-        response = self.app.get('/', follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_404_page(self):
-        response = self.app.get(
-            '/this-route-does-not-exist', follow_redirects=True)
-        self.assertEqual(response.status_code, 404)
-
-    # Model Tests
+    # Model Basic Tests
     def test_valid_car_creation(self):
         with app.app_context():
-            test_car_id = db.session.get(Car, 1).id
-            self.assertIsNotNone(test_car_id)
+            car1_id = db.session.get(Car, 1).id
+            self.assertIsNotNone(car1_id)
 
 
     def test_invalid_car_creation(self):
         with app.app_context():
-            test_car = Car(make='', model='', year=1900, like_count=0)
-            db.session.add(test_car)
+            car = Car(make='', model='', year=1900, like_count=0)
+            db.session.add(car)
 
             with self.assertRaises(Exception):
                 db.session.commit()
             
-            self.assertIsNone(test_car.id)
+            self.assertIsNone(car.id)
+
+
+    def test_valid_user_creation(self):
+        with app.app_context():
+            user1_id = db.session.get(User, 1).id
+            self.assertIsNotNone(user1_id)
+
+    
+    def test_invalid_user_creation(self):
+        with app.app_context():
+            user = User(email='', first_name='', password='')
+            db.session.add(user)
+
+            with self.assertRaises(Exception):
+                db.session.commit()
+            
+            self.assertIsNone(user.id)
+
+
+    def test_valid_user_interaction_creation(self):
+        with app.app_context():
+            interaction1_id = db.session.get(UserInteraction, 1).id
+            self.assertIsNotNone(interaction1_id)
+
+
+    def test_invalid_user_interaction_creation(self):
+        with app.app_context():
+            interaction = UserInteraction(
+                user_id=1, car_id=3, swiped_right=None)
+            db.session.add(interaction)
+
+            with self.assertRaises(Exception):
+                db.session.commit()
+            
+            self.assertIsNone(interaction.id)
+
+    
+    # Model Relationship Tests
+    def test_valid_user_interaction_relationship(self):
+        with app.app_context():
+            # Retrieve user 1 from the database
+            test_user = User.query.first()
+            self.assertIsNotNone(test_user, "Test user not found in database")
+
+            # Retrieve car 1 from the database
+            test_car = Car.query.first()
+            self.assertIsNotNone(test_car, "Test car not found in database")
+
+            # Retrieve interaction 1 from the database
+            test_interaction = UserInteraction.query.first()
+            self.assertIsNotNone(test_interaction, "Test interaction not found in database")
+
+            # Test the user 1 interaction relationship
+            self.assertEqual(test_interaction.user, test_user)
+            self.assertEqual(test_interaction.car, test_car)
+
+    
+    def test_invalid_user_interaction_relationship(self):
+        with app.app_context():
+            # Retrieve user 2 from the database
+            user2 = db.session.get(User, 2)
+            self.assertIsNotNone(user2, "User 2 not found in database")
+
+            # Retrieve car 1 from the database
+            car1 = db.session.get(Car, 1)
+            self.assertIsNotNone(car1, "Car 1 not found in database")
+
+            # Retrieve all interactions from the database
+            interactions = UserInteraction.query.all()
+            self.assertIsNotNone(interactions, "No interactions found in database")
+
+            # Test the user interaction relationship
+            # This should fail because user 2 and none of the cars are related
+            # because user 2 has not interacted with any cars.
+            for interaction in interactions:
+                self.assertNotEqual(interaction.user, user2)
+                self.assertNotEqual(interaction.car, car1)
 
     
     def test_like_count_increment(self):
@@ -117,6 +215,17 @@ class BasicTestCase(unittest.TestCase):
             self.assertEqual(test_car.like_count, before_decrement - 1)
 
 """
+    def test_home_page_loads(self):
+        response = self.app.get('/', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+
+
+    def test_404_page(self):
+        response = self.app.get(
+            '/this-route-does-not-exist', follow_redirects=True)
+        self.assertEqual(response.status_code, 404)
+    
+    
     # Authentication Tests
     def test_successful_login(self):
         with app.app_context():

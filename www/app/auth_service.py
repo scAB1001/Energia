@@ -4,6 +4,7 @@ from flask import flash
 from .models import User
 from . import db
 from sqlalchemy.exc import IntegrityError
+import re
 
 # Constants for hash method and flash message contents
 HASH_TYPE = 'pbkdf2:sha256'
@@ -81,12 +82,26 @@ def create_user(email, first_name, password):
     Returns:
     User: The newly created user object.
     """
+    # Check for first name length and character composition
+    if not (2 <= len(first_name) <= 20) or not first_name.isalpha():
+        flash(NAME_LEN_MSG if not first_name.isalpha() else NAME_CHARS_ONLY_MSG, ERROR)
+        return None
+
+    # Check for password length and alphanumeric composition
+    if not (7 <= len(password) <= 18) or not re.search(r"[a-zA-Z]", password) or not re.search(r"[0-9]", password):
+        flash(PWD_LEN_MSG if len(password) < 7 else PWD_LETTERS_NUMBERS_MSG, ERROR)
+        return None
+
     hashed_password = generate_hash(password)
-    new_user = User(email=email, first_name=first_name,
-                    password=hashed_password)
+    new_user = User(email=email, first_name=first_name, password=hashed_password)
     db.session.add(new_user)
-    db.session.commit()
-    return new_user
+    try:
+        db.session.commit()
+        return new_user
+    except IntegrityError:
+        db.session.rollback()
+        flash(ACCOUNT_EXISTS, ERROR)
+        return None
 
 
 def register_and_login(email, first_name, password1, password2):
@@ -104,12 +119,10 @@ def register_and_login(email, first_name, password1, password2):
     """
     if not validate_password(password1, password2):
         return False
-    try:
-        user = create_user(email, first_name, password1)
+    
+    user = create_user(email, first_name, password1)
+    if user:
         login_user(user, remember=True)
         flash(ACCOUNT_CREATED, SUCCESS)
         return True
-    except IntegrityError:
-        db.session.rollback()
-        flash(ACCOUNT_EXISTS, ERROR)
-        return False
+    return False  # User creation failed due to validation error
