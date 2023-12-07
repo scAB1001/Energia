@@ -11,7 +11,6 @@ from app.auth import login, logout, signup, MAX_LOGIN_ATTEMPTS
 from app.auth_service import generate_hash, validate_password, valid_inputs, authenticate_and_login, create_user, register_and_login
 from app.views import home, explore, saved, single_view, settings, delete_account
 
-# C:\Users\AB\OneDrive\Documents\CODE\py\www
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 

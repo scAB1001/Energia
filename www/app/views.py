@@ -200,8 +200,7 @@ def home():
     Returns:
     Rendered HTML: The homepage with a personalized greeting if the user is authenticated.
     """
-    #prep_db()
-    pre_populate_tblCars()
+    # prep_db()
     
     first_name = 'Guest'  # Default guest name
     if current_user.is_authenticated:
