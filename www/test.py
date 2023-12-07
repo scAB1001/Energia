@@ -16,7 +16,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class BasicTestCase(unittest.TestCase):
-    # Boilerplate code for setting up and tearing down the test environment
+    # Boilerplate code for setting up/tearing down the test env
     def setUp(self):
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
@@ -88,13 +88,14 @@ class BasicTestCase(unittest.TestCase):
             print("\tTest data already exists in database.")
             return
 
+
     def tearDown(self):
         with app.app_context():
             db.session.remove()
             db.drop_all()
 
 
-
+    
     # Authentication tests
     def login_test_user(self):
         with self.app as client:
@@ -108,7 +109,7 @@ class BasicTestCase(unittest.TestCase):
                 
                 # Check if login was successful
                 self.assertEqual(login_response.status_code, 200)
-                self.assertIn('/', login_response.get_data(as_text=True))
+                self.assertIn('Home', login_response.get_data(as_text=True))
                 self.assertIn('Signed in successfully!', login_response.get_data(as_text=True))
     
     
@@ -159,7 +160,7 @@ class BasicTestCase(unittest.TestCase):
                                      data=invalid_data, follow_redirects=True)
             self.assertIn(b"ERROR", response.data)
  
-    #"""
+    
     def logout_test_user(self):
         # Log in the test user
         self.login_test_user()
@@ -197,6 +198,7 @@ class BasicTestCase(unittest.TestCase):
             empty_pwd_data['password'] = ''
             form = LoginForm(data=empty_pwd_data)
             self.assertFalse(form.validate())
+
 
     def test_registration_form_validation(self):
         with app.app_context():
@@ -537,36 +539,96 @@ class BasicTestCase(unittest.TestCase):
 
 
     def test_successful_login_resets_attempts(self):
-        with app.app_context():
+        invalid_data = {
+            'email': 'user1@example.com',
+            'password': 'mypassword'
+        }
+
+        with app.test_client() as client:
+            # Show number of login attempts at start of session
+            with client.session_transaction() as sess:
+                attempts = sess.get('login_attempts', 0)
+                self.assertEqual(attempts, 0)
+            
             # Simulate a failed login attempt
-            self.app.post('/login', data={'email': 'wrong@example.com', 'password': None})
-            session['login_attempts'] = 1
+            client.post('/login', data=invalid_data)
+            with client.session_transaction() as sess:
+                # Now 1
+                attempts = sess.get('login_attempts', 0)
+                self.assertEqual(attempts, 1)
 
             # Simulate a successful login
-            response = self.app.post('/login', data={'email': 'valid@example.com', 'password': 'correct'}, follow_redirects=True)
-            self.assertEqual(session.get('login_attempts', 0), 0)
-            self.assertIn('Home', response.get_data(as_text=True))
-
+            valid_data = invalid_data.copy()
+            valid_data['password'] = 'Password1'
+            response = client.post('/login', 
+                data=valid_data, follow_redirects=True)
+            
+            with client.session_transaction() as sess:
+                # Reset to 0
+                attempts = sess.get('login_attempts', 0)
+                self.assertEqual(attempts, 0)
+                self.assertIn('Home', response.get_data(as_text=True))
+    
 
     def test_max_login_attempts_reached(self):
-        with app.app_context():
-            for _ in range(MAX_LOGIN_ATTEMPTS):
-                self.app.post('/login', data={'email': 'wrong@example.com', 'password': None})
-            
-            # The next login attempt should redirect to the signup page
-            response = self.app.post('/login', data={'email': 'wrong@example.com', 'password': None}, follow_redirects=True)
-            #self.assertIn('Sign Up', response.get_data(as_text=True))
+        invalid_data = {
+            'email': 'B@example.com',
+            'password': 'Incorrect123'
+        }
+        with app.test_client() as client:
+        # Show number of login attempts at start of session
+            with client.session_transaction() as sess:
+                attempts = sess.get('login_attempts', 0)
+                self.assertEqual(attempts, 0)
 
+            # Simulate the max number of allowed failed login attempts
+            for _ in range(MAX_LOGIN_ATTEMPTS):
+                client.post('/login', data=invalid_data)
+            
+            with client.session_transaction() as sess:
+                # Now 3
+                attempts = sess.get('login_attempts', 0)
+                self.assertEqual(attempts, MAX_LOGIN_ATTEMPTS)
+
+            # The next attempt should redirect to /signup and flash a msg
+            response = client.post('/login', 
+                data=invalid_data, follow_redirects=True)
+            
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('Signup', response.get_data(as_text=True))
+            self.assertIn('Maximum sign-in attempts reached.',
+                          response.get_data(as_text=True))
+    
 
     def test_login_attempts_increment(self):
-        with app.app_context():
-            self.app.post('/login', data={'email': 'wrong@example.com', 'password': None})
-            self.assertEqual(session.get('login_attempts', 0), 1)
+        # Using valid form data but incorrect credentials
+        invalid_data = {
+            'email': 'B@example.com',
+            'password': 'Incorrect123'
+        }
+        
+        with app.test_client() as client:
+        # Show number of login attempts at start of session
+            with client.session_transaction() as sess:
+                attempts = sess.get('login_attempts', 0)
+                self.assertEqual(attempts, 0)
 
-            self.app.post('/login', data={'email': 'wrong@example.com', 'password': None})
-            self.assertEqual(session.get('login_attempts', 0), 2)
+            # Simulate first failed login attempt
+            client.post('/login', data=invalid_data)
+            with client.session_transaction() as sess:
+                # Now 1
+                attempts = sess.get('login_attempts', 0)
+                self.assertEqual(attempts, 1)
+
+            # Simulate second failed login attempt
+            client.post('/login', data=invalid_data)
+            with client.session_transaction() as sess:
+                # Now 2
+                attempts = sess.get('login_attempts', 0)
+                self.assertEqual(attempts, 2)
 
 
+    
     # Site route tests
     def test_home_route_as_guest(self):
         response = self.app.get('/')
@@ -630,10 +692,12 @@ class BasicTestCase(unittest.TestCase):
         #self.assertIn('Settings', response.get_data(as_text=True))
     
     
+    #   Error page tests
     def test_404_page(self):
         response = self.app.get(
             '/this-route-does-not-exist', follow_redirects=True)
         self.assertEqual(response.status_code, 404)
+
 
     def test_500_page(self):
         # Log in the test user
@@ -646,7 +710,7 @@ class BasicTestCase(unittest.TestCase):
                     '/react', json={'carID': 1, 'swiped_right': True})
                 self.assertEqual(response.status_code, 500)
                 self.assertIn('Unable to commit', response.get_json()['status'])
-    #"""
+    
 
 if __name__ == '__main__':
     unittest.main()
