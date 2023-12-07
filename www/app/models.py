@@ -1,6 +1,5 @@
 from app import db
 from sqlalchemy.sql import func
-#from sqlalchemy import CheckConstraint
 from flask_login import UserMixin
 
 # Constant fo default datetime
@@ -46,13 +45,6 @@ class User(BaseModel, UserMixin):
     first_name = db.Column(db.String(20), nullable=False)
     interactions = db.relationship('UserInteraction', backref='user', lazy=True)
 
-    # Constraints for the user model as the input is controlled by the user
-    #__table_args__ = (
-    #    CheckConstraint('LENGTH(email) BETWEEN 5 AND 30',
-    #                    name='email_min_length'),
-    #    CheckConstraint('LENGTH(first_name) BETWEEN 2 AND 20',
-    #                    name='first_name_length')
-    #)
 
     def __repr__(self):
         return f"User {self.id}: {self.first_name}, {self.email}"
