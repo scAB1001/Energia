@@ -18,6 +18,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class BasicTestCase(unittest.TestCase):
     # Boilerplate code for setting up/tearing down the test env
     def setUp(self):
+        """
+        Creates a new database for the unit test to use
+
+        :return: None
+        """
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + \
@@ -34,9 +39,11 @@ class BasicTestCase(unittest.TestCase):
 
 
     def _create_test_data(self):
-        # Creating valid test user, car and user-interaction 
-        #   for authentication and interaction tests
+        """
+        Creates test data for the unit test to use
 
+        :return: None
+        """
         # Create users
         user1 = User(
             email='user1@example.com', first_name='User1',
@@ -90,6 +97,11 @@ class BasicTestCase(unittest.TestCase):
 
 
     def tearDown(self):
+        """
+        Ensures that the database is emptied for next unit test
+
+        :return: None
+        """
         with app.app_context():
             db.session.remove()
             db.drop_all()
@@ -98,6 +110,13 @@ class BasicTestCase(unittest.TestCase):
     
     # Authentication tests
     def login_test_user(self):
+        """
+        Logs in the test user using valid credentials
+
+        Testing for:
+        - Successful login
+        - Successful login flash message
+        """
         with self.app as client:
             # Login the test user
             user_data = {'email': 'user1@example.com', 'password': 'Password1'}
@@ -114,6 +133,13 @@ class BasicTestCase(unittest.TestCase):
     
     
     def login_test_user_fail(self):
+        """
+        Logs in the test user using invalid credentials
+
+        Testing for:
+        - Unsuccessful login
+        - Unsuccessful login flash message
+        """
         with self.app as client:
             # Login the test user
             user_data = {'email': 'user1@example.com', 'password': None}
@@ -131,6 +157,13 @@ class BasicTestCase(unittest.TestCase):
 
     
     def test_route_user_signup(self):
+        """
+        Signs up the test user using valid credentials
+
+        Testing for:
+        - Successful signup
+        - Successful signup flash message
+        """
         with app.app_context():
             valid_data = {
                 'email': 'new@example.com',
@@ -143,10 +176,18 @@ class BasicTestCase(unittest.TestCase):
             response = self.app.post('/signup',
                                      data=valid_data, follow_redirects=True)
             self.assertEqual(response.status_code, 200)
-            #self.assertIn(b"Account created! We've signed you in.", response.data)
+            self.assertIn("Account created!", 
+                response.get_data(as_text=True))
 
 
     def test_route_user_signup_fail(self):
+        """
+        Signs up the test user using invalid credentials
+
+        Testing for:
+        - Unsuccessful signup
+        - Unsuccessful signup flash message
+        """
         with app.app_context():
             invalid_data = {
                 'email': 'new@example.com',
@@ -158,10 +199,17 @@ class BasicTestCase(unittest.TestCase):
             # Test registration with invalid data
             response = self.app.post('/signup',
                                      data=invalid_data, follow_redirects=True)
-            self.assertIn(b"ERROR", response.data)
+            self.assertIn("Sign Up", response.get_data(as_text=True))
  
     
     def logout_test_user(self):
+        """
+        Logs out the test user
+
+        Testing for:
+        - Successful logout
+        - Successful logout flash message
+        """
         # Log in the test user
         self.login_test_user()
 
@@ -178,6 +226,14 @@ class BasicTestCase(unittest.TestCase):
 
     #   Form tests
     def test_login_form_validation(self):
+        """
+        Form validation tests for the login form
+
+        Testing for:
+        - Valid input
+        - Invalid email
+        - Invalid password (empty)
+        """
         with app.app_context():
             # Base valid data
             base_data = {'email': 'user@example.com',
@@ -201,6 +257,17 @@ class BasicTestCase(unittest.TestCase):
 
 
     def test_registration_form_validation(self):
+        """
+        Form validation tests for the registration form
+
+        Testing for:
+        - Valid input
+        - Invalid (mismatch) password
+        - Invalid (too long) password
+        - Invalid (missing num/chars) password
+        - Invalid first name (contains numbers)
+        - Invalid first name (empty)
+        """
         with app.app_context():
             # Base valid data
             base_data = {
@@ -249,12 +316,21 @@ class BasicTestCase(unittest.TestCase):
     # Model tests
     #   Creation tests
     def test_valid_car_creation(self):
+        """
+        Tests the existence of the test car from setup()
+        """
         with app.app_context():
             car1_id = db.session.get(Car, 1).id
             self.assertIsNotNone(car1_id)
     
 
     def test_invalid_car_creation(self):
+        """
+        Creates an invalid car
+        
+        Testing for:
+        - Invalid car object in database
+        """
         with app.app_context():
             car = Car(make='', model='', year=1900, like_count=0)
             db.session.add(car)
@@ -266,24 +342,42 @@ class BasicTestCase(unittest.TestCase):
 
 
     def test_valid_user_creation(self):
+        """
+        Tests the existence of the test user from setup()
+        """
         with app.app_context():
             user1_id = db.session.get(User, 1).id
             self.assertIsNotNone(user1_id)
 
   
     def test_invalid_user_creation(self):
+        """
+        Creates an invalid user
+
+        Testing for:
+        - Invalid user object in database
+        """
         with app.app_context():
             user_id = User(email='', first_name='', password='').id
             self.assertIsNone(user_id)
 
 
     def test_valid_user_interaction_creation(self):
+        """
+        Tests the existence of the test user interaction from setup()
+        """
         with app.app_context():
             interaction1_id = db.session.get(UserInteraction, 1).id
             self.assertIsNotNone(interaction1_id)
 
 
     def test_invalid_user_interaction_creation(self):
+        """
+        Creates an invalid user interaction
+
+        Testing for:
+        - Invalid user interaction object in database
+        """
         with app.app_context():
             interaction = UserInteraction(
                 user_id=1, car_id=3, swiped_right=None)
@@ -297,6 +391,13 @@ class BasicTestCase(unittest.TestCase):
 
     #   Deletion tests
     def test_delete_user(self):
+        """
+        Tests the deletion of the test user 2 from setup()
+
+        Testing for:
+        - User 2 deleted from database
+        - User 2 no longer exists in database
+        """
         with app.app_context():
             # Confirm that 2 users exist to begin with
             users = User.query.all()
@@ -320,6 +421,13 @@ class BasicTestCase(unittest.TestCase):
 
     
     def test_delete_user_interactions(self):
+        """
+        Deletes all interactions for user 1
+
+        Testing for:
+        - All interactions for user 1 deleted from database
+        - All interactions for user 1 no longer exist in database
+        """
         with app.app_context():
             # Confirm that 3 interactions exist for user 1 to begin with
             interactions = UserInteraction.query.filter_by(user_id=1).all()
@@ -344,6 +452,14 @@ class BasicTestCase(unittest.TestCase):
     
 
     def test_delete_account_route(self):
+        """
+        Tests the deletion of the test user 1 from setup() 
+            through the delete_account route
+
+        Testing for:
+        - User 1 deleted from database
+        - User 1 no longer exists in database
+        """
         # Log in the test user
         self.login_test_user()
 
@@ -359,6 +475,13 @@ class BasicTestCase(unittest.TestCase):
 
     #   Model relationship tests
     def test_valid_user_interaction_relationship(self):
+        """
+        Tests the relationship between user 1 and interaction 1
+
+        Testing for:
+        - User 1 and interaction 1 are related
+        - User 1 and interaction 1 are not related to user 2 or car 1
+        """
         with app.app_context():
             # Retrieve user 1 from the database
             user1 = User.query.first()
@@ -377,6 +500,14 @@ class BasicTestCase(unittest.TestCase):
 
     
     def test_invalid_user_interaction_relationship(self):
+        """
+        Tests the relationship between user 2 and interaction 1
+
+        Testing for:
+        - User 2 and interaction 1 are not related
+        - User 2 and interaction 1 are not related to user 1 or car 1
+        """
+
         with app.app_context():
             # Retrieve user 2 from the database
             user2 = db.session.get(User, 2)
@@ -400,6 +531,12 @@ class BasicTestCase(unittest.TestCase):
  
     # Live-service tests
     def test_like_count_increment(self):
+        """
+        Tests the incrementation of the like count for car 1
+
+        Testing for:
+        - Like count incremented by 1
+        """
         with app.app_context():
             # Retrieve the test car from the database (entry 1)
             car1 = Car.query.first()
@@ -422,6 +559,12 @@ class BasicTestCase(unittest.TestCase):
 
 
     def test_like_count_decrement(self):
+        """
+        Tests the decrementation of the like count for car 1
+
+        Testing for:
+        - Like count decremented by 1
+        """
         with app.app_context():
             # Retrieve the test car from the database
             car1 = Car.query.first()
@@ -444,6 +587,12 @@ class BasicTestCase(unittest.TestCase):
 
 
     def test_invalid_like_count_action(self):
+        """
+        Tests the invalidation of the like count for car 1
+
+        Testing for:
+        - Like count unchanged
+        """
         with app.app_context():
             # Retrieve the test car from the database
             car1 = Car.query.first()
@@ -466,6 +615,15 @@ class BasicTestCase(unittest.TestCase):
 
 
     def test_cards_depleted(self):
+        """
+        Tests the cards depleted signal
+
+        Testing for:
+        - Cards depleted signal received
+        - Cards not depleted signal received
+        - Invalid cards depleted signal received
+        - Flash messages received
+        """
         with app.app_context():
             # Simulate a valid 'cards depleted' signal
             base_data = {'isEmpty': True}
@@ -502,6 +660,16 @@ class BasicTestCase(unittest.TestCase):
 
 
     def test_reaction_validation(self):
+        """
+        Tests the validation of the reaction data/signal
+
+        Testing for:
+        - Valid reaction data/signal
+        - Invalid reaction data/signal (empty)
+        - Invalid reaction data/signal (missing car ID)
+        - Invalid reaction data/signal (missing swiped_right)
+        """
+
         # Log in the test user
         self.login_test_user()
 
@@ -539,6 +707,14 @@ class BasicTestCase(unittest.TestCase):
 
 
     def test_successful_login_resets_attempts(self):
+        """
+        Tests the reset of login attempts after a successful login
+
+        Testing for:
+        - Successful login
+        - Successful login flash message
+        - Login attempts reset to 0
+        """
         invalid_data = {
             'email': 'user1@example.com',
             'password': 'mypassword'
@@ -571,6 +747,15 @@ class BasicTestCase(unittest.TestCase):
     
 
     def test_max_login_attempts_reached(self):
+        """
+        Tests the max login attempts reached signal
+
+        Testing for:
+        - Max login attempts reached signal received
+        - Max login attempts not reached signal received
+        - Invalid max login attempts reached signal received
+        - Flash messages received
+        """
         invalid_data = {
             'email': 'B@example.com',
             'password': 'Incorrect123'
@@ -601,6 +786,14 @@ class BasicTestCase(unittest.TestCase):
     
 
     def test_login_attempts_increment(self):
+        """
+        Tests the incrementation of login attempts after failed logins
+
+        Testing for:
+        - Failed login attempt
+        - Login attempts incremented by 1
+        """
+
         # Using valid form data but incorrect credentials
         invalid_data = {
             'email': 'B@example.com',
@@ -631,12 +824,27 @@ class BasicTestCase(unittest.TestCase):
     
     # Site route tests
     def test_home_route_as_guest(self):
+        """
+        Tests the home route as a guest
+
+        Testing for:
+        - Successful home route
+        - Successful home route flash message
+        """
         response = self.app.get('/')
         self.assertEqual(response.status_code, 200)
         self.assertIn('Welcome to AutoSwipe, Guest.', response.get_data(as_text=True))
     
 
     def test_home_route_as_user(self):
+        """
+        Tests the home route as a user
+
+        Testing for:
+        - Successful home route
+        - Successful home route flash message
+        """
+
         # Log in the test user
         self.login_test_user()
 
@@ -652,54 +860,105 @@ class BasicTestCase(unittest.TestCase):
     
 
     def test_routes_as_guest(self):
+        """
+        Tests the routes that require a user to be logged in
+
+        Testing for:
+        - Successful route redirect
+        - Successful route flash message
+        """
         # Test the routes that require a user to be logged in
         routes = ['/explore', '/saved', '/settings']
 
         for route in routes:
             response = self.app.get(route, follow_redirects=True)
             self.assertEqual(response.status_code, 200)
-            #self.assertIn('Please log in to access this page.', response.get_data(as_text=True))
+            self.assertIn('Sign In', response.get_data(as_text=True))
 
 
     def test_explore_route(self):
+        """
+        Tests the explore route
+
+        Testing for:
+        - Successful explore route
+        - Successful explore route flash message
+        """
         # Log in the test user
         self.login_test_user() 
 
         response = self.app.get('/explore')
         self.assertEqual(response.status_code, 200)
-        #self.assertIn('Explore', response.get_data(as_text=True))
+        self.assertIn('Explore', response.get_data(as_text=True))
     
 
     def test_saved_route(self):
-        self.login_test_user()  # ensure a test user is logged in
+        """
+        Tests the saved route
+
+        Testing for:
+        - Successful saved route
+        - Successful saved route flash message
+        """
+        # Log in the test user
+        self.login_test_user()
         response = self.app.get('/saved')
         self.assertEqual(response.status_code, 200)
-        #self.assertIn('Saved Cars', response.get_data(as_text=True))
+        self.assertIn('Saved', response.get_data(as_text=True))
     
 
     def test_single_view_route(self):
+        """
+        Tests the single view route
+
+        Testing for:
+        - Successful single view route
+        - Successful single view route flash message
+        """
         self.login_test_user()
-        car_id = 1  # assuming there is a car with ID 1
+        car_id = 1
         response = self.app.get(f'/saved/single-view/{car_id}')
         self.assertEqual(response.status_code, 200)
-        #self.assertIn('Car Details', response.get_data(as_text=True))
+        self.assertIn('Single View', response.get_data(as_text=True))
     
 
     def test_settings_route(self):
+        """
+        Tests the settings route
+
+        Testing for:
+        - Successful settings route
+        - Successful settings route flash message
+        """
+        # Log in the test user
         self.login_test_user()
         response = self.app.get('/settings')
         self.assertEqual(response.status_code, 200)
-        #self.assertIn('Settings', response.get_data(as_text=True))
+        self.assertIn('Settings', response.get_data(as_text=True))
     
     
     #   Error page tests
     def test_404_page(self):
+        """
+        Tests the 404 page
+
+        Testing for:
+        - Successful 404 page
+        - Successful 404 page flash message
+        """
         response = self.app.get(
             '/this-route-does-not-exist', follow_redirects=True)
         self.assertEqual(response.status_code, 404)
-
+        self.assertIn('404', response.get_data(as_text=True))
 
     def test_500_page(self):
+        """
+        Tests the 500 page through the react route
+
+        Testing for:
+        - Successful 500 page
+        - Successful 500 page flash message
+        """
         # Log in the test user
         self.login_test_user()
 

@@ -286,7 +286,7 @@ def single_view(carID):
     # Fetch full details of the specified car
     car = db.session.get(Car, carID).full_details()
 
-    return render_template('/site/single_view.html', title='Car', user=current_user, car=car)
+    return render_template('/site/single_view.html', title='Single View', user=current_user, car=car)
 
 
 @views.route('/settings')
