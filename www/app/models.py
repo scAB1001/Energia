@@ -111,7 +111,7 @@ class Car(BaseModel):
         Returns:
         Dictionary: A detailed view of the car's information for card display.
         """
-        width = 20
+        width = 10
         return {
             'carID': int(str(self.id)),
             'imageUrl': f'{self.image}',

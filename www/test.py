@@ -13,7 +13,7 @@ from app.views import home, explore, saved, single_view, settings, delete_accoun
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-
+    
 class BasicTestCase(unittest.TestCase):
     # Boilerplate code for setting up/tearing down the test env
     def setUp(self):
