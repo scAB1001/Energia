@@ -91,12 +91,14 @@ def prep_db():
     Prepares the database by clearing tables and pre-populating them.
 
     This function first clears the session data, drops all database tables, 
-    re-initialises all the database tables and then pre-populates the Car table.
+        re-initialises all the database tables, pre-populates the Car table 
+            and resets the login attempts counter.
     """
     db.session.remove()
     db.drop_all()
     db.create_all()
-    #pre_populate_tblCars()
+    session['login_attempts'] = 0
+    pre_populate_tblCars()
 
 
 @views.route('/toggle_count/<int:car_id>', methods=['POST'])
@@ -199,6 +201,7 @@ def home():
     Rendered HTML: The homepage with a personalized greeting if the user is authenticated.
     """
     #prep_db()
+    pre_populate_tblCars()
     
     first_name = 'Guest'  # Default guest name
     if current_user.is_authenticated:

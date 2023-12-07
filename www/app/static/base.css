@@ -5,18 +5,19 @@
     --text-default: #F2F4F3;
     --accent-default: #5A2E0C;
     --accent-section: #353B30;
-    --accent-flash: #175616;
+    --accent-flash: #8A3906;
+    --accent-flash2: #175616;
     --accent-warning: #CDA43C;
     --accent-danger: #b20000;
     --border-default: solid 3px black;
     --font-family-thick: 'Robot Serif', monospace;
     --font-family-mono: 'Courier New', monospace;
     --font-size-text: 16px;
+    --font-size-logo-text: 18px;
     --font-size-h2: 20px;
     --font-size-h1: 22px;
     --font-size-button: 18px;
     --struct-subtle-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    ;
 }
 
 /* General styles for high contrast and readability */
@@ -59,6 +60,13 @@ main {
 
 #logo {
     font-size: var(--font-size-h1);
+}
+
+.logo-heading {
+    font-size: var(--font-size-logo-text);
+    margin: 0;
+    padding: 0.5rem;
+
 }
 
 .nav-link {
@@ -220,14 +228,6 @@ h2 {
     margin-bottom: 0;
 }
 
-marquee {
-    width: 100%;
-    height: 100%;
-    font-weight: bold;
-    font-size: var(--font-size-h2);
-    font-family: var(--font-family-mono);
-}
-
 .cta {
     text-align: center;
     margin-top: 0.75rem;
@@ -380,8 +380,8 @@ marquee {
     /* Above other elements */
     z-index: 1001;
     animation:
-        slideIn 1s ease forwards,
-        slideOut 2.75s ease forwards 2.25s;
+        slideIn 1.75s ease forwards,
+        slideOut 2.75s ease forwards 3s;
 }
 
 .scrollable-table2 {
@@ -409,7 +409,7 @@ marquee {
     font-family: var(--font-family-thick);
 }
 
-.error-page h3 {
+.error-page h2 {
     font-size: 2rem;
     margin-bottom: 1rem;
     font-size: var(--font-size-h2);

@@ -29,10 +29,11 @@
   <a class="navbar-brand nav-link" id="logo" href="/" aria-label="AutoSwipe Home">
 
   {% endif %}
-    
-    <img src="{{ url_for('static', filename='icons/logo.png') }}" width="20%" height="20%" class="d-inline-block"
+    <h1 class="logo-heading">
+      <img src="{{ url_for('static', filename='icons/logo.png') }}" width="20%" height="20%" class="d-inline-block"
       alt="AutoSwipe Logo">
       AutoSwipe
+    </h1>
     
   {% if user.is_authenticated %}
   </div>
@@ -86,9 +87,9 @@
     </ul>
   </div>
   {% else %}
-  <marquee direction="right" aria-label="notify-user-to-signin">
-    <h3 id="notify-user-to-signin">Sign in to use AutoSwipe.</h3>
-  </marquee>
+  <div aria-label="notify-user-to-signin">
+    <h2 id="notify-user-to-signin">Please sign in to use AutoSwipe.</h2>
+  </div>
   {% endif %}
 </nav>
 
